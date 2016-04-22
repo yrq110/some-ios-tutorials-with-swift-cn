@@ -339,7 +339,7 @@ public class func getTopAppsDataFromItunesWithSuccess(success: ((iTunesData: NSD
 ~~~~
 上面的代码看起来很熟悉，不过与检索本地文件不同的是，你使用`NSURLSession`从iTunes上获得了数据。里面发生了什么：
 
-1. 当你第一次调用`loadDataFromURL`时，
+1. 当你第一次调用`loadDataFromURL`时，使用`NSData`对象中的的URL与一个completion闭包作为输入参数。
 2. 接着你使用可选绑定确保data存在
 3. 最后你将data传递给success
 
