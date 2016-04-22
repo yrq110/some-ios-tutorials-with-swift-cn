@@ -265,7 +265,7 @@ public struct App: Decodable {
 1. `Feed`与`Topapp`都使用的可选属性。如果你确信JSON中总有填充值的话可以定义一个非可选属性。
 2. 你不需要为JSON中的每一个成员都创建模型对象。
 
-现在你的模型类
+现在你的模型类已经准备好了，让Gloss工作吧！
 
 打开playground文件并添加如下代码：
 ~~~~
