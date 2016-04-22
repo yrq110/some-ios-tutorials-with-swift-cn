@@ -3,7 +3,7 @@
 [原文地址](https://www.raywenderlich.com/120442/swift-json-tutorial)
 > 更新至Xcode 7.1与Swift 2   12-21-2015
 
-[JavaScript Object Notation](http://www.json.org/)或简称JSON，是一种与Web端服务进行数据传递的通用方法。它具有易用与可读性强的特点，这也是它为何会这么火的原因。
+[JavaScript Object Notation](http://www.json.org/)或简称`JSON`，是一种与Web端服务进行数据传递的通用方法。它具有易用与可读性强的特点，这也是它为何会这么火的原因。
 
 考虑一下下面这段JSON：
 
@@ -24,13 +24,13 @@
 ]
 ~~~~
 
-在Objective-C中，对JSON的解析与反序列化是很明确的：
+在`Objective-C`中，对JSON的解析与反序列化是很明确的：
 ~~~~
 NSArray *json = [NSJSONSerialization JSONObjectWithData:JSONData options:kNilOptions error:nil];
 NSString *age = json[0][@"person"][@"age"];
 NSLog(@"Dani's age is %@", age);
 ~~~~
-在Swift中，由于Swift的可选类型与类型安全，同样的操作显得更加繁琐：
+在`Swift`中，由于Swift的可选类型与类型安全，同样的操作显得更加繁琐：
 ~~~~
 var json: Array!
 do {
@@ -47,9 +47,9 @@ if let item = json[0] as? [String: AnyObject] {
   }
 }
 ~~~~
-在上面的代码中，当你使用JSON中的每一个object之前都需要通过可选绑定进行检查。这会保证你代码的安全性，但是若你的JSON越复杂，你的代码就会变得越丑。
+在上面的代码中，当你使用JSON中的每一个object之前都需要通过`可选绑定`(optional binding)进行检查。这会保证你代码的安全性，但是若你的JSON越复杂，你的代码就会变得越丑。
 
-使用Swift2.0中的guard语句可以帮助避免if语句的嵌套：
+使用Swift2.0中的`guard`语句可以帮助避免if语句的嵌套：
 ~~~~
 guard let item = json[0] as? [String: AnyObject],
   let person = item["person"] as? [String: AnyObject],
@@ -60,7 +60,7 @@ print("Dani's age is \(age)")
 ~~~~
 还是太冗长，不是吗？你怎样才能使它更简洁？
 
-在这篇JSON指南中，你会学到一种更轻松的解析JSON的方法——使用开源库[Gloss](https://github.com/hkellaway/Gloss)
+在这篇JSON指南中，你会学到一种更轻松的解析JSON的方法——使用开源库`[Gloss]`(https://github.com/hkellaway/Gloss)
 
 你将会使用Gloss去解析一个包含US App商店Top25应用信息的JSON文档。你将会发现在Objective-C中也能轻易的使用！
 
@@ -74,11 +74,11 @@ print("Dani's age is \(age)")
 >你可能会发现playground工程的导航默认是关闭的。使用`command`+`1`来显示它。
 
 在开始playground文件中有一些source与resource文件，会使你更加专注于使用Swift进行JSON的解析。看一看它的结构与概要：
-* Resources文件夹绑定了你的Swift代码中要访问的资源文件
-  * topapps.json：包含需要解析的JSON字符串
-* Sources文件夹包含你的主playground可以访问的其他Swift远吗文件。在Sources文件夹中添加额外的.swift辅助文件会使你的playground变得更加简洁与易读。
-  * App.swift：
-  * DataManager.swift：
+* `Resources`文件夹绑定了你的Swift代码中要访问的资源文件
+  * `topapps.json`：包含需要解析的JSON字符串
+* `Sources`文件夹包含你的主playground可以访问的其他Swift远吗文件，在Sources文件夹中添加额外的.swift辅助文件会使你的playground变得更加简洁与易读。
+  * `App.swift`：一个原始的swift结构体，代表一个app。你的目标就是解析JSON转换为这些对象的一个集合。
+  * `DataManager.swift`：管理来自本地或网络的数据检索，之后你将会使用这个文件中的方法加载一些JSON。
 
 当你感到对当前的playground充分理解后请继续向下阅读！
 ##用Swift原生方法解析JSON
@@ -129,8 +129,8 @@ DataManager.getTopAppsDataFromFileWithSuccess { (data) -> Void in
 ~~~~
 上面发生了什么：
 
-1. 首先你使用NSJSONSerialization对数据进行了反序列化
-2. 你需要检查逐一JSON对象中的所有值确保他们不为空(nil)。一旦你确定它含有一个有效的值则继续检查下一个object。当你使用这种方法遍历了所有下标则会得到所需要的name与link值。
+1. 首先你使用`NSJSONSerialization`对数据进行了反序列化
+2. 你需要逐一检查JSON对象中的所有值确保他们不为空(nil)。一旦你确定它含有一个有效的值则继续检查下一个object。当你使用这种方法遍历了所有下标则会得到所需要的name与link值。
 3. 最后一步就是使用name与link值初始化一个App对象并使用控制台输出。
 
 保存并运行你的stroyboard，你应该会在调制窗口中有如下的结果：
@@ -366,7 +366,7 @@ topApps.feed?.entries
 ###Gloss的工作原理
 你可以看到Gloss在解析处理方面的卓越成效，不过它是怎么工作的呢？
 
-<~~是`Decoder.decode`功能中的一个自定义操作符(custom operator)。Gloss中支持多种类型的解码：
+<~~是`Decoder.decode`功能中的一个`自定义操作符`(custom operator)。Gloss中支持多种类型的解码：
 * Simple types (Decoder.decode)
 * Decodable models (Decoder.decodeDecodable)
 * Simple arrays (Decoder.decode)
