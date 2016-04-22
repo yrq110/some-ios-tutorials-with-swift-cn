@@ -64,7 +64,7 @@ print("Dani's age is \(age)")
 
 你将会使用Gloss去解析一个包含US App商店Top25应用信息的JSON文档。你将会发现在Objective-C中也能轻易的使用！
 
-##开始
+##入门
 下载这篇指南的[开始playground](http://www.raywenderlich.com/wp-content/uploads/2015/11/TopApps-Starter.zip)
 
 由于用户界面在这篇JSON指南中并不是很重要，因此你将只使用playgrounds进行学习。
