@@ -78,7 +78,7 @@ print("Dani's age is \(age)")
 在开始playground文件中有一些source与resource文件，会使你更加专注于使用Swift进行JSON的解析。看一看它的结构与概要：
 * `Resources`文件夹绑定了你的Swift代码中要访问的资源文件
   * `topapps.json`：包含需要解析的JSON字符串
-* `Sources`文件夹包含你的主playground可以访问的其他Swift远吗文件，在Sources文件夹中添加额外的.swift辅助文件会使你的playground变得更加简洁与易读。
+* `Sources`文件夹包含你的主playground可以访问的其他Swift源文件，在Sources文件夹中添加额外的.swift文件辅助会使你的playground变得更加简洁与易读。
   * `App.swift`：一个原始的swift结构体，代表一个app。你的目标就是解析JSON转换为这些对象的一个集合。
   * `DataManager.swift`：管理来自本地或网络的数据检索，之后你将会使用这个文件中的方法加载一些JSON。
 
