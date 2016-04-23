@@ -1,6 +1,8 @@
 #Swift Tutorial: Working with JSON
 ##Swift指南：JSON的使用
 [原文地址](https://www.raywenderlich.com/120442/swift-json-tutorial)
+
+![swift](https://cdn3.raywenderlich.com/wp-content/uploads/2014/06/swift_tut-250x250.jpg)
 > 更新至Xcode 7.1与Swift 2   12-21-2015
 
 [JavaScript Object Notation](http://www.json.org/)或简称`JSON`，是一种与Web端服务进行数据传递的通用方法。它具有易用与可读性强的特点，这也是它为何会这么火的原因。
