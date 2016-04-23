@@ -32,5 +32,7 @@
 在这篇教程中，你将会创建一个叫做Scribble的app。这是一个可以让你使用响应式UI、压力灵敏度与阴影进行绘图的简易app。
 
 下载[Scribble](http://www.raywenderlich.com/wp-content/uploads/2016/12/Scribble-StarterV1.zip)。在你的iPad Pro上试试，用Pencil与手指进行绘图。
+
 ![image](http://www.raywenderlich.com/wp-content/uploads/2016/01/GettingStarted.png)
+
 晃动iPad清屏，就像一个[Etch-A-Sketch](https://en.wikipedia.org/wiki/Etch_A_Sketch)！
