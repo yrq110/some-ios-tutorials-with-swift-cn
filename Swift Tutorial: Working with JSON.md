@@ -62,7 +62,7 @@ print("Dani's age is \(age)")
 ~~~~
 还是太冗长，不是吗？你怎样才能使它更简洁？
 
-在这篇JSON教程中，你会学到一种更轻松的解析JSON的方法——使用开源库`[Gloss]`(https://github.com/hkellaway/Gloss)
+在这篇JSON教程中，你会学到一种更轻松的解析JSON的方法——使用开源库[Gloss](https://github.com/hkellaway/Gloss)
 
 你将会使用Gloss去解析一个包含US App商店Top25应用信息的JSON文档。你将会发现在Objective-C中也能轻易的使用！
 
