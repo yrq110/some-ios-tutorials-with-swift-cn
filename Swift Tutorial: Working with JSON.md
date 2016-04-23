@@ -164,7 +164,7 @@ DataManager.getTopAppsDataFromFileWithSuccess { (data) -> Void in
 
 ![image](http://www.raywenderlich.com/wp-content/uploads/2015/12/Screen-Shot-2015-12-14-at-8.23.16-PM.png)
 
-成功了！现在你将Gloss添加进了你的palyground了，可以不用使用令人头疼的可选绑定来解析JSON了！
+成功了！现在你将Gloss添加进palyground了，可以不用使用令人头疼的可选绑定来解析JSON了！
 >也可以使用Cocoapods来安装Gloss。由于playground已经不再支持，你只能在标准的Xcode工程中使用这种方法
 
 ###映射JSON到对象
