@@ -158,8 +158,48 @@ print(touch.azimuthUnitVectorInView(self))
 
 注意x方向使用cos计算，y方向使用sin。比如说你像上图那样握笔，从你初始的水平方向逆时针旋转45度，单位向量为(cos(45),sin(-45))或(0.7071,-0.7071)。
 
->如果你不太了解向量，这是一个需要补充的知识。这个[教程](http://www.raywenderlich.com/90520/trigonometry-games-sprite-kit-swift-tutorial-part-1)使你充分了解向量。
+>如果你不太了解向量，这是一个需要补充的知识。这个[教程](http://www.raywenderlich.com/90520/trigonometry-games-sprite-kit-swift-tutorial-part-1)会使你充分了解向量。
 
 当你理解Pencil方向的改变与指示向量的关系后删掉最后的print语句。
 
 ##绘制阴影
+现在你知道了如何测量倾斜量，已经准备好在Scribble中添加简单的阴影了。
+
+当Pencil处于一个自然绘图的角度，使用力道来决定笔画的粗细，当用户倾斜到一边时，可以用力道来测量阴影的透明度。
+
+你可以根据线条的方向与握笔的方向来计算线条的粗细。
+
+如果你还不太明白试着找一支铅笔与一张纸，将铅笔倾斜到一边进行绘制，使笔尖与纸张的接触达到最大。当你沿着铅笔倾斜的方向绘制时，阴影是较细的。当你垂直于倾斜方向进行绘制时，阴影是最粗的。
+
+![shade](https://cdn3.raywenderlich.com/wp-content/uploads/2016/12/RealPencilShading.png)
+
+##使用纹理
+首先要做的是改变线条的纹理使其看着像真正铅笔的阴影。为了达到这个效果我们使用开始工程资源中的PencilTexture图片。
+
+在CanvaView中添加这个属性：
+~~~~
+private var pencilTexture = UIColor(patternImage: UIImage(named: "PencilTexture")!)
+~~~~
+这里允许你使用pecilTexture作为颜色来绘制，而不是之前默认的红色。
+
+在drawStroke(_:touch:)中找到如下这行:
+~~~~
+drawColor.setStroke()
+~~~~
+改为:
+~~~~
+pencilTexture.setStroke()
+~~~~
+运行一下。嘿！你的线条更像一个铅笔的线条了:
+
+![texture](https://cdn5.raywenderlich.com/wp-content/uploads/2016/12/Tree-373x320.png)
+
+>在这篇教程中，你使用了一种很简单的方式来实现纹理。在功能齐全的艺术类app中的笔刷引擎是很复杂的，不过入门的话这样做足够了。
+
+检测一下Pencil倾斜的程度已经足够产生阴影，将这个常量添加进CanvasView中:
+~~~~
+private let tiltThreshold = π/6  // 30º
+~~~~
+如果你发现这个值没有起作用，你需要自己设置一个合适的值。
+
+>π是一个方便的常量，在CanvasView.swift中定义为CGFloat(M_PI)
