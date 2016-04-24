@@ -127,3 +127,27 @@ for touch in touches {
 你还会发现使用Pencil画的圆更圆，这就是由于iPad Pro感应到Pencil时会扫描出双倍的触摸点。
 
 ##倾斜Pencil
+现在你可以熟练的在app里作画了。然而如果你读过任何Pencil评测的话，你会记得讨论过它有阴影绘制的能力。用户们需要做的就是将笔倾斜，殊不知这种阴影是不会自动产生，取决于我们这些聪明的开发者如何利用代码去让它工作。
+
+###高度、方位与单位向量
+在这节中，我会向你描述如何测量这种倾斜，你会在下一节添加简易的阴影效果。
+
+当你使用Pencil时，你可以在三维空间中旋转它。上下的方向被叫做高度(altitude),两侧被叫做方位(azimuth):
+
+![altitue](https://cdn3.raywenderlich.com/wp-content/uploads/2016/12/AzimuthDiagram.png)
+
+高度角属性是UITouch在iOS9.1中新添加的属性，仅适用于Apple Pencil。它的单位是[弧度](https://en.wikipedia.org/wiki/Radian)。当Pencil平放在iPad表面时高度角就是0.当它垂直于屏幕时高度角是π/2。记住360度对应的是2π弧度，因此π/2就是90度。
+
+UITouch有两个新方法用来获取方位角:
+
+azimuthAngleInView(_:)与azimuthUnitVectorInView(_:)。根据你的情况选择相应的方法。
+
+感受一下方位角单位向量是如何工作的。仅供参考，一个单位向量的长度为1，从坐标(0,0)点指向一个方向。
+
+![vector](https://cdn3.raywenderlich.com/wp-content/uploads/2016/12/AzimuthVector-361x320.png)
+
+在touchesMoved(_:withEvent:)的最上面，在guard语句之后添加:
+~~~~
+print(touch.azimuthUnitVectorInView(self))
+~~~~
+运行一下。
