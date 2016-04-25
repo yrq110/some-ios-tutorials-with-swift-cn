@@ -220,7 +220,7 @@ if touch.altitudeAngle < tiltThreshold {
   lineWidth = lineWidthForDrawing(context, touch: touch)
 }
 ~~~~
-这里你添加了一个if用来检测Pencil倾斜的角度是否超过π/6或30度。如果是的话就会调用阴影绘制方法而不是线条绘制方法。
+这里你添加了一个if用来检测Pencil倾斜的角度是否超过π/6或30度。如果未超过的话就会调用阴影绘制方法而不是线条绘制方法。
 
 现在将这个方法添加到CanvasView的底部:
 ~~~~
