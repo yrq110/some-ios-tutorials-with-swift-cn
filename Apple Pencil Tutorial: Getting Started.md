@@ -280,7 +280,7 @@ private func lineWidthForShading(context: CGContext?, touch: UITouch) -> CGFloat
 
 注意笔触的方向是如何改变线宽的。这些做虽然有点幼稚，不过你肯定会发现其中的潜力的。
 
-##使用方位角调整款宽度
+##使用方位角调整宽度
 还有一件事要做:当你使用铅笔以90度的角度进行绘制时，线宽会比其它倾斜的角度时都窄。不过当你使用Apple Pencil时宽度则不会改变。
 
 在CanvaView类的顶部添加这个常量:
