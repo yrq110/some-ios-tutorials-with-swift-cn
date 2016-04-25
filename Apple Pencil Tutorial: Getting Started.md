@@ -203,3 +203,134 @@ private let tiltThreshold = π/6  // 30º
 如果你发现这个值没有起作用，你需要自己设置一个合适的值。
 
 >π是一个方便的常量，在CanvasView.swift中定义为CGFloat(M_PI)
+
+>在图形编程中，使用弧度是很重要的而不是通过角度为中介进行转换。看看wiki的这个[图片](https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Unit_circle_angles_color.svg/2000px-Unit_circle_angles_color.svg.png)，了解一下角度与弧度间的关系。
+
+接下来，在drawStroke(_:touch:)方法中找到这一行:
+~~~~
+let lineWidth = lineWidthForDrawing(context, touch: touch)
+~~~~
+改为:
+~~~~
+var lineWidth:CGFloat
+ 
+if touch.altitudeAngle < tiltThreshold {
+  lineWidth = lineWidthForShading(context, touch: touch)
+} else {
+  lineWidth = lineWidthForDrawing(context, touch: touch)
+}
+~~~~
+这里你添加了一个if用来检测Pencil倾斜的角度是否超过π/6或30度。如果是的话就会调用阴影绘制方法而不是线条绘制方法。
+
+现在将这个方法添加到CanvasView的底部:
+~~~~
+private func lineWidthForShading(context: CGContext?, touch: UITouch) -> CGFloat {
+ 
+  // 1
+  let previousLocation = touch.previousLocationInView(self)
+  let location = touch.locationInView(self)
+ 
+  // 2 - vector1 is the pencil direction
+  let vector1 = touch.azimuthUnitVectorInView(self)
+ 
+  // 3 - vector2 is the stroke direction
+  let vector2 = CGPoint(x: location.x - previousLocation.x, y: location.y - previousLocation.y)
+ 
+  // 4 - Angle difference between the two vectors
+  var angle = abs(atan2(vector2.y, vector2.x) - atan2(vector1.dy, vector1.dx))
+ 
+  // 5
+  if angle > π {
+    angle = 2 * π - angle
+  }
+  if angle > π / 2 {
+    angle = π - angle
+  }
+ 
+  // 6
+  let minAngle: CGFloat = 0
+  let maxAngle = π / 2
+  let normalizedAngle = (angle - minAngle) / (maxAngle - minAngle)
+ 
+  // 7
+  let maxLineWidth: CGFloat = 60
+  var lineWidth = maxLineWidth * normalizedAngle
+ 
+  return lineWidth
+}
+~~~~
+这里有些复杂的虎穴，让我们来详细的分析一下:
+1. 保存前一触摸点与当前触摸点
+2. 保存Pencil的方位向量
+3. 保存当前笔触的方向向量
+4. 计算画线与Pencil方向的角度差
+5. 限制角度在[0,90]的范围内。如果是90度则线条最宽。记住所有计算都是使用弧度的，π/2即为90度
+6. 归一化角度，
+7. 计算线宽最大值与归一化角度的乘积得到正确的阴影宽度
+
+>注意 不管你何时使用Pencil，运用下面的公式都是很方便的:
+
+>向量角:angle = atan2(opposite, adjacent)
+
+>归一化:normal = (value - minValue) / (maxValue - minValue)
+
+运行一下。像图中标示的那样握笔，不改变角度，画些阴影出来。
+
+![shade](http://www.raywenderlich.com/wp-content/uploads/2016/12/Calligraphic-320x320.png)
+
+注意笔触的方向是如何改变线宽的。这些做虽然有点幼稚，不过你肯定会发现其中的潜力的。
+
+##使用方位角调整款宽度
+还有一件事要做:当你使用铅笔以90度的角度进行绘制时，线宽会比其它倾斜的角度时都窄。不过当你使用Apple Pencil时宽度则不会改变。
+
+在CanvaView类的顶部添加这个常量:
+~~~~
+private let minLineWidth: CGFloat = 5
+~~~~
+它定义了一个阴影线条的最窄宽度，你可以根据自己的喜好调整这个数值。
+
+在lineWidthForShading(_:touch:)方法的底部，在return语句前添加以下语句:
+~~~~
+// 1    
+let minAltitudeAngle: CGFloat = 0.25
+let maxAltitudeAngle = tiltThreshold
+ 
+// 2
+let altitudeAngle = touch.altitudeAngle < minAltitudeAngle ? minAltitudeAngle : touch.altitudeAngle
+ 
+// 3
+let normalizedAltitude = 1 - ((altitudeAngle - minAltitudeAngle) / (maxAltitudeAngle - minAltitudeAngle))
+ 
+// 4
+lineWidth = lineWidth * normalizedAltitude + minLineWidth
+~~~~
+>注意：确保你将这段代码添加进的是lineWidthForShading(_:touch:)方法，而不是lineWidthForDrawing(_:touch:)
+
+这里有大量需要消化的东西，让我们捋一捋:
+
+1. 理论上，Pencil最小的高度是0度，意味着Pencil会平躺在iPad上，笔尖没有接触屏幕，这样的话高度就不会记录下来。实际情况下的最小高度大约为0.2，这里我设置为0.25
+2. 如果高度小于最小值，则使用最小值
+3. 像之前做的那样，将高度值归一化在[0,1]的范围内
+4. 最后，计算使用方位角算出的线宽与归一化角度的乘积，再加上最小线宽
+
+运行一下。在绘制阴影时改变Pencil的高度观察线条的粗细是如何变化的。逐渐使Pencil的高度增加会使你的线条变得更加光滑。
+
+![amuth](http://www.raywenderlich.com/wp-content/uploads/2016/12/ShadeDraw.png)
+
+##玩玩透明度
+本节中的最后一个任务是根据力道来改变纹理的透明度，使阴影看起来更加真实。
+
+在lineWidthForShading(_:touch:)方法中的return语句前添加以下代码:
+~~~~
+let minForce: CGFloat = 0.0
+let maxForce: CGFloat = 5
+ 
+let normalizedAlpha = (touch.force - minForce) / (maxForce - minForce)
+ 
+CGContextSetAlpha(context, normalizedAlpha)
+~~~~
+经过之前的代码，这个的作用就显而易见了。使用了force属性并且将其归一化在[0,1]范围内，接着使用这个值设置context的alpha值。
+
+运行一下。用不同的压力来绘制:
+
+![shade2](http://www.raywenderlich.com/wp-content/uploads/2016/12/Shaded.png)
