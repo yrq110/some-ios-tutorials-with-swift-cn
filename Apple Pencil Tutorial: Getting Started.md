@@ -2,6 +2,8 @@
 ##Apple Pencil指南：入门
 [原文地址](https://www.raywenderlich.com/121834/apple-pencil-tutorial)
 
+译者:[yrq110](https://github.com/yrq110)
+
 ![pencil](http://www.raywenderlich.com/wp-content/uploads/2016/12/Final3.png)
 
 >更新至Xcode 7.3、iOS9.3与Swift 2.2  04-01-2016
