@@ -334,3 +334,88 @@ CGContextSetAlpha(context, normalizedAlpha)
 运行一下。用不同的压力来绘制:
 
 ![shade2](http://www.raywenderlich.com/wp-content/uploads/2016/12/Shaded.png)
+
+你可能会像我一样素描时在某处会有一些失误，并希望可以擦除这些错误的线条。
+
+在这一节中，你将会看到如何区分Apple Pencil与手指的使用。更进一步说，你可以将app设置成使用手指扮演一个忠实的橡皮擦。
+
+检测使用的是Pencil还是手指很简单，使用UITouch中的type属性即可。
+
+在CanvasView的顶部，添加一个橡皮擦颜色的属性。你将会在画布视图上使用背景色进行绘制，这会出现一个橡皮擦的效果。是不是很聪明?:
+~~~~
+private var eraserColor: UIColor {
+  return backgroundColor ?? UIColor.whiteColor()
+}
+~~~~
+这里你将橡皮擦颜色设为了视图的背景色，如果它非空的话。
+
+接下来，找到drawStroke(_:touch:)方法中的如下代码:
+~~~~
+if touch.altitudeAngle < tiltThreshold {
+  lineWidth = lineWidthForShading(context, touch: touch)
+} else {
+  lineWidth = lineWidthForDrawing(context, touch: touch)
+}
+ 
+pencilTexture.setStroke()
+~~~~
+使用如下代码替换:
+~~~~
+if touch.type == .Stylus {
+  if touch.altitudeAngle < tiltThreshold {
+    lineWidth = lineWidthForShading(context, touch: touch)
+  } else {
+    lineWidth = lineWidthForDrawing(context, touch: touch)
+  }
+  pencilTexture.setStroke()
+} else {
+  lineWidth = 20
+  eraserColor.setStroke()
+}
+~~~~
+整理你添加了一个if用来检测是Pencil还是手指，这决定之后是改变线宽还是使用橡皮擦颜色绘制。
+
+运行一下。现在你可以用你的手指来清理那些不整齐的边界或任何其他东西。
+
+![earse](http://www.raywenderlich.com/wp-content/uploads/2016/12/Eraser.png)
+
+在iOS8之后，UITouch中加入了一个叫做majorRadius的属性，如它的名字所示，保存触摸时的尺寸。
+
+找到前面你添加的这段代码:
+~~~~
+lineWidth = 20
+~~~~
+替换为这个:
+~~~~
+lineWidth = touch.majorRadius / 2
+~~~~
+运行一下。绘制一片阴影区域，然后用手指的指尖与指面进行擦拭，观察粗细的变化。
+
+![majorRadius](http://www.raywenderlich.com/wp-content/uploads/2016/12/EraserForce.png)
+
+当你使用优雅的Apple Pencil画图后会发现用手指绘制是多么的笨拙与痛苦。
+
+##降低延迟
+
+你也许会认为线条的绘制会紧随着笔尖的滑动。并不完全是那样，在触摸与线条渲染之间是有延时的。对此Apple使用了一个技巧:触摸预测
+
+看起来很难以置信，Apple知道你的Pencil、手指在哪，将要画什么。那些预测点会保存进一个UIEvent的数组中，你可以预先绘制好预测点。是不是很酷？
+
+在你使用预测点之前有一个小小的技术障碍需要克服。当前我们在图形上下文画的线会立即在画布视图中显示。
+
+你需要在画布中绘制这些预测点不过当真实点被捕捉到时需要丢弃那些预测点。
+
+举个例子，当你根据预测的曲线画一个S型图案，不过当你改变方向时，这些预测会出错并且需要被舍弃。这张图片说明了问题，绘制的S是红色的，触摸的预测显示为蓝色。
+
+![predict](http://www.raywenderlich.com/wp-content/uploads/2016/12/Predicted-480x297.png)
+
+你的代码需要做如下工作来避免这个问题:
+
+1. 你需要创建一个名为drawingImage的UIImage属性来从图形上下文中捕捉那些真实的触摸，而不是预测的
+2. 每一个触摸的移动事件都会在图形上下文中绘制drawingImage 
+3. 真实的触摸会绘制在图形上下文中，将会保存进drawingImage中而不是画布视图的image属性
+4. 预测触摸会被绘制进图形上下文中
+5. 在图形上下文绘制完预测触摸后，赋值给canvasView.image-给用户展现的视图
+
+这样就不会有预测点被绘制进drawingImage中，而且每次有触摸移动事件发生时，预测点都会被删除。
+
