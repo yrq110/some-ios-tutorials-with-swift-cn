@@ -2,6 +2,8 @@
 ##Swift指南：使用JSON
 [原文地址](https://www.raywenderlich.com/120442/swift-json-tutorial)
 
+译者:[yrq110](https://github.com/yrq110)
+
 ![swift](https://cdn3.raywenderlich.com/wp-content/uploads/2014/06/swift_tut-250x250.jpg)
 > 更新至Xcode 7.1与Swift 2   12-21-2015
 
