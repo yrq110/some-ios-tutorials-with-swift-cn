@@ -57,6 +57,8 @@ x = 4
 ~~~~
 作为一个开发者在学习面向过程或面向对象时就是这么讲的，你不会花一点时间会思考它。不过一个量如何能先等于3然后等于4？
 
+![x](http://www.raywenderlich.com/wp-content/uploads/2015/08/x3.png)
+
 变量意为一个变化的量。考虑数学中的量x，你会在软件行为中将时间作为关键参数。你在改变变量时创造了可变的状态。
 
 若在一个相对简单的系统中，可变状态也许不是一个大问题。不过当连接多个对象时，像一个庞大的OOP系统，可变状态就会很让人头痛。
@@ -88,6 +90,88 @@ parkRides[0] = Ride(name: "Functional Programming", types: [.Thrill], waitTime: 
 ~~~~
 改变其中的项会发生编译错误。去修改那些ride吧！没门儿，小鬼！
 ##模块化
-![x](http://www.raywenderlich.com/wp-content/uploads/2015/08/x3.png)
+你将会写出你的第一个函数，在swift的String使用NSString的方法，因此需要在playground的头部添加Foundation框架:
+~~~~
+import Foundation
+~~~~
+假设你需要一个按字母表排序的设施名称列表，使用命令式的方法来实现的话，添加如下函数到你的playground底部:
+~~~~
+func sortedNames(rides: [Ride]) -> [String] {
+  var sortedRides = rides
+  var i, j : Int
+  var key: Ride
+ 
+  // 1
+  for (i = 0; i < sortedRides.count; i++) {
+    key = sortedRides[i]
+ 
+    // 2
+    for (j = i; j > -1; j--) {
+      if key.name.localizedCompare(sortedRides[j].name) == .OrderedAscending {
+        sortedRides.removeAtIndex(j + 1)
+        sortedRides.insert(key, atIndex: j)
+      }
+    }
+  }
+ 
+  // 3
+  var sortedNames = [String]()
+  for ride in sortedRides {
+    sortedNames.append(ride.name)
+  }
+ 
+  print(sortedRides)
+ 
+  return sortedNames
+}
+~~~~
+这里你做了:
+
+1. 在函数内遍历设施
+2. 执行插入排序
+3. 取得排序后设施中的名称
+
+从sortedNames(:)的角度来看，它接收了设施的列表，然后输出了排序后的包含设施名称的列表。sortedNames(:)外面的东西没有受到影响，为了证明，首先我们打印出排序后的设施名称:
+~~~~
+print(sortedNames(parkRides))
+~~~~
+然后收集设施列表中的名称并打印出来:
+~~~~
+var originalNames = [String]()
+for ride in parkRides {
+  originalNames.append(ride.name)
+}
+ 
+print(originalNames)
+~~~~
+在编辑器中你会发现sortedNames(:)中对设施的排序并没有改变输入的设施列表。你使用命令式代码创建的这个模块函数被认为是准函数式(quasi-functional)的。
+
+即使如此，用命令式语句写出的函数依旧很冗长、笨拙。如果有一种技术可以通过使用像sortedNames(:)这样的函数更进一步的简化代码岂不是很棒？
+
+###第一类与高阶函数
+另一个函数式编程的特点就是函数们。第一类函数是其中一种，它意味着可以被分配给一个值，可以作为其它函数的输入与输出。再往上就是高阶函数，它可以将函数作为参数并返回其它函数。
 
 ![first-class](http://www.raywenderlich.com/wp-content/uploads/2015/08/firstclass.png)
+
+在这一节中，你将会学习到函数式编程中几个常见的高阶函数——filter、map与reduce。
+
+####filter
+在swift中，filter(:)是CollectionType型值的一个方法，比如说数组(array),它可以将另一个函数作为参数输入返回数组中应用这个函数返回为真的值。
+
+filter(:) 将输入的函数应用到数组中的每一个元素上，返回另一个包含返回值为真的所有元素的数组。
+
+回想一下你的sortedNames做过什么，用声明式的思想去思考一下而不是命令式。
+
+注释掉sortedNames，你将会更有效率的重写它。在playground底部创建一个将Ride作为参数的函数:
+~~~~
+func waitTimeIsShort(ride: Ride) -> Bool {
+  return ride.waitTime < 15.0
+}
+~~~~
+waitTimeIsShort(:)接受一个ride，如果等待时间小于15秒则返回true，否则返回false。
+
+在parkRides上调用filter然后输入你刚刚创建的函数:
+~~~~
+var shortWaitTimeRides = parkRides.filter(waitTimeIsShort)
+print(shortWaitTimeRides)
+~~~~
