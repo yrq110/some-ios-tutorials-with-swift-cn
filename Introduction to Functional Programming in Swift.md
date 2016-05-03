@@ -47,6 +47,47 @@ struct Ride {
 ##函数式编程概念
 在这一节中，你将会学习函数式编程中的重要概念。许多函数式编程的专著中都挑选了不变状态(immutable state)与无副作用(lack of side effects)作为最重要的方面，为何我们不从这里开始呢？
 ###不变性与副作用
+不管你最开始学的什么编程语言，接触到的第一个概念应该就是用变量来表现数据。当你回到这种表现的最初理念时，变量就会变得很古怪。
+
+在你的playground中添加如下看起来理所当然的代码:
+~~~~
+var x = 3
+// other stuff...
+x = 4
+~~~~
+作为一个开发者在学习面向过程或面向对象时就是这么讲的，你不会花一点时间会思考它。不过一个量如何能先等于3然后等于4？
+
+变量意为一个变化的量。考虑数学中的量x，你会在软件行为中将时间作为关键参数。你在改变变量时创造了可变的状态。
+
+若在一个相对简单的系统中，可变状态也许不是一个大问题。不过当连接多个对象时，像一个庞大的OOP系统，可变状态就会很让人头痛。
+
+例如，当2个或多个线程同时访问一个变量时，它们也许在访问或修改时出错，出现不期望的行为。像竞态条件、锁死等问题。
+
+想象一下你可以在一个状态从不改变的地方写代码。在并发系统中的大量问题都会消失———poof！你可以创建一个不变属性来实现它，或者数据在程序运行期间不允许更改。
+
+在objective-C中可以通过一个常量来实现，不会你的属性在创建时默认是可变模式。在swift中默认是不变的。
+
+使用不变数据的优点就是在代码单元中使用时将会没有副作用，意味着你代码中函数不会改变它们外部的元素，当调用函数时不会发生可怕的现象。
+
+在你playground的Ride结构体后面添加如下数组，在这篇教程中使用一个不变的swift常量来表现你的主要数据，看看会发生什么:
+~~~~
+let parkRides = [
+  Ride(name: "Raging Rapids", types: [.Family, .Thrill, .Water], waitTime: 45.0),
+  Ride(name: "Crazy Funhouse", types: [.Family], waitTime: 10.0),
+  Ride(name: "Spinning Tea Cups", types: [.Kids], waitTime: 15.0),
+  Ride(name: "Spooky Hollow", types: [.Scary], waitTime: 30.0),
+  Ride(name: "Thunder Coaster", types: [.Family, .Thrill], waitTime: 60.0),
+  Ride(name: "Grand Carousel", types: [.Family, .Kids], waitTime: 15.0),
+  Ride(name: "Bumper Boats", types: [.Family, .Water], waitTime: 25.0),
+  Ride(name: "Mountain Railroad", types: [.Family, .Relaxing], waitTime: 0.0)
+]
+~~~~
+当你使用let创建parkRides而不是var时，这个数组及它的项就是不可变的。使用如下方法尝试改变数组中的一项:
+~~~~
+parkRides[0] = Ride(name: "Functional Programming", types: [.Thrill], waitTime: 5.0)
+~~~~
+改变其中的项会发生编译错误。去修改那些ride吧！没门儿，小鬼！
+##模块化
 ![x](http://www.raywenderlich.com/wp-content/uploads/2015/08/x3.png)
 
 ![first-class](http://www.raywenderlich.com/wp-content/uploads/2015/08/firstclass.png)
