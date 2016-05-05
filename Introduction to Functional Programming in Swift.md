@@ -197,3 +197,50 @@ print(rideNames.sort(<))
 ~~~~
 你的sortedNames(:)方法得益于map、sort与一个闭包，现在变成了仅仅两行！
 ####Reduce
+CollectionType类型方法reduce(:,:)接受两个参数。第一个是一个类型T的值，第二个是函数，它将T的值与另一个元素融合产生一个具有新值的T，输入函数会处理调用的集合中的每一个元素。
+
+假设你想知道公园里所有设施的平均等待时间。
+
+在reduce中输入值0.0，然后使用一个闭包函数对每一种设施等待时间与设施总数的比值求和。
+~~~~
+let averageWaitTime = parkRides.reduce(0.0) { (average, ride) in average + (ride.waitTime/Double(parkRides.count)) }
+print(averageWaitTime)
+~~~~
+在这个例子中，最初的两次迭代如下所示:
+
+| iteration | average | ride.waitTime / Double(parkRides.count) | resulting average ||—|—|—|—||1|0.0|45.0 / 8.0 = 5.625 | 0.0 + 5.625 = 5.625||2|5.625|10.0 / 8.0 = 1.25 | 5.625 + 1.25 = 6.875|
+
+如你所见，平均值的结果使用不断迭代的平均值。这个过程会持续到遍历完parkRides中的每一个设施才会结束。它使你只用了一行代码就能得到平均值！
+
+###柯里化
+>注意。随着现在swift的开源，在swift3.0中貌似会移除柯里化函数语句。你可以在[这里](https://github.com/apple/swift-evolution/blob/master/proposals/0002-remove-currying.md)找到信息，尤其是**Detailed design**部分
+
+函数式编程中又一个高级特性就是柯里化，由数学家Haskell Curry得名。柯里化的思想是将接受多个参数的函数作为一个接受单个参数的函数应用的序列。
+
+![](http://www.raywenderlich.com/wp-content/uploads/2015/08/curry.png)
+
+明确一下，在这篇教程中柯里化不是一个能吃出喜悦泪水的咖喱，不过你可以通过创建一个使用括号将两个参数分开的双参数函数来实践一下柯里化:
+~~~~
+func rideTypeFilter(type: RideType)(fromRides rides: [Ride]) -> [Ride] {
+  return rides.filter { $0.types.contains(type) }
+}
+~~~~
+
+这里，rideTypeFilter(:)(:)接受了一个设施类型作为第一个参数，一个设施的数组作为第二个参数。
+
+构造另一个函数是柯里化的一个较好应用。使用单个参数来调用你的柯里化函数，然后构造一个单个参数的函数。
+
+在你的playground中添加这个设施类型的过滤器，动手试试:
+~~~~
+func createRideTypeFilter(type: RideType) -> [Ride] -> [Ride] {
+  return rideTypeFilter(type)
+}
+~~~~
+注意到createRideTypeFilter返回映射一个ride数组到另一个ride数组的函数，通过调用一个单个参数的rideTypeFilter。使用createRideTypeFilter 为孩子们创建一个过滤器，然后使用过滤器过滤你的公园设施表，像这样:
+~~~~
+let kidRideFilter = createRideTypeFilter(.Kids)
+ 
+print(kidRideFilter(parkRides))
+~~~~
+在playground的输出中，你会看到kidRideFilter过滤掉了所有非孩童类的设施。
+###纯函数
