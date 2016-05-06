@@ -324,8 +324,8 @@ print(parkRides)
 >**问题陈述** 一个带小孩的家庭想在频繁如厕的情况下玩尽可能多的设施，所以他们需要找到排队最短的适合小孩的设施。帮助他们找到所有等待时间小于20分钟的家庭类设施并以等待时间为基准排序(升序)。
 
 ###命令式方法
-Momentarily ignore all you’ve learned about FP so far and think about how you would solve this problem with an algorithm. You would probably:
 暂时忘掉所有你学的函数式编程，想想通过怎样的算法来解决这个问题。你也许会:
+
 1. 创建一个设施的空数组
 2. 遍历所有设施找到包含属性Family的项
 3. 当一个家庭类设施的等待时间小于20分钟，则加入到可变数组中
