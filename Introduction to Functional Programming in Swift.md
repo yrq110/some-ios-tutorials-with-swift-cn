@@ -219,7 +219,7 @@ print(averageWaitTime)
 
 ![](http://www.raywenderlich.com/wp-content/uploads/2015/08/curry.png)
 
-明确一下，在这篇教程中柯里化不是一个能吃出喜悦泪水的咖喱，不过你可以通过创建一个使用括号将两个参数分开的双参数函数来实践一下柯里化:
+明确一下，在这篇教程中柯里化不是一个好吃到流泪的咖喱，不过你可以通过创建一个使用括号将两个参数分开的双参数函数来实践一下柯里化:
 ~~~~
 func rideTypeFilter(type: RideType)(fromRides rides: [Ride]) -> [Ride] {
   return rides.filter { $0.types.contains(type) }
@@ -244,3 +244,74 @@ print(kidRideFilter(parkRides))
 ~~~~
 在playground的输出中，你会看到kidRideFilter过滤掉了所有非孩童类的设施。
 ###纯函数
+纯函数的思想，是函数式编程中一个重要的概念，
+One of the primary concepts in FP that leads to the ability to reason consistently about program structure, as well as confidently test program results, is the idea of a pure function.
+一个纯函数应该符合以下两个标准:
+* 对于相同的输入总会产生相同的输出结果，输出仅仅取决于输入
+* 在函数外没有任何副作用
+
+纯函数的存在于不变状态的使用密切相关。
+
+在你的playground中添加如下的纯函数:
+~~~~
+func ridesWithWaitTimeUnder(waitTime: Double, fromRides rides: [Ride]) -> [Ride] {
+  return rides.filter { $0.waitTime < waitTime }
+}
+~~~~
+ridesWithWaitTimeUnder(:fromRides:)是一个纯函数，因为输入一个相同的等待时间阈值与设施列表后总会得到相同的输出。
+
+使用纯函数可以方便地对一个函数进行单元测试，在你的playground中加入如下的断言语句来模拟一个单元测试:
+~~~~
+var shortWaitRides = ridesWithWaitTimeUnder(15.0, fromRides: parkRides)
+assert(shortWaitRides.count == 2, "Count of short wait rides should be 2")
+print(shortWaitRides)
+~~~~
+在这里你测试了如果输入15.0的等待时间阈值与parkRides时是否总会得到2个设施的结果。
+###引用透明
+引用透明的概念与纯函数密不可分。对于一个x，无论你怎么调用f(x)总会得到一个相同的结果，则称f是引用透明的。它用来预测代码并允许编译器去执行优化行为。
+
+纯函数满足这个条件。如果你很熟悉Objective-C的话会发现#define与macros就是引用透明的例子。
+
+用纯函数ridesWithWaitTimeUnder的函数体去替换它看看它是不是引用透明的:
+~~~~
+shortWaitRides = parkRides.filter { $0.waitTime < 15.0 }
+assert(shortWaitRides.count == 2, "Count of short wait rides should be 2")
+print(shortWaitRides)
+~~~~
+###递归
+最后一个要讨论的概念就是递归，一个调用自己函数体的函数行为。在函数式语言的声明式语句中，使用递归可以有效地替代循环结构。
+
+当一个函数的输入时再次调用本身时，就是递归的情况。为了防止函数的无限调用，递归函数需要一个边界条件去终止过程。
+
+使用满足Comparable协议的Ride结构体扩展来为你的设施添加一个递归排序的函数，
+~~~~
+extension Ride: Comparable { }
+ 
+func <(lhs: Ride, rhs: Ride) -> Bool {
+  return lhs.waitTime < rhs.waitTime
+}
+ 
+func ==(lhs: Ride, rhs: Ride) -> Bool {
+  return lhs.name == rhs.name
+}
+~~~~
+按Swift操作符重载的要求，你需要在extension外添加Comparable操作符。当等待时间更短时认为一个设施小于另一个，当设施名字相同时认为两者相同。
+
+现在，在你的playground中添加一个递归快排的方法:
+~~~~
+func quicksort<T: Comparable>(var elements: [T]) -> [T] {
+  if elements.count > 1 {
+    let pivot = elements.removeAtIndex(0)
+    return quicksort(elements.filter { $0 <= pivot }) + [pivot] + quicksort(elements.filter { $0 > pivot })
+  }
+  return elements
+}
+~~~~
+quicksort(:)是一个接受Comparable数组并根据一个基准值进行排序的泛型函数。
+
+添加如下代码检查设施列表的排序情况:
+~~~~
+print(quicksort(parkRides))
+print(parkRides)
+~~~~
+第二行证明了quicksort(:)并没有修改输入的不变数组。
