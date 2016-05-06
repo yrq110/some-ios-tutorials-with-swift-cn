@@ -2,6 +2,8 @@
 ##Swift函数式编程介绍
 [原文地址](https://www.raywenderlich.com/114456/introduction-functional-programming-swift)
 
+译者:[yrq110](https://github.com/yrq110)
+
 ![title](https://cdn2.raywenderlich.com/wp-content/uploads/2015/08/intro-250x250.png)
 
 在2014年WWDC上隆重登场的swift不仅仅是作为一门新的语言，它为iOS与OS X平台带来了许多新的特性。
