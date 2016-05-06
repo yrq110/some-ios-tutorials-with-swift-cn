@@ -318,3 +318,36 @@ print(quicksort(parkRides))
 print(parkRides)
 ~~~~
 第二行证明了quicksort(:)并没有修改输入的不变数组。
+
+##命令式 vs 声明式
+考虑一下下面的问题，结合你学习到的函数式编程知识，对命令式与函数式编程的不同之处会有一个清晰的理解。
+>**问题陈述** 一个带小孩的家庭想在频繁如厕的情况下玩尽可能多的设施，所以他们需要找到排队最短的适合小孩的设施。帮助他们找到所有等待时间小于20分钟的家庭类设施并以等待时间为基准排序(升序)。
+
+###命令式方法
+Momentarily ignore all you’ve learned about FP so far and think about how you would solve this problem with an algorithm. You would probably:
+暂时忘掉所有你学的函数式编程，想想通过怎样的算法来解决这个问题。你也许会:
+1. 创建一个设施的空数组
+2. 遍历所有设施找到包含属性Family的项
+3. 当一个家庭类设施的等待时间小于20分钟，则加入到可变数组中
+4. 最后用等待时间对设施进行排序
+
+这就是你解决问题的答案步骤，一下是算法的实现，请添加到你的playground中:
+~~~~
+var ridesOfInterest = [Ride]()
+for ride in parkRides {
+  var typeMatch = false
+  for type in ride.types {
+    if type == .Family {
+      typeMatch = true
+      break
+    }
+  }
+  if typeMatch && ride.waitTime < 20.0 {
+    ridesOfInterest.append(ride)
+  }
+}
+ 
+var sortedRidesOfInterest = quicksort(ridesOfInterest)
+ 
+print(sortedRidesOfInterest)
+~~~~
