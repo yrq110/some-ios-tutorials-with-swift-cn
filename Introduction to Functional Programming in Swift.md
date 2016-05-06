@@ -244,8 +244,9 @@ print(kidRideFilter(parkRides))
 ~~~~
 在playground的输出中，你会看到kidRideFilter过滤掉了所有非孩童类的设施。
 ###纯函数
-纯函数的思想，是函数式编程中一个重要的概念，
+纯函数的思想，是函数式编程中一个重要的概念。
 One of the primary concepts in FP that leads to the ability to reason consistently about program structure, as well as confidently test program results, is the idea of a pure function.
+
 一个纯函数应该符合以下两个标准:
 * 对于相同的输入总会产生相同的输出结果，输出仅仅取决于输入
 * 在函数外没有任何副作用
