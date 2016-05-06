@@ -378,5 +378,4 @@ sortedRidesOfInterest = ridesWithWaitTimeUnder(20.0, fromRides: familyRideFilter
  
 print(sortedRidesOfInterest)
 ~~~~
-Here you produce the same result in a slightly more human-friendly form. Once you have the family ride filter, you can state the solution to the problem in one line of code again.
-你使用了一个更友好的形式得到了相同的结果。一旦你有了家庭设施过滤器，你就可以再次通过一行代码来以解决问题。
+你使用了一个更友好的形式得到了相同的结果。一旦你有了家庭设施过滤器，你就可以再次通过一行代码来解决问题。
