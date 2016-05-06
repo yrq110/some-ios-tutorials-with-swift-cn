@@ -5,4 +5,4 @@
 ###Contents
 * Swift Tutorial: Working with JSON
 * Apple Pencil Tutorial: Getting Started
-* Introduction to Functional Programming in Swift(Work in progress)
+* Introduction to Functional Programming in Swift
