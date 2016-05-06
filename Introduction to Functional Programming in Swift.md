@@ -351,3 +351,32 @@ var sortedRidesOfInterest = quicksort(ridesOfInterest)
  
 print(sortedRidesOfInterest)
 ~~~~
+你应该会看到 Mountain Railroad, Crazy Funhouse与Grand Carousel是最好的选择，并且它们按照等待时间递增的顺序排好了序。你利用了quicksort(:)函数去排序。
+
+用命令式代码书写可以是可以，但是扫一眼后对它所做的事情并没有一个清晰的思路。你需要暂停窥视算法细节去想想这个。你说没什么大不了的?如果你回过头来维护，debug或者将它交给其他开发者呢？就像网上那些人说的：你这样做不对！
+
+###函数式方法1
+函数式编程可以做得更好，在你的playground中添加如下代码:
+~~~~
+sortedRidesOfInterest = parkRides.filter({ $0.types.contains(.Family) && $0.waitTime < 20.0 }).sort(<)
+~~~~
+你使用了熟悉的包含了一个集合的filter方法去寻找匹配的设施，并像以前那样进行了排序。
+
+添加print来证明这一行简单的代码会输出与命令式语句相同的结果:
+~~~~
+print(sortedRidesOfInterest)
+~~~~
+你做到了！在一行中，你告诉了swift去算什么，你想要过滤出包含Family属性并且等待时间小于20分钟的有了设施，并且将它们排序。就这样准确并优雅地解决了问题。
+ 
+函数式编程不仅让你的代码变得更简介，也makes what it does self-evident. I dare you to find a side effect!
+
+###函数式方法2
+上面的一行代码解决方法也许有些隐晦，不过可以使用一个可修改的变量利用你之前用过的柯里化过滤方法来创建家庭设施过滤器(我自己都读不通，sorry):
+~~~~
+let familyRideFilter = createRideTypeFilter(.Family)
+sortedRidesOfInterest = ridesWithWaitTimeUnder(20.0, fromRides: familyRideFilter(parkRides)).sort(<)
+ 
+print(sortedRidesOfInterest)
+~~~~
+Here you produce the same result in a slightly more human-friendly form. Once you have the family ride filter, you can state the solution to the problem in one line of code again.
+你使用了一个更友好的形式得到了相同的结果。一旦你有了家庭设施过滤器，你就可以再次通过一行代码来以解决问题。
