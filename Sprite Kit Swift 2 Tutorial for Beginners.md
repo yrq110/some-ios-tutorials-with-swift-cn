@@ -45,4 +45,54 @@ If you think Unity is for you, check out some of our Unity written tutorials or 
 从一个简单的Hello World项目开始，使用Xcode7中的Sprite Kit游戏模板来运行。
 
 打开Xcode，选择File\New\Project，选择iOS\Application\Game模板，然后点击Next:
+
 ![](https://cdn2.raywenderlich.com/wp-content/uploads/2014/09/001_New_Game-480x282.png)
+
+工程名起为SpriteKitSimpleGame, 语言选择Swift, Game Technology选SpriteKit, 设备是iPhone, 然后点Next:
+
+![](https://cdn4.raywenderlich.com/wp-content/uploads/2015/10/002_Options-452x320.png)
+
+选择存放工程的地点，点击Create. 选择iPhone 6s模拟器, 点击play按钮运行工程, 在一个简易的启动界面后你应该会看到下图:
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/10/003_Hello_World-281x500.png)
+
+Sprite Kit由一些场景的概念所组成，就像一个游戏中的显示的层级与视图。比如说你可能有一个主要游戏区域的场景与一个拥有层级的世界地图场景。
+如果你看一眼工程会发现模板已经为你创建好了一个默认的场景 - GameScene。打开GameScene.swift你会看到包含了一段在屏幕中显示文本框的代码，还有一个当你点击就会添加的旋转宇宙飞船。
+
+在这篇教程中主要在GameScene上进行工作。在开始前你需要进行一些调整使你的游戏可以横屏运行而不是竖屏。
+##初始设置
+这个模板对于你来说有两个问题。第一，游戏需要被设置为横屏而它是竖屏的。第二，它正在使用Sprite Kit的场景编辑器，你在这篇教程中并不需要。来让我们解决这些问题。
+
+第一，在你的工程导航栏中点击你的SpriteKitSimpleGame工程打开target setting，选择SpriteKitSimpleGame target。然后在Deployment Info部分，去掉Portrait使仅有Landscape Left and Landscape Right被选中，像下面这样:
+
+![](https://cdn3.raywenderlich.com/wp-content/uploads/2015/10/004_Landscape-700x377.png)
+
+第二，删除GameScene.sks选择送到废纸篓。这个文件允许你布局精灵与可视场景的其他组件，不过对于我们这个游戏可以通过代码轻松创建所以不需要这个。
+
+然后，打开GameViewController.swift用如下代码替换内容:
+~~~~
+import UIKit
+import SpriteKit
+ 
+class GameViewController: UIViewController {
+ 
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    let scene = GameScene(size: view.bounds.size)
+    let skView = view as! SKView
+    skView.showsFPS = true
+    skView.showsNodeCount = true
+    skView.ignoresSiblingOrder = true
+    scene.scaleMode = .ResizeFill
+    skView.presentScene(scene)
+  }
+ 
+  override func prefersStatusBarHidden() -> Bool {
+    return true
+  }
+}
+~~~~
+GameViewController是一个UIViewController类, 它的一个根视图是SKView, 是一个包含Sprite Kit场景的视图.
+
+这里你实现了viewDidLoad()去创建一个启动时的GameScene，尺寸与视图本身相同。这就是最初的设置，现在屏幕上有些东西了！
+##添加一个精灵
