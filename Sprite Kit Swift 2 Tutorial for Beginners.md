@@ -11,7 +11,7 @@
 在这篇教程中，你将学会如果用苹果的2D游戏框架-Sprite Kit去写一款简单的2D游戏，使用Swift语言！
 
 你可以按顺序看也可以直接跳到最后的样例工程，那里会出现一些忍者。
->注意。这篇教程在我心中有特殊的地位，它的初版是我在这个站上发布的第一篇教程，使用Cocos2D与Objective-C所编写的游戏。哎呀嘛呀，时过境迁啊！
+>注意:这篇教程在我心中有特殊的地位，它的初版是我在这个站上发布的第一篇教程，使用Cocos2D与Objective-C所编写的游戏。哎呀嘛呀，时过境迁啊！
 
 ##Sprite Kit VS Unity
 除了Sprite Kit外最火的游戏框架当属Unity。Unity最初是3D引擎，不过现在也全面支持2D了。
@@ -56,7 +56,7 @@ If you think Unity is for you, check out some of our Unity written tutorials or 
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/10/003_Hello_World-281x500.png)
 
-Sprite Kit由一些场景的概念所组成，就像一个游戏中的显示的层级与视图。比如说你可能有一个主要游戏区域的场景与一个拥有层级的世界地图场景。
+Sprite Kit由场景的概念所组成，就像一个游戏中显示的层级与视图。比如说你可能有一个主要游戏区域的场景与一个拥有层级的世界地图场景。场景与一个拥有层级的世界地图场景。
 如果你看一眼工程会发现模板已经为你创建好了一个默认的场景 - GameScene。打开GameScene.swift你会看到包含了一段在屏幕中显示文本框的代码，还有一个当你点击就会添加的旋转宇宙飞船。
 
 在这篇教程中主要在GameScene上进行工作。在开始前你需要进行一些调整使你的游戏可以横屏运行而不是竖屏。
@@ -96,3 +96,101 @@ GameViewController是一个UIViewController类, 它的一个根视图是SKView, 
 
 这里你实现了viewDidLoad()去创建一个启动时的GameScene，尺寸与视图本身相同。这就是最初的设置，现在屏幕上有些东西了！
 ##添加一个精灵
+首先下载这个功能的资源文件拖进你的Xcode工程中。确保Copy items into destination group’s folder (if needed)这一项被选中，并且是在你SpriteKitSimpleGame target被选中的情况下。
+
+下面打开GameScene.swift用如下代码替换内容:
+~~~~
+import SpriteKit
+ 
+class GameScene: SKScene {
+ 
+  // 1
+  let player = SKSpriteNode(imageNamed: "player")
+ 
+  override func didMoveToView(view: SKView) {
+    // 2
+    backgroundColor = SKColor.whiteColor()
+    // 3
+    player.position = CGPoint(x: size.width * 0.1, y: size.height * 0.5)
+    // 4
+    addChild(player)
+  }
+}
+~~~~
+让我们来逐步分析。
+
+这里你为player(忍者)定义了一个私有常量，一个精灵的例子。如你所见创建一个精灵挺简单的，输入需要使用的图片名即可。
+
+在Sprite Kit中设置场景的背景色如同设置其他背景色一样简单，这个你将其设为白色。
+
+你将精灵定位在竖直方向10%的高度，水平中心处。
+
+为了让精灵显示在场景中，你必须将其作为一个子项添加进场景中，与添加其它子视图的方法类似。
+
+构建并运行下。女士们先生们，忍者闯进来了！
+![](http://www.raywenderlich.com/wp-content/uploads/2015/10/005_Ninja-480x270.png)
+
+##移动怪物
+接下来你要在场景中添加一些怪物与你的忍者战斗。为了使事情变得有趣你需要移动这些怪物，否则的话就太简单了！让我来在屏幕右侧创建怪物，然后设定一个动作告诉它们向左移动。
+
+在GameScene.swift中添加如下方法:
+~~~~
+func random() -> CGFloat {
+  return CGFloat(Float(arc4random()) / 0xFFFFFFFF)
+}
+ 
+func random(min min: CGFloat, max: CGFloat) -> CGFloat {
+  return random() * (max - min) + min
+}
+ 
+func addMonster() {
+ 
+  // Create sprite
+  let monster = SKSpriteNode(imageNamed: "monster")
+ 
+  // Determine where to spawn the monster along the Y axis
+  let actualY = random(min: monster.size.height/2, max: size.height - monster.size.height/2)
+ 
+  // Position the monster slightly off-screen along the right edge,
+  // and along a random position along the Y axis as calculated above
+  monster.position = CGPoint(x: size.width + monster.size.width/2, y: actualY)
+ 
+  // Add the monster to the scene
+  addChild(monster)
+ 
+  // Determine speed of the monster
+  let actualDuration = random(min: CGFloat(2.0), max: CGFloat(4.0))
+ 
+  // Create the actions
+  let actionMove = SKAction.moveTo(CGPoint(x: -monster.size.width/2, y: actualY), duration: NSTimeInterval(actualDuration))
+  let actionMoveDone = SKAction.removeFromParent()
+  monster.runAction(SKAction.sequence([actionMove, actionMoveDone]))
+ 
+}
+~~~~
+这里我会啰嗦一点，为了让事情更好理解。在第一部分应该将场景做成我们之前讨论的那样，对于你想创建对象的位置做一些计算，设置对象的位置，然后将其添加到场景中，像之前添加player那样。
+
+这里的新要素就是添加动作。Sprite Kit提供了大量的内置动作，可以帮助你随时改变精灵的状态，比如移动动作、旋转动作、渐变动作、动画动作等等。这里你可以看到怪物的三种动作:
+* **SKAction.moveTo(_:duration:)**: 使用这个动作使对象从屏幕外移动到左边，注意你可以设置移动的持续时间，你可以随机改变移动速度。
+* **SKAction.removeFromParent()**: Sprite Kit有一个方便的动作就是从父类中移除一个节点，从场景中删除。当场景中的怪物不可见时你会使用这个动作去移除它，这时很重要的因为否则你会一直添加怪物直到消耗掉所有内存资源。
+* **SKAction.sequence(_:)**: 队列动作允许你添加一个动作队列，依次执行。这样你就可以先执行"移动"动作，完成后执行"从父类移除"动作。
+
+>注意:这块代码中包含了一些辅助方法使用arc4random()产生一个范围内的随机数，满足了在这个游戏中的随机数产生需求，如果你想将这块更完善的话看看iOS 9中新的GameplayKit的随机数API。
+
+还差最后一件事，你需要调用创建怪物的方法！为了好玩，我们来不断地一直产生怪物。
+
+在didMoveToView()的最后添加如下代码:
+~~~~
+runAction(SKAction.repeatActionForever(
+  SKAction.sequence([
+    SKAction.runBlock(addMonster),
+    SKAction.waitForDuration(1.0)
+  ])
+))
+~~~~
+这里你运行了一个动作队列，调用了一块block代码，然后等待一秒。一直重复执行这个队列。
+
+搞定了！构建并运行工程，现在你应该会看到一些怪物在屏幕上活蹦乱跳了:
+![](http://www.raywenderlich.com/wp-content/uploads/2015/10/006_Monsters-480x270.png)
+
+##射出子弹
