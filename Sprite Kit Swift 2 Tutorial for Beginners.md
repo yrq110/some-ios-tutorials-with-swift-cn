@@ -194,3 +194,50 @@ runAction(SKAction.repeatActionForever(
 ![](http://www.raywenderlich.com/wp-content/uploads/2015/10/006_Monsters-480x270.png)
 
 ##射出子弹
+在这里需要忍者作出一些动作 - 来添加射击功能吧！可以使用多种方式来实现射击，在这个游戏中需要当用户点击屏幕时进行射击动作，在点击的方向射出一个子弹。
+
+我想用一个“移动”动作来实现这个功能，在这之前需要你做一些数学上的工作。
+
+这是因为“移动”动作需要你提供子弹行动的终点，你不能仅仅利用触摸点因为触摸点只表达了player射击时的方向。实际上你想实现的是让子弹移动时通过触摸点直到飞出屏幕。
+
+下面这张图描绘了这个问题:
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2010/02/ProjectileTriangle.jpg)
+
+如你所见，针对触摸点与原始点之前有一个在两个方向上偏移x与y的小三角形。你需要使用一个相似的大三角形，这个三角形的一个顶点在屏幕边界上。
+
+如果你有一些基本数学向量的方法（不如添加与减去向量）来调用的话对计算来说会很有帮助。然后Sprite Kit默认没有这些方法你需要自己去编写。
+
+幸运的是由于方便的Swift操作符加载这些也是很容易实现的。在你的文件头添加这些函数，在GameScene类之前:
+~~~~
+func + (left: CGPoint, right: CGPoint) -> CGPoint {
+  return CGPoint(x: left.x + right.x, y: left.y + right.y)
+}
+ 
+func - (left: CGPoint, right: CGPoint) -> CGPoint {
+  return CGPoint(x: left.x - right.x, y: left.y - right.y)
+}
+ 
+func * (point: CGPoint, scalar: CGFloat) -> CGPoint {
+  return CGPoint(x: point.x * scalar, y: point.y * scalar)
+}
+ 
+func / (point: CGPoint, scalar: CGFloat) -> CGPoint {
+  return CGPoint(x: point.x / scalar, y: point.y / scalar)
+}
+ 
+#if !(arch(x86_64) || arch(arm64))
+func sqrt(a: CGFloat) -> CGFloat {
+  return CGFloat(sqrtf(Float(a)))
+}
+#endif
+ 
+extension CGPoint {
+  func length() -> CGFloat {
+    return sqrt(x*x + y*y)
+  }
+ 
+  func normalized() -> CGPoint {
+    return self / length()
+  }
+}
+~~~~
