@@ -241,3 +241,59 @@ extension CGPoint {
   }
 }
 ~~~~
+这些是典型数学向量函数的实现。如果你对向量不太熟悉，很困惑发生了什么，来看看数学向量的[快速入门](http://www.mathsisfun.com/algebra/vectors.html)。
+
+下一步在文件中添加一个新方法:
+~~~~
+override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+ 
+  // 1 - Choose one of the touches to work with
+  guard let touch = touches.first else {
+    return
+  }
+  let touchLocation = touch.locationInNode(self)
+ 
+  // 2 - Set up initial location of projectile
+  let projectile = SKSpriteNode(imageNamed: "projectile")
+  projectile.position = player.position
+ 
+  // 3 - Determine offset of location to projectile
+  let offset = touchLocation - projectile.position
+ 
+  // 4 - Bail out if you are shooting down or backwards
+  if (offset.x < 0) { return }
+ 
+  // 5 - OK to add now - you've double checked position
+  addChild(projectile)
+ 
+  // 6 - Get the direction of where to shoot
+  let direction = offset.normalized()
+ 
+  // 7 - Make it shoot far enough to be guaranteed off screen
+  let shootAmount = direction * 1000
+ 
+  // 8 - Add the shoot amount to the current position
+  let realDest = shootAmount + projectile.position
+ 
+  // 9 - Create the actions
+  let actionMove = SKAction.moveTo(realDest, duration: 2.0)
+  let actionMoveDone = SKAction.removeFromParent()
+  projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
+ 
+}
+~~~~
+这儿包含了很多东西，让我们来逐步分析:
+
+1. SpriteKit中一个很酷的事情就是它有一些UITouch的方法，例如locationInNode(_:)与previousLocationInNode(_:)，使你可以通过SKNode的坐标系统获得一个触摸点的坐标。在这里你使用它得到屏幕坐标系统中触摸点的位置。
+2. 然后你在player起始位置创建了一个子弹。注意你还没有添加到场景中，因为需要先做一个理智的判断 - 这个游戏不允许忍者向身后射击。
+3. You then subtract the projectile’s current position from the touch location to get a vector from the current position to the touch location.
+If the X value is less than 0, this means the player is trying to shoot backwards. This is is not allowed in this game (real ninjas don’t look back!), so just return.
+Otherwise, it’s OK to add the projectile to the scene.
+Convert the offset into a unit vector (of length 1) by calling normalized(). This will make it easy to make a vector with a fixed length in the same direction, because 1 * length = length.
+Multiply the unit vector in the direction you want to shoot in by 1000. Why 1000? It will definitely be long enough to go past the edge of the screen :]
+Add the shoot amount to the current position to get where it should end up on the screen.
+
+9. 最后，像之前那样创建moveTo(_:, duration:)与removeFromParent()动作。
+构建并运行，现在你的忍者就可以对迎面而来的部队进行连续射击了！
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/10/007_Shoot-480x270.png)
