@@ -285,15 +285,17 @@ override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
 这儿包含了很多东西，让我们来逐步分析:
 
 1. SpriteKit中一个很酷的事情就是它有一些UITouch的方法，例如locationInNode(_:)与previousLocationInNode(_:)，使你可以通过SKNode的坐标系统获得一个触摸点的坐标。在这里你使用它得到屏幕坐标系统中触摸点的位置。
-2. 然后你在player起始位置创建了一个子弹。注意你还没有添加到场景中，因为需要先做一个理智的判断 - 这个游戏不允许忍者向身后射击。
-3. You then subtract the projectile’s current position from the touch location to get a vector from the current position to the touch location.
-If the X value is less than 0, this means the player is trying to shoot backwards. This is is not allowed in this game (real ninjas don’t look back!), so just return.
-Otherwise, it’s OK to add the projectile to the scene.
-Convert the offset into a unit vector (of length 1) by calling normalized(). This will make it easy to make a vector with a fixed length in the same direction, because 1 * length = length.
-Multiply the unit vector in the direction you want to shoot in by 1000. Why 1000? It will definitely be long enough to go past the edge of the screen :]
-Add the shoot amount to the current position to get where it should end up on the screen.
-
+2. 然后你在player起始位置创建了一个子弹，注意你还没有添加到场景中，因为需要先做一个理智的判断 - 这个游戏不允许忍者向身后射击。
+3. 通过计算触摸点位置与位置的差值得到一个从当前位置到触摸点位置的向量。
+4. 如果X值小于0则意味着player在向后射击，这是游戏里所不允许的(真正的忍者不会向后看！)，所以直接return跳出。
+5. 否则就可以将子弹添加到视图中了。
+6. 调用normalized()使offset归一化，这样方便构成一个相同方向上的向量，因为 1 * length = length。
+7. 将你想要射击的方向向量乘以1000，为何是1000?这个数值足够它飞出屏幕边界:)
+8. 将shoot amount添加到当前位置以得到它在屏幕上运动的终点。
 9. 最后，像之前那样创建moveTo(_:, duration:)与removeFromParent()动作。
+
 构建并运行，现在你的忍者就可以对迎面而来的部队进行连续射击了！
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/10/007_Shoot-480x270.png)
+
+##碰撞检测与物理效果:概述
