@@ -299,3 +299,16 @@ override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/10/007_Shoot-480x270.png)
 
 ##碰撞检测与物理效果:概述
+
+现在你可以将飞镖扔到任何地方，不过你的忍者应该想要击落一些东西，所以让我们来加一些代码来检测子弹与目标的碰撞吧。
+
+Sprite Kit有一个优点就是自带物理引擎，不仅擅长模拟真实移动，也擅长碰撞检测。
+
+让我们来在游戏中设置Sprite Kit的物理引擎来决定当怪物与子弹碰撞时的效果，在顶层的代码中你需要做:
+* 设置物理区。一个物理区就是进行物理运算模拟的地方。场景中默认设置了一个，你可以想要设置一个新属性，比方说重力。
+* 为每个精灵创建物实体。在Sprite Kit中，你可以为每个精灵分配一个形状来进行碰撞检测，并设置属性，这就叫做一个物实体。注意物理体不需要是与精灵完全相同的形状。一般来说为了方便起见选取一个近似的形状而不是每个像素都一样的形状，对于大多数游戏与移动这样做足够了。
+* 为每个精灵类型设置category for each type of sprite. One of the properties you can set on a physics body is a category, which is a bitmask indicating the group (or groups) it belongs to. In this game, you’re going to have two categories – one for projectiles, and one for monsters. Then later when two physics bodies collide, you can easily tell what kind of sprite you’re dealing with by looking at its category.
+* Set a contact delegate. Remember that physics world from earlier? Well, you can set a contact delegate on it to be notified when two physics bodies collide. There you’ll write some code to examine the categories of the objects, and if they’re the monster and projectile, you’ll make them go boom!
+
+Now that you understand the battle plan, it’s time to put it into action!
+现在你了解了战斗计划，是时候添加进动作了！
