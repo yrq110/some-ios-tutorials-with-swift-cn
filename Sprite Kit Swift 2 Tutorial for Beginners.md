@@ -305,10 +305,26 @@ override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
 Sprite Kit有一个优点就是自带物理引擎，不仅擅长模拟真实移动，也擅长碰撞检测。
 
 让我们来在游戏中设置Sprite Kit的物理引擎来决定当怪物与子弹碰撞时的效果，在顶层的代码中你需要做:
+
 * 设置物理区。一个物理区就是进行物理运算模拟的地方。场景中默认设置了一个，你可以想要设置一个新属性，比方说重力。
 * 为每个精灵创建物实体。在Sprite Kit中，你可以为每个精灵分配一个形状来进行碰撞检测，并设置属性，这就叫做一个物实体。注意物理体不需要是与精灵完全相同的形状。一般来说为了方便起见选取一个近似的形状而不是每个像素都一样的形状，对于大多数游戏与移动这样做足够了。
-* 为每个精灵类型设置category for each type of sprite. One of the properties you can set on a physics body is a category, which is a bitmask indicating the group (or groups) it belongs to. In this game, you’re going to have two categories – one for projectiles, and one for monsters. Then later when two physics bodies collide, you can easily tell what kind of sprite you’re dealing with by looking at its category.
-* Set a contact delegate. Remember that physics world from earlier? Well, you can set a contact delegate on it to be notified when two physics bodies collide. There you’ll write some code to examine the categories of the objects, and if they’re the monster and projectile, you’ll make them go boom!
+* 为每个精灵类型设置类别。类别是你可以设置的一个物理体属性，它用一个掩码来表示所属的群组。在这个游戏中，你需要有两个category，子弹的和怪物的。当两个物理体碰撞时，通过类别你可以知道需要处理的是哪类精灵。
+* 设置一个判断接触的委托方法来监测两个物理体是否碰撞。需要写一些代码去检测物体的类别，如果它们是怪物与子弹就让它们爆炸！
 
-Now that you understand the battle plan, it’s time to put it into action!
 现在你了解了战斗计划，是时候添加进动作了！
+
+##碰撞检测与物理效果:实现
+在GameScene.swift的头部添加如下结构体:
+~~~~
+struct PhysicsCategory {
+  static let None      : UInt32 = 0
+  static let All       : UInt32 = UInt32.max
+  static let Monster   : UInt32 = 0b1       // 1
+  static let Projectile: UInt32 = 0b10      // 2
+}
+~~~~
+设置一些物理类型的常量。
+
+>注意:你也许奇怪这些语句有啥用。注意Sprite Kit中的类别仅仅是一个32位的整数，表现为一个掩码。用32位整数中的数表示一个类别是一个很美妙的方法。这里你设置第一位表示一个怪物，下一位表示一个子弹。
+
+
