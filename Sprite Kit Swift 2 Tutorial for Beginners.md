@@ -290,7 +290,7 @@ override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
 4. 如果X值小于0则意味着player在向后射击，这是游戏里所不允许的(真正的忍者不会向后看！)，所以直接return跳出。
 5. 否则就可以将子弹添加到视图中了。
 6. 调用normalized()使offset归一化，这样方便构成一个相同方向上的向量，因为 1 * length = length。
-7. 将你想要射击的方向向量乘以1000，为何是1000?这个数值足够它飞出屏幕边界:)
+7. 将你想要的射击方向的向量乘以1000，为何是1000?这个数值足够它飞出屏幕边界:)
 8. 将shoot amount添加到当前位置以得到它在屏幕上运动的终点。
 9. 最后，像之前那样创建moveTo(_:, duration:)与removeFromParent()动作。
 
@@ -302,14 +302,14 @@ override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
 
 现在你可以将飞镖扔到任何地方，不过你的忍者应该想要击落一些东西，所以让我们来加一些代码来检测子弹与目标的碰撞吧。
 
-Sprite Kit有一个优点就是自带物理引擎，不仅擅长模拟真实移动，也擅长碰撞检测。
+Sprite Kit有一个优点就是自带物理引擎，不仅擅长模拟真实运动，也擅长碰撞检测。
 
 让我们来在游戏中设置Sprite Kit的物理引擎来决定当怪物与子弹碰撞时的效果，在顶层的代码中你需要做:
 
-* 设置物理区。一个物理区就是进行物理运算模拟的地方。场景中默认设置了一个，你可以想要设置一个新属性，比方说重力。
-* 为每个精灵创建物实体。在Sprite Kit中，你可以为每个精灵分配一个形状来进行碰撞检测，并设置属性，这就叫做一个物实体。注意物理体不需要是与精灵完全相同的形状。一般来说为了方便起见选取一个近似的形状而不是每个像素都一样的形状，对于大多数游戏与移动这样做足够了。
-* 为每个精灵类型设置类别。类别是你可以设置的一个物理体属性，它用一个掩码来表示所属的群组。在这个游戏中，你需要有两个category，子弹的和怪物的。当两个物理体碰撞时，通过类别你可以知道需要处理的是哪类精灵。
-* 设置一个判断接触的委托方法来监测两个物理体是否碰撞。需要写一些代码去检测物体的类别，如果它们是怪物与子弹就让它们爆炸！
+* 设置物理场。一个物理场(physics world)就是进行物理运算模拟的地方。场景中默认设置了一个，你可以想要设置一个新属性，比方说重力。
+* 为每个精灵创建物理体。在Sprite Kit中，你可以为每个精灵分配一个形状来进行碰撞检测，并设置属性，这就叫做一个物理体(physics body)。注意物理体不需要是与精灵完全相同的形状。一般来说为了方便起见选取一个近似的形状而不是每个像素都一样的形状，对于大多数游戏与移动这样做足够了。
+* 为每个精灵类型设置类别。类别(category)是你可以设置的一个物理体属性，它用一个掩码来表示所属的群组。在这个游戏中，你需要有两个category，子弹的和怪物的。当两个物理体碰撞时，通过类别你可以知道需要处理的是哪类精灵。
+* 设置一个判断接触的委托(contact delegate)方法来监测两个物理体是否碰撞。需要写一些代码去检测物体的类别，如果它们是怪物与子弹就让它们爆炸！
 
 现在你了解了战斗计划，是时候添加进动作了！
 
@@ -325,6 +325,44 @@ struct PhysicsCategory {
 ~~~~
 设置一些物理类型的常量。
 
->注意:你也许奇怪这些语句有啥用。注意Sprite Kit中的类别仅仅是一个32位的整数，表现为一个掩码。用32位整数中的数表示一个类别是一个很美妙的方法。这里你设置第一位表示一个怪物，下一位表示一个子弹。
+>注意:你也许奇怪这些语句有啥用。注意Sprite Kit中的类别仅仅是一个32位的整型数，相当于掩码。用32位整型数表示类别是一个很美妙的方法。这里你设置第一位表示一个怪物，下一位表示一个子弹。
+
+下面让GameScene实现**SKPhysicsContactDelegate**协议:
+~~~~
+class GameScene: SKScene, SKPhysicsContactDelegate {
+~~~~
+Then inside  add these lines after adding the player to the scene:
+在**didMoveToView(_:)**方法中添加player到视图的代码后添加如下行:
+~~~~
+physicsWorld.gravity = CGVectorMake(0, 0)
+physicsWorld.contactDelegate = self
+~~~~
+它设置了一个零重力场，并且设置了场景的委托，用来监测两个物理体的碰撞。
+
+在**addMonster()**方法中，在创建怪物精灵的代码后面添加如下行:
+~~~~
+monster.physicsBody = SKPhysicsBody(rectangleOfSize: monster.size) // 1
+monster.physicsBody?.dynamic = true // 2
+monster.physicsBody?.categoryBitMask = PhysicsCategory.Monster // 3
+monster.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile // 4
+monster.physicsBody?.collisionBitMask = PhysicsCategory.None // 5
+~~~~
+让我们来逐行分析下:
+
+1. 为精灵创建一个物理体。在这种情况下，物理体的被定义为与精灵相同尺寸的矩形，因为这是个合适的怪物近似形状。
+2. 设置精灵为动态(dynamic)的。这意味着物理引擎将不会控制怪物的移动，需要通过你已经写过的代码来进行（使用移动动作）。
+3. 设置categoryBitMask为之前你定义的怪物类别。
+4. contactTestBitMask的作用是设置当与另一个目标接触时需要提醒的目标类别，这里设置成子弹。
+5. collisionBitMask的作用是设置与另一个物体接触时需要用物理引擎处理做出响应(比方说反弹)的类别。 你不会想让怪物与子弹互相反弹的，在这个游戏中可以让它们穿过彼此，因此设为空。
+
+接下来在touchesEnded(_:withEvent:)中添加一些类似的代码，在设置子弹位置的代码后:
+~~~~
+projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width/2)
+projectile.physicsBody?.dynamic = true
+projectile.physicsBody?.categoryBitMask = PhysicsCategory.Projectile
+projectile.physicsBody?.contactTestBitMask = PhysicsCategory.Monster
+projectile.physicsBody?.collisionBitMask = PhysicsCategory.None
+projectile.physicsBody?.usesPreciseCollisionDetection = true
+~~~~
 
 
