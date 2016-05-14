@@ -2,6 +2,8 @@
 ##Sprite Kit Swift 2 初学指南
 [原文地址](https://www.raywenderlich.com/119815/sprite-kit-swift-2-tutorial-for-beginners)
 
+译者:[yrq110](https://github.com/yrq110/)
+
 ![](http://www.raywenderlich.com/wp-content/uploads/2015/10/iOS9_feast_SpriteKit.jpg)
 
 就像蝙蝠侠与罗宾、超人与路易斯霍恩一样，Sprite Kit与Swift是一对惊艳的组合:
@@ -349,7 +351,7 @@ monster.physicsBody?.collisionBitMask = PhysicsCategory.None // 5
 ~~~~
 让我们来逐行分析下:
 
-1. 为精灵创建一个物理体。在这种情况下，物理体的被定义为与精灵相同尺寸的矩形，因为这是个合适的怪物近似形状。
+1. 为精灵创建一个物理体。在这种情况下，物理体的形状被定义为与精灵相同尺寸的矩形，因为这是个合适的怪物近似形状。
 2. 设置精灵为动态(dynamic)的。这意味着物理引擎将不会控制怪物的移动，需要通过你已经写过的代码来进行（使用移动动作）。
 3. 设置categoryBitMask为之前你定义的怪物类别。
 4. contactTestBitMask的作用是设置当与另一个目标接触时需要提醒的目标类别，这里设置成子弹。
@@ -364,5 +366,46 @@ projectile.physicsBody?.contactTestBitMask = PhysicsCategory.Monster
 projectile.physicsBody?.collisionBitMask = PhysicsCategory.None
 projectile.physicsBody?.usesPreciseCollisionDetection = true
 ~~~~
+试试看，自己能否能否理解每一行代码，如果不能再去看看上面的解析吧。
 
+接下来，添加一个当子弹与怪物碰撞时调用的方法。注意它不会自动调用，你如果在后面调用它。
+~~~~
+func projectileDidCollideWithMonster(projectile:SKSpriteNode, monster:SKSpriteNode) {
+  print("Hit")
+  projectile.removeFromParent()
+  monster.removeFromParent()
+}
+~~~~
+你要做的就是当子弹与怪物碰撞时将它们从场景中移除。挺简单的，不是吗？
 
+现在是时候来实现接触的代理方法了，在文件中添加如下的新方法:
+~~~~
+func didBeginContact(contact: SKPhysicsContact) {
+ 
+  // 1
+  var firstBody: SKPhysicsBody
+  var secondBody: SKPhysicsBody
+  if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
+    firstBody = contact.bodyA
+    secondBody = contact.bodyB
+  } else {
+    firstBody = contact.bodyB
+    secondBody = contact.bodyA
+  }
+ 
+  // 2
+  if ((firstBody.categoryBitMask & PhysicsCategory.Monster != 0) &&
+      (secondBody.categoryBitMask & PhysicsCategory.Projectile != 0)) {
+    projectileDidCollideWithMonster(firstBody.node as! SKSpriteNode, monster: secondBody.node as! SKSpriteNode)
+  }
+ 
+}
+~~~~
+在之前你在场景中设置了物理场的接触委托，这个方法会在两个物理体碰撞时被调用。
+
+在这个方法中有两部分：
+
+1. 在这个方法中你传递了两个碰撞的物理体，没有规定传递它们的顺序，因此这段代码利用它们的categoryBitMask属性来进行排序这样你就在后面做出假设。.
+2. 在最后检查一下两个碰撞体是否是子弹和怪物，如果是的话调用你之前写的那个方法。
+构建并运行一下，现在当你的子弹碰到目标时会一起消失！
+##完成触摸
