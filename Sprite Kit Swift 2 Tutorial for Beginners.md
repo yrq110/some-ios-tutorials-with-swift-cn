@@ -408,4 +408,76 @@ func didBeginContact(contact: SKPhysicsContact) {
 1. 在这个方法中你传递了两个碰撞的物理体，没有规定传递它们的顺序，因此这段代码利用它们的categoryBitMask属性来进行排序这样你就在后面做出假设。.
 2. 在最后检查一下两个碰撞体是否是子弹和怪物，如果是的话调用你之前写的那个方法。
 构建并运行一下，现在当你的子弹碰到目标时会一起消失！
+
 ##完成触摸
+
+你离一个可运行(不过还是很简陋)的游戏已经很近了。需要添加一些效果与音乐(游戏总要有点声音吧！)还有一些游戏逻辑。
+
+在项目中已经有一些现成的很酷的背景乐与一个很棒的射击音效，你只需要播放它们即可！
+
+在didMoveToView(_:)的最后添加如下代码:
+~~~~
+let backgroundMusic = SKAudioNode(fileNamed: "background-music-aac.caf")
+backgroundMusic.autoplayLooped = true
+addChild(backgroundMusic)
+~~~~
+这个使用了SKAudioNode —— 一个iOS 9中的新类，在你的游戏中播放与循环背景乐。
+
+在touchesEnded(_:withEvent:)中添加如下这行来添加音效:
+~~~~
+runAction(SKAction.playSoundFileNamed("pew-pew-lei.caf", waitForCompletion: false))
+~~~~
+非常方便，不是吗？你可以用一行来播放音效！
+
+构建并运行，享受绝妙的旋律吧！
+
+>注意：如果你没听到背景乐，试试在真机上测试。
+
+##哥们！游戏结束！
+
+现在让我们来创建一个新场景，用来显示“你赢了”或“你输了”。创建一个名为GameOverScene的新swift文件。
+
+用如下代码替代GameOverScene.swift中的内容：
+~~~~
+import Foundation
+import SpriteKit
+ 
+class GameOverScene: SKScene {
+ 
+  init(size: CGSize, won:Bool) {
+ 
+    super.init(size: size)
+ 
+    // 1
+    backgroundColor = SKColor.whiteColor()
+ 
+    // 2
+    let message = won ? "You Won!" : "You Lose :["
+ 
+    // 3
+    let label = SKLabelNode(fontNamed: "Chalkduster")
+    label.text = message
+    label.fontSize = 40
+    label.fontColor = SKColor.blackColor()
+    label.position = CGPoint(x: size.width/2, y: size.height/2)
+    addChild(label)
+ 
+    // 4
+    runAction(SKAction.sequence([
+      SKAction.waitForDuration(3.0),
+      SKAction.runBlock() {
+        // 5
+        let reveal = SKTransition.flipHorizontalWithDuration(0.5)
+        let scene = GameScene(size: size)
+        self.view?.presentScene(scene, transition:reveal)
+      }
+    ]))
+ 
+  }
+ 
+  // 6
+  required init(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+}
+~~~~
