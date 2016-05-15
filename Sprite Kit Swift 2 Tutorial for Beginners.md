@@ -481,3 +481,41 @@ class GameOverScene: SKScene {
   }
 }
 ~~~~
+这里有几个需要注意的点：
+
+1. 设置背景色为白色，像之前你对主场景做的那样。
+2. 根据won参数来设置消息是“You Won” 还是 “You Lose”（用了三目运算符）。
+3. 这就是使用Sprite Kit怎样将一个标签显示到屏幕中的方法，如你所见，这是很简单的 - 你只需要选择你的字体并设定一个新的参数即可。
+4. 最后设置并运行一个包含两个动作的队列。我将使用一行来向你展示它是多么的方便(而不是使用两个分离的单独动作变量)。一开始西安等待3秒，然后使用runBlock动作去执行剩下的代码。
+5. 这就是如何在Sprite Kit中跳转到另一个场景。首先你要在不同的动画变换中选择出你先要显示出场景的方法 - 你选择了一个持续0.5秒的反转动画。接着你创建了想要显示的场景，在self.view属性上使用presentScene(_:transition:)方法。
+6. 如果你要重载一个场景的初始化，你必须实现required init(coder:)这个初始化方法。然而这个初始化永远不会被调用，需要添加一个fatalError(_:)方法来实现。
+
+到现在为止还算顺利，还需要设置加载游戏时的主要场景。
+
+返回GameScene.swift中，在addMonster()方法中, 用下面的代码替换最后一行的怪物动作：
+~~~~
+let loseAction = SKAction.runBlock() {
+  let reveal = SKTransition.flipHorizontalWithDuration(0.5)
+  let gameOverScene = GameOverScene(size: self.size, won: false)
+  self.view?.presentScene(gameOverScene, transition: reveal)
+}
+monster.runAction(SKAction.sequence([actionMove, loseAction, actionMoveDone]))
+~~~~
+这里创建了一个“失败动作”，当一个怪物飞出屏幕时会显示game over画面。看看你是否理解每一行，如果没有请看看之前的解析。
+
+现在你应该处理一下胜利时的情况，不要对你的玩家太残酷！在GameScene的顶部添加一个新属性，在player的声明之后：
+~~~~
+var monstersDestroyed = 0
+~~~~
+在projectile(_:didCollideWithMonster:)上添加如下代码：
+~~~~
+monstersDestroyed++
+if (monstersDestroyed > 30) {
+  let reveal = SKTransition.flipHorizontalWithDuration(0.5)
+  let gameOverScene = GameOverScene(size: self.size, won: true)
+  self.view?.presentScene(gameOverScene, transition: reveal)
+}
+~~~~
+直接运行一下，现在有了胜利与失败的条件并能在适当的时候看到game over画面了。
+
+![](http://www.raywenderlich.com/wp-content/uploads/2015/10/008_YouWin.png)
