@@ -261,7 +261,8 @@ private func lineWidthForShading(context: CGContext?, touch: UITouch) -> CGFloat
   return lineWidth
 }
 ~~~~
-这里有些复杂的虎穴，让我们来详细的分析一下:
+这儿的数学有点复杂，让我们来详细的分析一下:
+
 1. 保存前一触摸点与当前触摸点
 2. 保存Pencil的方位向量
 3. 保存当前笔触的方向向量
@@ -270,7 +271,7 @@ private func lineWidthForShading(context: CGContext?, touch: UITouch) -> CGFloat
 6. 归一化角度，
 7. 计算线宽最大值与归一化角度的乘积得到正确的阴影宽度
 
->注意 不管你何时使用Pencil，运用下面的公式都是很方便的:
+>注意 不论何时使用Pencil，运用下面的公式都是很方便的:
 
 >向量角:angle = atan2(opposite, adjacent)
 
