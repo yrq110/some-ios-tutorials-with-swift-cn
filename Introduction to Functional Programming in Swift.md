@@ -221,7 +221,7 @@ print(averageWaitTime)
 
 ![](http://www.raywenderlich.com/wp-content/uploads/2015/08/curry.png)
 
-明确一下，在这篇教程中柯里化不是一个好吃到流泪的咖喱，不过你可以通过创建一个使用括号将两个参数分开的双参数函数来实践一下柯里化:
+明确一下，在这篇教程中，柯里化并不是一个好吃到流泪的咖喱，不过你可以通过创建使用括号将两个参数分开的双参数函数来实现一下柯里化:
 ~~~~
 func rideTypeFilter(type: RideType)(fromRides rides: [Ride]) -> [Ride] {
   return rides.filter { $0.types.contains(type) }
@@ -269,9 +269,9 @@ var shortWaitRides = ridesWithWaitTimeUnder(15.0, fromRides: parkRides)
 assert(shortWaitRides.count == 2, "Count of short wait rides should be 2")
 print(shortWaitRides)
 ~~~~
-在这里你测试了如果输入15.0的等待时间阈值与parkRides时是否总会得到2个设施的结果。
+在这里测试了当输入15.0的等待时间阈值与parkRides时，是否总会输出2个设施。
 ###引用透明
-引用透明的概念与纯函数密不可分。对于一个x，无论你怎么调用f(x)总会得到一个相同的结果，则称f是引用透明的。它用来预测代码并允许编译器去执行优化行为。
+引用透明的概念与纯函数密不可分。对于一个x，无论你怎么调用f(x)总会得到一个相同的结果(不受外部因素与变量影响)，则称f是引用透明的。它用来预测代码并允许编译器去执行优化行为。
 
 纯函数满足这个条件。如果你很熟悉Objective-C的话会发现#define与macros就是引用透明的例子。
 
@@ -324,14 +324,14 @@ print(parkRides)
 >**问题陈述** 一个带小孩的家庭想在频繁如厕的情况下玩尽可能多的设施，所以他们需要找到排队最短的适合小孩的设施。帮助他们找到所有等待时间小于20分钟的家庭类设施并以等待时间为基准排序(升序)。
 
 ###命令式方法
-暂时忘掉所有你学的函数式编程，想想通过怎样的算法来解决这个问题。你也许会:
+暂时忘掉所有所学的函数式编程，想想通过怎样的算法来解决这个问题。你也许会:
 
 1. 创建一个设施的空数组
 2. 遍历所有设施找到包含属性Family的项
 3. 当一个家庭类设施的等待时间小于20分钟，则加入到可变数组中
 4. 最后用等待时间对设施进行排序
 
-这就是你解决问题的答案步骤，一下是算法的实现，请添加到你的playground中:
+这就是解决问题的答案步骤，以下是算法的实现，请添加到你的playground中:
 ~~~~
 var ridesOfInterest = [Ride]()
 for ride in parkRides {
@@ -351,16 +351,16 @@ var sortedRidesOfInterest = quicksort(ridesOfInterest)
  
 print(sortedRidesOfInterest)
 ~~~~
-你应该会看到 Mountain Railroad, Crazy Funhouse与Grand Carousel是最好的选择，并且它们按照等待时间递增的顺序排好了序。你利用了quicksort(:)函数去排序。
+会看到Mountain Railroad, Crazy Funhouse与Grand Carousel是最好的选择，并且它们按照等待时间递增的顺序排好了序，使用quicksort(:)函数去排序。
 
-用命令式代码书写可以是可以，但是扫一眼后对它所做的事情并没有一个清晰的思路。你需要暂停窥视算法细节去想想这个。你说没什么大不了的?如果你回过头来维护，debug或者将它交给其他开发者呢？就像网上那些人说的：你这样做不对！
+用命令式代码书写可以是可以，但是扫一眼后对它所做的事情并没有一个清晰的思路。需要暂停窥视算法细节去想想这个。你说没什么大不了的?如果你回过头来维护，debug或者将它交给其他开发者呢？就像网上那些人说的：你这样做不对！
 
 ###函数式方法1
 函数式编程可以做得更好，在你的playground中添加如下代码:
 ~~~~
 sortedRidesOfInterest = parkRides.filter({ $0.types.contains(.Family) && $0.waitTime < 20.0 }).sort(<)
 ~~~~
-你使用了熟悉的包含了一个集合的filter方法去寻找匹配的设施，并像以前那样进行了排序。
+使用包含集合的filter方法去寻找匹配的设施，并像以前那样进行了排序。
 
 添加print来证明这一行简单的代码会输出与命令式语句相同的结果:
 ~~~~
@@ -368,14 +368,14 @@ print(sortedRidesOfInterest)
 ~~~~
 你做到了！在一行中，你告诉了swift去算什么，你想要过滤出包含Family属性并且等待时间小于20分钟的有了设施，并且将它们排序。就这样准确并优雅地解决了问题。
  
-函数式编程不仅让你的代码变得更简介，也makes what it does self-evident. I dare you to find a side effect!
+函数式编程不仅让你的代码变得更简洁，也让其含义变得更显而易见。我敢打赌你找不到副作用！
 
 ###函数式方法2
-上面的一行代码解决方法也许有些隐晦，不过可以使用一个可修改的变量利用你之前用过的柯里化过滤方法来创建家庭设施过滤器(我自己都读不通，sorry):
+上面的一行代码解决方法也许有些隐晦，不过可以使用一个可修改的变量，利用之前用过的柯里化过滤方法来创建家庭设施过滤器:
 ~~~~
 let familyRideFilter = createRideTypeFilter(.Family)
 sortedRidesOfInterest = ridesWithWaitTimeUnder(20.0, fromRides: familyRideFilter(parkRides)).sort(<)
  
 print(sortedRidesOfInterest)
 ~~~~
-你使用了一个更友好的形式得到了相同的结果。一旦你有了家庭设施过滤器，你就可以再次通过一行代码来解决问题。
+使用更加友好的方式得到了相同的结果。一旦有了家庭设施过滤器，就可以再次通过一行代码来解决问题。
