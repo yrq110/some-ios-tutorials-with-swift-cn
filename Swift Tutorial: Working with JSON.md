@@ -11,7 +11,7 @@
 
 考虑一下下面这段JSON：
 
-~~~~
+````swift
 [
   {
     "person": {
@@ -26,16 +26,16 @@
     }
   }
 ]
-~~~~
+````
 
 在`Objective-C`中，对JSON的解析与反序列化是很明确的：
-~~~~
+````Objective-C
 NSArray *json = [NSJSONSerialization JSONObjectWithData:JSONData options:kNilOptions error:nil];
 NSString *age = json[0][@"person"][@"age"];
 NSLog(@"Dani's age is %@", age);
-~~~~
+````
 在`Swift`中，由于Swift的可选类型与类型安全，同样的操作显得更加繁琐：
-~~~~
+````swift
 var json: Array!
 do {
   json = try NSJSONSerialization.JSONObjectWithData(JSONData, options: NSJSONReadingOptions()) as? Array
@@ -50,18 +50,18 @@ if let item = json[0] as? [String: AnyObject] {
     }
   }
 }
-~~~~
+````
 在上面的代码中，当你使用JSON中的每一个object之前都需要通过`可选绑定`(optional binding)进行检查。这会保证你代码的安全性，但是若你的JSON越复杂，你的代码就会变得越丑。
 
 使用Swift2.0中的`guard`语句可以帮助避免if语句的嵌套：
-~~~~
+````swift
 guard let item = json[0] as? [String: AnyObject],
   let person = item["person"] as? [String: AnyObject],
   let age = person["age"] as? Int else {
     return;
 }
 print("Dani's age is \(age)")
-~~~~
+````
 还是太冗长，不是吗？你怎样才能使它更简洁？
 
 在这篇JSON教程中，你会学到一种更轻松的解析JSON的方法——使用开源库[Gloss](https://github.com/hkellaway/Gloss)
@@ -91,12 +91,12 @@ print("Dani's age is \(age)")
 
 来让我们从提供的JSON文件中提取出AppStore中排名第一App的名字吧！
 
-首先，当你准备大量使用字典时，在playground的头部定义一个类型别名：
-~~~~
+首先，当准备大量使用字典时，在playground的头部定义一个类型别名：
+````swift
 typealias Payload = [String: AnyObject]
-~~~~
+````
 如下面所示完善回调函数getTopAppsDataFromFileWithSuccess中的代码：
-~~~~
+````swift
 DataManager.getTopAppsDataFromFileWithSuccess { (data) -> Void in
  
   var json: Payload!
@@ -130,14 +130,14 @@ DataManager.getTopAppsDataFromFileWithSuccess { (data) -> Void in
   XCPlaygroundPage.currentPage.finishExecution()
  
 }
-~~~~
+````
 上面发生了什么：
 
-1. 首先你使用`NSJSONSerialization`对数据进行了反序列化
-2. 你需要逐一检查JSON对象中的所有值确保他们不为空(nil)。一旦你确定它含有一个有效的值则继续检查下一个object。当你使用这种方法遍历了所有下标则会得到所需要的name与link值。
+1. 首先使用`NSJSONSerialization`对数据进行了反序列化
+2. 需要逐一检查JSON对象中的所有值确保他们不为空(nil)。一旦确定它含有一个有效的值则继续检查下一个object。当使用这种方法遍历了所有下标则会得到所需要的name与link值。
 3. 最后一步就是使用name与link值初始化一个App对象并使用控制台输出。
 
-保存并运行你的stroyboard，你应该会在调制窗口中有如下的结果：
+保存并运行stroyboard，应该会在调制窗口中有如下的结果：
 >App(name: "Game of War - Fire Age", link: "https://itunes.apple.com/us/app/game-of-war-fire-age/id667728512?mt=8&uo=2")
 
 是的。“Game of War – Fire Age”就是JSON文件中的第一个app
@@ -148,9 +148,9 @@ DataManager.getTopAppsDataFromFileWithSuccess { (data) -> Void in
 对象映射是一个将JSON对象转换为本地Swift对象的一种技术。在定义后模型对象与响应的映射规则后，Gloss就会代替你承担解析的重担。
 
 这种方法明显优于你刚刚尝试的方法：
-* 你的代码会变得更加简洁、可复用并且容易维护
-* 你可以操作对象而不是数组与字典
-* 你可以扩展模型类，添加一些额外功能
+* 代码会变得更加简洁、可复用并且容易维护
+* 可以操作对象而不是数组与字典
+* 可以扩展模型类，添加一些额外功能
 
 听起来不错？让我们来看看它是怎样工作的！
 
@@ -158,7 +158,7 @@ DataManager.getTopAppsDataFromFileWithSuccess { (data) -> Void in
 为了干净工整的代码环境，新建一个名为Gloss.playground的playground，然后将topapps.json复制进Resources中，将DataManager.swift复制进Soureces中。
 
 ###在你的工程中集成Gloss
-在你的工程/playground中集成Gloss：
+在工程/playground中集成Gloss：
 1. 点击下面的地址[Gloss Repo Zip File](https://github.com/hkellaway/Gloss/archive/master.zip)然后保存到一个熟悉的地方。
 2. 解压后将Gloss-master/Gloss/Gloss文件夹拖进你的Sources文件夹中。
 
@@ -167,26 +167,26 @@ DataManager.getTopAppsDataFromFileWithSuccess { (data) -> Void in
 ![image](http://www.raywenderlich.com/wp-content/uploads/2015/12/Screen-Shot-2015-12-14-at-8.23.16-PM.png)
 
 成功了！现在你将Gloss添加进palyground了，可以不用使用令人头疼的可选绑定来解析JSON了！
->也可以使用Cocoapods来安装Gloss。由于playground已经不再支持，你只能在标准的Xcode工程中使用这种方法
+>也可以使用Cocoapods来安装Gloss。由于playground已经不再支持，只能在标准的Xcode工程中使用这种方法
 
 ###映射JSON到对象
-首先，你需要根据你的JSON文档定义自己的模型对象
+首先，需要根据你的JSON文档定义自己的模型对象
 
-模型对象必须遵守`Decodable`协议，会使他们能。为了实现它，你需要在协议中实施`init?(json: JSON)`进行初始化
+模型对象必须遵守`Decodable`协议，会使他们能。为了实现它，需要在协议中实施`init?(json: JSON)`进行初始化
 
 观察一下topapps.json的结构来创建数据模型吧！
 
 ####TopApps
 TopApps模型代表最顶层的对象，它包含一个键值对：
-~~~~
+````swift
 {
   "feed": {
     ...
   }
 }
-~~~~
-在你的playground的sources文件夹下创建一个名为`TopApps.swift`的swift文件并添加如下代码：
-~~~~
+````
+在playground的sources文件夹下创建一个名为`TopApps.swift`的swift文件并添加如下代码：
+````swift
 public struct TopApps: Decodable {
  
   // 1
@@ -198,7 +198,7 @@ public struct TopApps: Decodable {
   }
  
 }
-~~~~
+````
 1. 定义你模型的属性。在这里仅仅只有一个。接下来你会定义`Feed`模型对象
 2. 确保`TopApps`遵守`Decodable`协议并进行了自定义初始化
 
@@ -206,7 +206,7 @@ public struct TopApps: Decodable {
 
 ####Feed
 `Feed`对象与顶层的对象非常相似。`Feed`有两对键值。你只对top25的app感兴趣，因此不需要去处理author对象。
-~~~~
+````swift
 {
   "author": {
     ...
@@ -215,9 +215,9 @@ public struct TopApps: Decodable {
     ...
   ]	
 }
-~~~~
-在你的playground的`sources`文件夹下创建一个名为`Feed.swift`的swift文件并添加如下代码：
-~~~~
+````
+在playground的`sources`文件夹下创建一个名为`Feed.swift`的swift文件并添加如下代码：
+````swift
 public struct Feed: Decodable {
  
   public let entries: [App]?
@@ -227,10 +227,10 @@ public struct Feed: Decodable {
   }
  
 }
-~~~~
+````
 ####App
-`App`是你定义的最后一个模型对象。它代表表中的一个app：
-~~~~
+`App`是定义的最后一个模型对象。它代表表中的一个app：
+````swift
 {
   "im:name": {
     "label": "Game of War - Fire Age"
@@ -241,9 +241,9 @@ public struct Feed: Decodable {
   },
   ...
 }
-~~~~
-在你的playground的sources文件夹下创建一个名为`App.swift`的swift文件并添加如下代码：
-~~~~
+````
+在playground的sources文件夹下创建一个名为`App.swift`的swift文件并添加如下代码：
+````swift
 public struct App: Decodable {
  
   // 1
@@ -265,14 +265,14 @@ public struct App: Decodable {
   }
  
 }
-~~~~
+````
 1. `Feed`与`Topapp`都使用的可选属性。如果你确信JSON中总有填充值的话可以定义一个非可选属性。
-2. 你不需要为JSON中的每一个成员都创建模型对象。
+2. 不需要为JSON中的每一个成员都创建模型对象。
 
-现在你的模型类已经准备好了，让Gloss工作吧！
+现在模型类已经准备好了，让Gloss工作吧！
 
 打开playground文件并添加如下代码：
-~~~~
+````swift
 import UIKit
 import XCPlayground
  
@@ -307,29 +307,29 @@ DataManager.getTopAppsDataFromFileWithSuccess { (data) -> Void in
   XCPlaygroundPage.currentPage.finishExecution()
  
 }
-~~~~
-1. 首先你对数据进行了反序列化操作，之前你也这么做过。
+````
+1. 首先对数据进行了反序列化操作，之前你也这么做过。
 2. 使用JSON数据初始化一个静态的`Topapps`对象
 3. 得到feed中的第一项，也就是第一个app
 4. 在控制台输出app
 
 讲真，这是你需要的所有代码。
 
-保存并运行你的storyboard你会看到你将再次成功获得app的名字，不过这次是以更优雅的方式：
-~~~~
+保存并运行storyboar你会看到再次成功获得app的名字，不过这次是以更优雅的方式：
+````swift
 App(name: "Game of War - Fire Age", link: "https://itunes.apple.com/us/app/game-of-war-fire-age/id667728512?mt=8&uo=2")
-~~~~
+````
 这里关注的是解析本地数据，你如何解析一个远程的数据？
 
 ###检索远程JSON
-是时候将这个工程变得更加实用了。通常你会检索远程数据而不是本地的。你可以通过网络请求轻易的得到AppStore的排行榜。
+是时候将这个工程变得更加实用了。通常会检索远程数据而不是本地的。可以通过网络请求轻易的得到AppStore的排行榜。
 
 打开`Datamanager.swift`并定义Top Apps URL：
-~~~~
+````swift
 let TopAppURL = "https://itunes.apple.com/us/rss/topgrossingipadapplications/limit=25/json"
-~~~~
+````
 接着添加如下方法:
-~~~~
+````swift
 public class func getTopAppsDataFromItunesWithSuccess(success: ((iTunesData: NSData!) -> Void)) {
   //1
   loadDataFromURL(NSURL(string: TopAppURL)!, completion:{(data, error) -> Void in
@@ -340,21 +340,21 @@ public class func getTopAppsDataFromItunesWithSuccess(success: ((iTunesData: NSD
       }
   })
 }
-~~~~
+````
 上面的代码看起来很熟悉，不过与检索本地文件不同的是，你使用`NSURLSession`从iTunes上获得了数据。里面发生了什么：
 
-1. 当你第一次调用`loadDataFromURL`时，使用`NSData`对象中的的URL与一个completion闭包作为输入参数。
-2. 接着你使用可选绑定确保data存在
-3. 最后你将data传递给success
+1. 当第一次调用`loadDataFromURL`时，使用`NSData`对象中的的URL与一个completion闭包作为输入参数。
+2. 接着使用可选绑定确保data存在
+3. 最后将data传递给success
 
-打开你的storyboard并将下面这行:
-~~~~
+打开storyboard并将下面这行:
+````swift
 DataManager.getTopAppsDataFromFileWithSuccess { (data) -> Void in
-~~~~
+````
 替换为
-~~~~
+````swift
 DataManager.getTopAppsDataFromItunesWithSuccess { (data) -> Void in
-~~~~
+````
 现在你可以从iTunes上检索真实的数据了。
 
 保存并运行你的storyboard，你将会看到数据解析的结果依然是第一个app：
@@ -363,12 +363,12 @@ App(name: "Game of War - Fire Age", link: "https://itunes.apple.com/us/app/game-
 ~~~~
 上面的值可以会与你的不同，毕竟AppStore的top apps是会变的。
 
-一般人们不仅会对AppStore的top app感兴趣，他们想看到所有top apps的一个列表。为了满足这个你不需要写任何额外的代码，可以使用下面这个代码段轻易的实现：
+一般人们不仅会对AppStore的top app感兴趣，他们想看到所有top apps的一个列表。为了满足这个不需要写任何额外的代码，可以使用下面这个代码段轻易的实现：
 ~~~~
 topApps.feed?.entries
 ~~~~
 ###Gloss的工作原理
-你可以看到Gloss在解析处理方面的卓越成效，不过它是怎么工作的呢？
+可以看到Gloss在解析处理方面的卓越成效，不过它是怎么工作的呢？
 
 <~~是`Decoder.decode`功能中的一个`自定义操作符`(custom operator)。Gloss中支持多种类型的解码：
 * Simple types (Decoder.decode)
@@ -382,7 +382,7 @@ topApps.feed?.entries
 
 >如果你想了解关于自定义操作符的更多信息，可以看看这个教程：[Operator Overloading in Swift Tutorial](http://www.raywenderlich.com/80818/operator-overloading-in-swift-tutorial)
 
-在这个教程中你严重依赖`Decodable`模型。如果你需要实现更复杂的类型，可以扩展`Decoder`并提供你自己的解码implementation
+在这个教程中严重依赖`Decodable`模型。如果你需要实现更复杂的类型，可以扩展`Decoder`并提供你自己的解码implementation
 
 当然Gloss也可以将对象转换为JSON。如果你对这个感兴趣可以看看`Encodable`协议。
 
