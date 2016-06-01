@@ -53,13 +53,13 @@ OAuth2规范使用授权流(grant flows)来描述交互行为。
 
 规范中定义了四种不同的授权流，可以被归为两类：
 
-* 3-legged流：这种情况下终端用户需要获得授权权限。简化授权是为了那些不方便存储安全令牌的使用浏览器的app。授权码授权，会生成一个访问令牌与随机刷新的令牌，使客户端能安全的保存令牌。在这样的移动app的客户端中会有一个安全存放令牌的地方，类似iOS中的钥匙串。
+* 3-legged流：这种情况下终端用户需要获得授权权限。简化授权是为了那些不方便存储安全令牌的使用浏览器的app。授权码授权，会生成一个访问令牌与随机生成的令牌，使客户端能安全的保存令牌。在这样的移动app的客户端中会有一个安全存放令牌的地方，类似iOS中的钥匙串。
 * 2-legged流: 凭证会直接发给app。不同之处在于资源用户直接在客户端中输入了凭证，比如说你作为一个开发者在访问像Parse等的API时会将密钥存放在你的app中。
 
 在这篇教程中会使用已有的Google Drive账号，并上传Incognito自拍。这种情况下使用3-legged认证比较好。
 
 ##授权之舞
-虽然使用开源库时会隐藏那些OAuth2协议中棘手的细节，不过了解一下基本的工作原理会有助于你更好的设置与调整。
+虽然使用开源库时会隐藏那些OAuth2协议中棘手的细节，不过了解一下基本的工作原理会有助于你更好的进行配置。
 
 这里是授权认证之舞的步骤：
 
@@ -74,3 +74,96 @@ app需要注册需要访问的服务。对你来说，Incognito需要注册Googl
 
 app之后会切换到浏览器界面。一旦用户登入，则Google授权服务器会显示一个授权页: “Incognito想要访问你的相册：允许/拒绝”，当终端用户点击“允许”时，服务器会使用重定向URI跳转回Incognito中，并给app发送一个授权码。
 ![](https://cdn2.raywenderlich.com/wp-content/uploads/2015/05/oauth2-explained-3.png)
+
+###Step 2: 交换授权码与令牌
+授权码是临时的，因此OAuth2库需要用临时码交换得到一个合适的访问令牌，是随机生成的。
+###Step 3: 取得资源
+使用访问令牌，Incognito可以访问服务器上受保护的资源-用户所授权访问的资源，可以自由的上传图片。
+
+准备好实践了吗？首先，你需要注册OAuth2的提供商-Google。
+
+##注册OAuth2提供商
+如果你没有Google账户，现在就去创建一个吧。我们会等你:]
+
+使用你的浏览器打开http://console.developer.google.com 进行操作
+
+点击创建工程并起名为Incognito：
+![](https://cdn2.raywenderlich.com/wp-content/uploads/2015/04/RW_OAuth_CreateProject1-480x292.png)
+
+接着，你需要启用API。
+
+进入APIs&auth\APIs界面，然后点击Google Apps APIs\Drive API。在接下来的视图中点击启用API：
+![](https://cdn4.raywenderlich.com/wp-content/uploads/2015/04/RW_Oauth_EnableAPI1-437x320.png)
+
+现在你需要创建一个新的证书来访问app中的账户。
+
+进入APIs&auth\Credentials界面点击创建新的客户端ID按钮，点击同意在出现的视图中填写以下信息：
+* 邮箱: 选择你的邮箱地址
+* 项目名称: Incognito
+* 主页: http://www.raywenderlich.com
+
+点击保存，回到客户端ID界面。
+
+选择安装的应用，然后选择iOS输入com.raywenderlich.Incognito作为你的Bundle ID。
+
+授权服务器将会使用这个bundle id作为重定向URI进入app。
+
+最后点击创建客户端ID，最后的界面会显示生成的客户端ID、客户端密钥与重定向URI：
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/04/RW_OAuth_Tokens-571x500.png)
+
+现在成功注册了Google服务，可以开始使用第一个OAuth2库来实现OAuth2了：依赖外部浏览器的AeroGear。
+
+##使用AeroGear与外部浏览器授权
+打开ViewController.swift在文件头部添加如下代码：
+````swift
+import AeroGearHttp
+import AeroGearOAuth2
+````
+现在，在ViewController类中添加实例变量：
+````swift
+var http: Http!
+````
+在viewDidLoad()中初始化它：
+````swift
+self.http = Http()
+````
+使用AerGearHttp库中的这个Http的实例来执行HTTP的请求。
+
+在ViewController.swift中找到空的share(:)方法并添加如下代码：
+````swift
+let googleConfig = GoogleConfig(
+clientId: "YOUR_GOOGLE_CLIENT_ID",                               // [1] Define a Google configuration
+scopes:["https://www.googleapis.com/auth/drive"])                // [2] Specify scope
+ 
+let gdModule = AccountManager.addGoogleAccount(googleConfig)     // [3] Add it to AccountManager
+self.http.authzModule = gdModule                                 // [4] Inject the AuthzModule 
+                                                                 // into the HTTP layer object 
+ 
+let multipartData = MultiPartData(data: self.snapshot(),         // [5] Define multi-part 
+          name: "image",
+          filename: "incognito_photo",
+          mimeType: "image/jpg")
+let multipartArray =  ["file": multipartData]
+ 
+self.http.POST("https://www.googleapis.com/upload/drive/v2/files",   // [6] Upload image
+               parameters: multipartArray,
+               completionHandler: {(response, error) in
+  if (error != nil) {
+    self.presentAlert("Error", message: error!.localizedDescription)
+  } else {
+    self.presentAlert("Success", message: "Successfully uploaded!")
+  }
+})
+````
+上面的方法进行了如下操作：
+1. 需要使用你的Google控制台中的客户端ID来替换上面代码中的YOUR_GOOGLE_CLIENT_ID，进行正确的配置。
+2. 定义了授权请求的域名，在Incognito中你需要访问drive API。
+3. 使用AccountManager的方法进行OAuth模块的初始化。
+4. 接着将OAuth2模块导入连接着授权模块的HTTP对象中。
+5. 创建一个包含多种数据的对象来封装你想发送给服务器的信息。
+6. 最后调用一个简单的HTTP请求上传图片，POST()会检查OAuth2模块是否加进了HTTP中，并产生一个回调：
+* 若没有访问令牌存在则开始授权码的授权
+* 若需要则重新生成访问令牌
+* 若所有令牌都可用，则仅仅调用POST指令
+
+>注意：想了解有关AeroGear OAuth2的信息的话可以看看AeroGear的[在线文档](https://aerogear.org/docs/guides/aerogear-ios-2.X/Authorization/)与[API手册](https://aerogear.org/docs/specs/aerogear-ios-oauth2/)，或者看看Pods中的源代码。
