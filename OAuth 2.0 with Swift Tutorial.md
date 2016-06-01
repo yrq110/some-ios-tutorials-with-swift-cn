@@ -156,14 +156,15 @@ self.http.POST("https://www.googleapis.com/upload/drive/v2/files",   // [6] Uplo
 })
 ````
 上面的方法进行了如下操作：
+
 1. 需要使用你的Google控制台中的客户端ID来替换上面代码中的YOUR_GOOGLE_CLIENT_ID，进行正确的配置。
 2. 定义了授权请求的域名，在Incognito中你需要访问drive API。
 3. 使用AccountManager的方法进行OAuth模块的初始化。
 4. 接着将OAuth2模块导入连接着授权模块的HTTP对象中。
 5. 创建一个包含多种数据的对象来封装你想发送给服务器的信息。
 6. 最后调用一个简单的HTTP请求上传图片，POST()会检查OAuth2模块是否加进了HTTP中，并产生一个回调：
-* 若没有访问令牌存在则开始授权码的授权
-* 若需要则重新生成访问令牌
-* 若所有令牌都可用，则仅仅调用POST指令
+    * 若没有访问令牌存在则开始授权码的授权
+    * 若需要则重新生成访问令牌
+    * 若所有令牌都可用，则仅仅调用POST指令
 
 >注意：想了解有关AeroGear OAuth2的信息的话可以看看AeroGear的[在线文档](https://aerogear.org/docs/guides/aerogear-ios-2.X/Authorization/)与[API手册](https://aerogear.org/docs/specs/aerogear-ios-oauth2/)，或者看看Pods中的源代码。
