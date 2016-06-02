@@ -73,6 +73,7 @@ app需要注册需要访问的服务。对你来说，Incognito需要注册Googl
 * 作用域: 用来告诉服务app所拥有的许可级别。
 
 app之后会切换到浏览器界面。一旦用户登入，则Google授权服务器会显示一个授权页: “Incognito想要访问你的相册：允许/拒绝”，当终端用户点击“允许”时，服务器会使用重定向URI跳转回Incognito中，并给app发送一个授权码。
+
 ![](https://cdn2.raywenderlich.com/wp-content/uploads/2015/05/oauth2-explained-3.png)
 
 ###Step 2: 交换授权码与令牌
@@ -88,11 +89,13 @@ app之后会切换到浏览器界面。一旦用户登入，则Google授权服�
 使用你的浏览器打开http://console.developer.google.com 进行操作
 
 点击创建工程并起名为Incognito：
+
 ![](https://cdn2.raywenderlich.com/wp-content/uploads/2015/04/RW_OAuth_CreateProject1-480x292.png)
 
 接着，你需要启用API。
 
 进入APIs&auth\APIs界面，然后点击Google Apps APIs\Drive API。在接下来的视图中点击启用API：
+
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2015/04/RW_Oauth_EnableAPI1-437x320.png)
 
 现在你需要创建一个新的证书来访问app中的账户。
@@ -109,6 +112,7 @@ app之后会切换到浏览器界面。一旦用户登入，则Google授权服�
 授权服务器将会使用这个bundle id作为重定向URI进入app。
 
 最后点击创建客户端ID，最后的界面会显示生成的客户端ID、客户端密钥与重定向URI：
+
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/04/RW_OAuth_Tokens-571x500.png)
 
 现在成功注册了Google服务，可以开始使用第一个OAuth2库来实现OAuth2了：依赖外部浏览器的AeroGear。
@@ -172,6 +176,7 @@ self.http.POST("https://www.googleapis.com/upload/drive/v2/files",   // [6] Uplo
 构建并运行app，选择一张图片，添加一些覆盖物，然后点击分享按钮，会提示你输入Google证书，如果你已经登录过了，你的整数会存放在缓存中。重定向到认证界面，点击接受，然后...
 
 Boom沙卡拉卡 你收到了一条Safari无法打开页面的错误信息。发生了什么？
+
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/05/iOS-Simulator-Screen-Shot-21-May-2015-21.48.49-281x500.png)
 
 当你点击接受后，Google OAuth站点会重定向到com.raywenderlich.Incognito://[some url]。因此需要设置app使其能打开这个
@@ -196,7 +201,9 @@ URL scheme。
 scheme是一个URL中的第一个部分，在网页中的scheme通常是http或https。iOS app可以自定义它们自己的 URL schemes，比如com.raywenderlich.Incognito://doStuff，重点就是自定义一个独特的scheme使其与设备中安装的其他app有所区别。
 
 在OAuth2之舞中使用你自定义的URL scheme根据请求来返回到app中。自定义Scheme中包含一些参数，在这里，授权码被包含在code参数中。 OAuth2库会从URL中提取授权码然后在下一次请求时与访问令牌进行交换。
+
 你需要在Incognito的AppDelegate类中实现一个基于自定义URL scheme的响应方法。
+
 打开AppDelegate.swift，在文件头部添加如下代码:
 ````swift
 import AeroGearOAuth2
@@ -214,7 +221,6 @@ func application(application: UIApplication,
     return true
 }
 ````
-This method simply createws an NSNotification containing the URL used to open the app. The AeroGearOAuth2 library listens for the notification and calls the completionHandler of the POST method you invoked above.
 这个方法中创建了一个包含打开app时URL信息的NSNotification。AeroGearOAuth2库会接收到这个通知，然后调用你之前插入的POST方法中的completionHandler。
 
 构建并运行一下工程，选个时髦的自拍并打扮一下，点击分享按钮，认证，观察一下发生了什么：
