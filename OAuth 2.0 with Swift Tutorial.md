@@ -193,4 +193,29 @@ URL scheme。
     </dict>
 </array>
 ````
-scheme是一个URL中的第一个部分，在网页中的scheme通常是http或https。iOS app可以自定义它们自己的 URL schemes，比如com.raywenderlich.Incognito://doStuff，重点就是自定义一个独特的scheme使其与设备中安装的其他app有所区区别。
+scheme是一个URL中的第一个部分，在网页中的scheme通常是http或https。iOS app可以自定义它们自己的 URL schemes，比如com.raywenderlich.Incognito://doStuff，重点就是自定义一个独特的scheme使其与设备中安装的其他app有所区别。
+
+在OAuth2之舞中使用你自定义的URL scheme根据请求来返回到app中。自定义Scheme中包含一些参数，在这里，授权码被包含在code参数中。 OAuth2库会从URL中提取授权码然后在下一次请求时与访问令牌进行交换。
+你需要在Incognito的AppDelegate类中实现一个基于自定义URL scheme的响应方法。
+打开AppDelegate.swift，在文件头部添加如下代码:
+````swift
+import AeroGearOAuth2
+````
+接着像下面这样实现application(_: openURL: sourceApplication: annotation)：
+````swift
+func application(application: UIApplication,
+  openURL url: NSURL,
+  sourceApplication: String?,
+  annotation: AnyObject?) -> Bool {
+    let notification = NSNotification(name: AGAppLaunchedWithURLNotification,
+      object:nil,
+      userInfo:[UIApplicationLaunchOptionsURLKey:url])
+    NSNotificationCenter.defaultCenter().postNotification(notification)
+    return true
+}
+````
+This method simply createws an NSNotification containing the URL used to open the app. The AeroGearOAuth2 library listens for the notification and calls the completionHandler of the POST method you invoked above.
+这个方法中创建了一个包含打开app时URL信息的NSNotification。AeroGearOAuth2库会接收到这个通知，然后调用你之前插入的POST方法中的completionHandler。
+
+构建并运行一下工程，选个时髦的自拍并打扮一下，点击分享按钮，认证，观察一下发生了什么：
+![](http://www.raywenderlich.com/wp-content/uploads/2015/03/incognito_flow3.gif)
