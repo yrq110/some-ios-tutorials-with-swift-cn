@@ -168,3 +168,29 @@ self.http.POST("https://www.googleapis.com/upload/drive/v2/files",   // [6] Uplo
     * 若所有令牌都可用，则仅仅调用POST指令
 
 >注意：想了解有关AeroGear OAuth2的信息的话可以看看AeroGear的[在线文档](https://aerogear.org/docs/guides/aerogear-ios-2.X/Authorization/)与[API手册](https://aerogear.org/docs/specs/aerogear-ios-oauth2/)，或者看看Pods中的源代码。
+
+构建并运行app，选择一张图片，添加一些覆盖物，然后点击分享按钮，会提示你输入Google证书，如果你已经登录过了，你的整数会存放在缓存中。重定向到认证界面，点击接受，然后...
+
+Boom沙卡拉卡 你收到了一条Safari无法打开页面的错误信息。发生了什么？
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/05/iOS-Simulator-Screen-Shot-21-May-2015-21.48.49-281x500.png)
+
+当你点击接受后，Google OAuth站点会重定向到com.raywenderlich.Incognito://[some url]。因此需要设置app使其能打开这个
+URL scheme。
+
+>注意：Safari将你的授权响应信息存放在了模拟器的cookie中，所以别立即就重新授权，为了清空模拟器的这些cookie需要重置iOS模拟器的内容与设置。
+
+##配置URL Scheme
+允许你的用户重定向回到Incognito中，你需要自定义一个关联的URL scheme。
+在Info.plist.文件中点击右键选择Open As\Source Code，在plist的底部，</dict>标签的右边加入如下代码：
+````
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>com.raywenderlich.Incognito</string>
+        </array>
+    </dict>
+</array>
+````
+scheme是一个URL中的第一个部分，在网页中的scheme通常是http或https。iOS app可以自定义它们自己的 URL schemes，比如com.raywenderlich.Incognito://doStuff，重点就是自定义一个独特的scheme使其与设备中安装的其他app有所区区别。
