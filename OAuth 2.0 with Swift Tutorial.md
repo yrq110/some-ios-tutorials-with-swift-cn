@@ -224,4 +224,16 @@ func application(application: UIApplication,
 这个方法中创建了一个包含打开app时URL信息的NSNotification。AeroGearOAuth2库会接收到这个通知，然后调用你之前插入的POST方法中的completionHandler。
 
 构建并运行一下工程，选个时髦的自拍并打扮一下，点击分享按钮，认证，观察一下发生了什么：
+
 ![](http://www.raywenderlich.com/wp-content/uploads/2015/03/incognito_flow3.gif)
+
+你可以从[这里](http://www.raywenderlich.com/wp-content/uploads/2015/05/Incognito.aerogear_final.zip)下载完成后的应用。
+
+在OAuth2授权过程中跳转到外部浏览器未免显得太笨重，应该有一个简化的实现方法...
+##使用嵌入的Web视图
+
+嵌入的web视图有更好的用户体验。使用UIWebView来实现而不是跳转到Safari中。从安全的角度来讲，使用app的代码来处理登录表单与提供商的数据会使安全性降低。当用户输入信息时app可以使用JS去访问用户证书，如果你的终端用户信任app的安全性的话是一个可考虑的方案。
+
+![](https://cdn4.raywenderlich.com/wp-content/uploads/2015/03/oauth2-explained-2.png)
+
+来使用OAuthSwift库重新实现分享的方法，不过这次使用的是嵌入的web视图。
