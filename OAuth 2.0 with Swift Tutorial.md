@@ -237,3 +237,57 @@ func application(application: UIApplication,
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2015/03/oauth2-explained-2.png)
 
 来使用OAuthSwift库重新实现分享的方法，不过这次使用的是嵌入的web视图。
+
+##使用嵌入web视图的OAuthSwift
+
+将会开始一个不同的新工程，所以先关闭Xcode的工作区，下载Incognito初始工程的版本，用Xcode打开Incognito.xcworkspace文件。
+
+构建并运行工程，看起来挺熟悉的。
+
+首先需要将OAuthSwift库加入到工程中。
+
+打开ViewController.swift在文件头部添加如下代码：
+````swift
+import OAuthSwift
+````
+在share()方法中添加如下代码:
+````swift
+// 1 Create OAuth2Swift object
+let oauthswift = OAuth2Swift(
+  consumerKey:    "YOUR_GOOGLE_DRIVE_CLIENT_ID",         // 2 Enter google app settings
+  consumerSecret: "YOUR_GOOGLE_DRIVE_CLIENT_SECRET",
+  authorizeUrl:   "https://accounts.google.com/o/oauth2/auth",
+  accessTokenUrl: "https://accounts.google.com/o/oauth2/token",
+  responseType:   "code"
+)
+// 3 Trigger OAuth2 dance
+oauthswift.authorizeWithCallbackURL(
+  NSURL(string: "com.raywenderlich.Incognito:/oauth2Callback")!,
+  scope: "https://www.googleapis.com/auth/drive",        // 4 Scope
+  state: "",
+  success: { credential, response in
+    var parameters =  [String: AnyObject]()
+    // 5 Get the embedded http layer and upload
+    oauthswift.client.postImage(
+      "https://www.googleapis.com/upload/drive/v2/files",
+      parameters: parameters,
+      image: self.snapshot(),
+      success: { data, response in
+        let jsonDict: AnyObject! = NSJSONSerialization.JSONObjectWithData(data,
+          options: nil,
+          error: nil)
+        self.presentAlert("Success", message: "Successfully uploaded!")
+      }, failure: {(error:NSError!) -> Void in
+        self.presentAlert("Error", message: error!.localizedDescription)
+    })
+  }, failure: {(error:NSError!) -> Void in
+    self.presentAlert("Error", message: error!.localizedDescription)
+})
+````
+上面的代码进行了如下操作：
+
+1. 首先创建一个OAuth2Swift对象，将为你执行OAuth之舞。
+2. 将YOUR_GOOGLE_CLIENT_ID与YOUR_GOOGLE_DRIVE_CLIENT_SECRET替换为你的客户端ID与客户端密钥。
+3. 通过oauthswift实例来请求授权。
+4. 这个域名是你请求访问的Drive API。
+5. 如果授权成功则可以开始上传图片了。
