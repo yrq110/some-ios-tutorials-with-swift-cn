@@ -2,6 +2,8 @@
 ##基于Swift的OAuth 2.0使用指南
 [原文地址](https://www.raywenderlich.com/99431/oauth-2-with-swift-tutorial)
 
+译者:[yrq110](https://github.com/yrq110)
+
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2015/05/oauth2-epalined-4b-250x250.png)
 
 在你将内容分享到喜爱的社交网络(Facebook, Twitter等)上或者你企业的OAuth2服务器上时，很可能不经意使用了OAuth2与其他种类的协议，你甚至不知道内部的原理。
@@ -503,3 +505,25 @@ UIApplication.sharedApplication().openURL(NSURL(string: "https://accounts.google
 7. 一得到令牌…
 8. …就绑定到HTTP头中…
 9. …最后, 上传图片至Google Drive
+
+还差一步!
+
+搞定之前的后，打开AppDelegate.swift添加如下方法：
+````swift
+func application(application: UIApplication,
+  openURL url: NSURL,
+  sourceApplication: String?,
+  annotation: AnyObject?) -> Bool {
+    let notification = NSNotification(
+      name: "AGAppLaunchedWithURLNotification",
+      object:nil,
+      userInfo:[UIApplicationLaunchOptionsURLKey:url])
+    NSNotificationCenter.defaultCenter().postNotification(notification)
+    return true
+}
+````
+启动了一个notification, 授权代码所监听的对象，为了获得URL的授权码。
+
+最后一次构建并运行工程，再次成功运行! 效果如之前一样不过这次使用了AFOAuth2Manager!
+
+你可以在[这里](http://www.raywenderlich.com/wp-content/uploads/2015/05/Incognito.afoauth2manager_finish.zip)下载最终的Incognito AFOAuth2Manager工程。
