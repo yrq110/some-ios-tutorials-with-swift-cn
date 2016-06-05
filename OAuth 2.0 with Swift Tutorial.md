@@ -291,3 +291,215 @@ oauthswift.authorizeWithCallbackURL(
 3. 通过oauthswift实例来请求授权。
 4. 这个域名是你请求访问的Drive API。
 5. 如果授权成功则可以开始上传图片了。
+
+##配置URL
+如之前的工程那样的，需要设置一个Incognito接受的URL scheme，你所要做的就是实现处理自定义URL的代码。
+
+打开AppDelegate.swift添加如下代码：
+````swift
+import OAuthSwift
+````
+然后像下面这样实现application(_:openURL: sourceApplication: annotation:)方法:
+````swift
+func application(application: UIApplication,
+  openURL url: NSURL,
+  sourceApplication: String?,
+  annotation: AnyObject?) -> Bool {
+    OAuth2Swift.handleOpenURL(url)
+    return true
+}
+````
+跟AeroGearOAuth2不同, OAuthSwift使用一个类方法去处理并解析返回的URL。不过如果你看看handleOpenURL(_) 方法的代码时会发现仅仅是发送了一个NSNotification，就像用AeroGearOAuth2时需要你做的那样!
+
+构建并运行你的工程，创建一个新的自拍然后上传。喔! 再一次成功了! 挺简单的吧 :]
+
+##显示UIWebView
+现在就要如约添加web view了。点击Incognito文件夹，在Xcode中的工程导航栏处选择File\New\File，然后选择iOS\Source\Swift File，将其命名为 WebViewController然后保存进工程中。
+
+然后打开WebViewController.swift添加如下代码：
+````swift
+import UIKit
+import OAuthSwift
+ 
+class WebViewController: OAuthWebViewController {
+  var targetURL : NSURL?
+  var webView : UIWebView = UIWebView()
+ 
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    webView.frame = view.bounds
+    webView.autoresizingMask =
+      UIViewAutoresizing.FlexibleHeight | UIViewAutoresizing.FlexibleHeight
+    webView.scalesPageToFit = true
+    view.addSubview(webView)
+    loadAddressURL()
+  }
+ 
+  override func setUrl(url: NSURL) {
+    targetURL = url
+  }
+ 
+  func loadAddressURL() {
+    if let targetURL = targetURL {
+      let req = NSURLRequest(URL: targetURL)
+      webView.loadRequest(req)
+    }
+  }
+}
+````
+在上面的代码中创建了一个继承OAuthWebViewController的WebViewController，这个类只实现了一个方法：SetUrl:。在viewDidLoad()中调整web view的尺寸然后添加到viewcontroller的父视图中。此外，在OAuth2Swift的实例中加载URL，创建一个request。
+
+接着打开ViewController.swift找到share()方法。在创建完oauthswift实例后添加如下代码：
+````swift
+oauthswift.webViewController = WebViewController()
+````
+这里会告诉oauthswift实例使用刚刚创建的web view controller。
+
+最后，打开AppDelegate.swift，修改application(_:openURL: sourceApplication: annotation:) 方法，在return true的前面添加如下代码：
+````swift
+// [1] Dismiss webview once url is passed to extract authorization code
+UIApplication.sharedApplication().keyWindow?.rootViewController?.dismissViewControllerAnimated(true, completion: nil)
+````
+构建并运行工程，注意当授权窗口出现时，并不是通过Safari显示的，未产生app间的切换。由于默认在你app中是不会存储cookies的因此每次都会出现授权的窗口。
+
+使用一个UIWebView去授权Google当然会更流畅，的确是! :]
+
+你可以在这里下载最终的[Incognito](http://www.raywenderlich.com/wp-content/uploads/2015/05/Incognito.oauthswift_final.zip)。
+
+在这个教程中还剩下一件事。来重新审视share()方法，使用著名的HTTP库AFNetworking在OAuth2中的应用。
+
+##使用AFOAuth2Manager授权
+AFOAuth2Manager使用一种与其他OAuth2库完全不同的方式：使用基于著名的AFNetworking框架的底层API。至于你想用一个UIWebView还是打开一个外部的浏览器完全由你来决定，开发者可自由选择在OAuth2之舞中第1步的初始化方式。
+
+这个部分的教程从另一个初始工程开始，关闭已有的工程下载这个新的：[Incognito starter project](http://www.raywenderlich.com/wp-content/uploads/2015/05/Incognito.afoauth2manager_start.zip).
+
+打开一个新工程进入ViewController.swift中，首先定义一些帮助方法与扩展。
+
+在文件头部添加如下的String扩展：
+````swift
+extension String {
+  public func urlEncode() -> String {
+    let encodedURL = CFURLCreateStringByAddingPercentEscapes(
+		  nil,
+      self as NSString,
+      nil,
+      "!@#$%&*'();:=+,/?[]",
+      CFStringBuiltInEncodings.UTF8.rawValue)
+    return encodedURL as String
+  }
+}
+````
+上面的代码扩展了一个String类的函数，使用URL编码一段字符串。
+
+在ViewController中添加如下方法：
+````swift
+func parametersFromQueryString(queryString: String?) -> [String: String] {
+  var parameters = [String: String]()
+  if (queryString != nil) {
+    var parameterScanner: NSScanner = NSScanner(string: queryString!)
+    var name:NSString? = nil
+    var value:NSString? = nil
+    while (parameterScanner.atEnd != true) {
+      name = nil;
+      parameterScanner.scanUpToString("=", intoString: &name)
+      parameterScanner.scanString("=", intoString:nil)
+      value = nil
+      parameterScanner.scanUpToString("&", intoString:&value)
+      parameterScanner.scanString("&", intoString:nil)
+      if (name != nil && value != nil) {
+        parameters[name!.stringByReplacingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!]
+          = value!.stringByReplacingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+      }
+    }
+  }
+  return parameters
+}
+````
+从URL字符串中提取中查询的参数字符串。比方说如果查询字符串是name=Bob&age=21则方法会返回一个字典：name => Bob, age => 21。
+
+接着你需要在ViewController中定义一个辅助函数，用来提取NSNotification中URL的OAuth码。
+
+在share()方法下面添加如下方法:
+````swift
+func extractCode(notification: NSNotification) -> String? {
+  let url: NSURL? = (notification.userInfo as!
+    [String: AnyObject])[UIApplicationLaunchOptionsURLKey] as? NSURL
+ 
+  // [1] extract the code from the URL
+  return self.parametersFromQueryString(url?.query)["code"]
+}
+````
+使用刚才实现的方法从查询字符串字典中抓取了键"code"的值。
+
+在share()中添加如下:
+````swift
+// 1 Replace with client id /secret
+let clientID = "YOUR_GOOGLE_CLIENT_ID"
+let clientSecret = "YOUR_GOOGLE_CLIENT_SECRET"
+ 
+let baseURL = NSURL(string: "https://accounts.google.com")
+let scope = "https://www.googleapis.com/auth/drive".urlEncode()
+let redirect_uri = "com.raywenderlich.Incognito:/oauth2Callback"
+ 
+if !isObserved {
+  // 2 Add observer
+  var applicationLaunchNotificationObserver = NSNotificationCenter.defaultCenter().addObserverForName(
+    "AGAppLaunchedWithURLNotification",
+    object: nil,
+    queue: nil,
+    usingBlock: { (notification: NSNotification!) -> Void in
+      // [5] extract code
+      let code = self.extractCode(notification)
+ 
+      // [6] carry on oauth2 code auth grant flow with AFOAuth2Manager
+      var manager = AFOAuth2Manager(baseURL: baseURL,
+        clientID: clientID,
+        secret: clientSecret)
+      manager.useHTTPBasicAuthentication = false
+ 
+      // [7] exchange authorization code for access token
+      manager.authenticateUsingOAuthWithURLString("o/oauth2/token",
+        code: code,
+        redirectURI: redirect_uri,
+        success: { (cred: AFOAuthCredential!) -> Void in
+ 
+          // [8] Set credential in header
+          manager.requestSerializer.setValue("Bearer \(cred.accessToken)",
+            forHTTPHeaderField: "Authorization")
+ 
+          // [9] upload photo
+          manager.POST("https://www.googleapis.com/upload/drive/v2/files",
+            parameters: nil,
+            constructingBodyWithBlock: { (form: AFMultipartFormData!) -> Void in
+              form.appendPartWithFileData(self.snapshot(),
+                name:"name",
+                fileName:"fileName",
+                mimeType:"image/jpeg")
+            }, success: { (op:AFHTTPRequestOperation!, obj:AnyObject!) -> Void in
+              self.presentAlert("Success", message: "Successfully uploaded!")
+            }, failure: { (op: AFHTTPRequestOperation!, error: NSError!) -> Void in
+              self.presentAlert("Error", message: error!.localizedDescription)
+          })
+        }) { (error: NSError!) -> Void in
+          self.presentAlert("Error", message: error!.localizedDescription)
+      }
+  })
+  isObserved = true
+}
+ 
+// 3 calculate final url
+var params = "?scope=\(scope)&redirect_uri=\(redirect_uri)&client_id=\(clientID)&response_type=code"
+// 4 open an external browser
+UIApplication.sharedApplication().openURL(NSURL(string: "https://accounts.google.com/o/oauth2/auth\(params)")!)
+````
+哇哦，这个方法好长！如果一步步分析的话就会理解的：
+
+1. 通常，你需要使用Google控制台的客户端id与客户端密钥替换掉YOUR_GOOGLE_CLIENT_ID与YOUR_GOOGLE_DRIVE_CLIENT_SECRET
+2. 接着添加一个notification的观察者
+3. 创建一个OAuth所需的参数列表
+4. 使用Safari打开URL开始OAuth之舞
+5. 一旦用户授权成功，这个闭包就会执行，开始从回调URL中提取OAuth码
+6. OAuth流的第二步：交换OAuth码得到令牌
+7. 一得到令牌…
+8. …就绑定到HTTP头中…
+9. …最后, 上传图片至Google Drive
