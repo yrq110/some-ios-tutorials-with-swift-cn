@@ -1,4 +1,4 @@
-# CN-Swift-Tutorial-Project
+# SomeSwiftTutorial
 
 >Translate some swift tutorials in Chinese
 
