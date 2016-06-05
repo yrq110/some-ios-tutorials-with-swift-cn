@@ -1,5 +1,5 @@
 #OAuth 2.0 with Swift Tutorial
-##基于Swift的OAuth 2.0使用指南
+##Swift的OAuth 2.0使用指南
 [原文地址](https://www.raywenderlich.com/99431/oauth-2-with-swift-tutorial)
 
 译者:[yrq110](https://github.com/yrq110)
