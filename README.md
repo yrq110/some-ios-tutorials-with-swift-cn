@@ -1,6 +1,6 @@
-# SomeSwiftTutorial
+# Some_IOS_Tutorial_With_Swift
 
->Translate some swift tutorials in Chinese
+>Translate some IOS tutorials with swift in Chinese
 
 ###Contents
 * Swift指南:使用JSON(Swift Tutorial: Working with JSON)
