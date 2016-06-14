@@ -8,3 +8,4 @@
 * Swift函数式编程介绍(Introduction to Functional Programming in Swift)
 * Sprite Kit Swift 2初学指南(Sprite Kit Swift 2 Tutorial for Beginners)
 * Swift的OAuth 2.0使用指南(OAuth 2.0 with Swift Tutorial)
+* 使用Swift在Xcode7中的单元测试(Unit Testing in Xcode 7 with Swift)
