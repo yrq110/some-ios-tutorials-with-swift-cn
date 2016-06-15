@@ -1,6 +1,8 @@
 #Bond Tutorial: Bindings in Swift
 ##学习Bond：Swift中的数据绑定
 
+[原文地址](https://www.raywenderlich.com/123108/bond-tutorial)
+
 >注意: 升级到Xcode 7.3, iOS 9.3, Swift 2.2. 2016.04.08
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/01/Binding-with-bond-feature-250x250.png)
