@@ -21,3 +21,17 @@ Swift Bond是一个绑定框架，可以免去在绑定UI时的繁琐工作，�
 启动Xcode开始写一些代码。
 
 首先，下载[开始工程](http://www.raywenderlich.com/wp-content/uploads/2016/01/BindingWithBond-Starter.zip)，包含了应用的基本框架
+````
+$ pod install
+Updating local specs repositories
+Analyzing dependencies
+Downloading dependencies
+Installing Bond (4.3.0)
+Installing DatePickerCell (1.0.4)
+Generating Pods project
+Integrating client project
+[!] Please close any current Xcode sessions and use `BindingWithBond.xcworkspace` for this project from now on.
+Sending stats
+Pod installation complete! There is 1 dependency from the Podfile and 1 total
+pod installed.
+````
