@@ -38,6 +38,7 @@ Pod installation complete! There is 1 dependency from the Podfile and 1 total
 pod installed.
 ````
 用Xcode打开刚生成的workspace文件，构建并运行，会看到如下图:
+
 ![](https://cdn3.raywenderlich.com/wp-content/uploads/2015/12/Starter-319x500.png)
 
 一切正常吗? 是时候创建你的第一个绑定了!
