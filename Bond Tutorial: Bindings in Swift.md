@@ -113,6 +113,94 @@ searchTextField.bnd_text
 
 如你所见，Swift Bond提供了一种流畅并明确的方式去描述应用与UI中的数据流。简化了你应用的代码，更容易理解，并能迅速达成目标。
 
-在下一章你会学到一些工作原理，现在花点时间看看它的本事是值得的-Bond … Swift Bond.
+在下一章你会学到一些工作原理，现在花点时间了解一下它的本事是值得的-Bond … Swift Bond.
 
 ![](http://www.raywenderlich.com/wp-content/uploads/2016/01/swiftmartini.png)
+
+##工作原理
+
+在做一个更有意义的app之前我们先来看看Bond有哪些功能，我建议你浏览一下Bond的类型(按住cmd点击)，看看注释解释。
+
+在刚才代码的基础上开始编写，bnd_text是一个包含String?属性的Bond观测量，观测量是EventProducer的一个子类。
+
+Event producers会根据由泛型类型定义的数据变化触发相应的事件。
+
+当你调用observe方法时，就将闭包表达式注册为了一个观察者。每次触发事件时，都会用事件数据(由泛型类型定义)调用闭包表达式。
+
+比如，考虑一下一开始写的代码:
+````swift
+searchTextField.bnd_text.observe {
+    text in
+    print(text)
+  }
+````
+调用observe，每当searchTextField的text属性改变时就会执行一次闭包中的代码。
+
+>注意：这基于一个经典的设计模式 - [观察者模式](https://en.wikipedia.org/wiki/Observer_pattern).
+
+EventProducer遵守EventProducerType协议, 也就是定义map操作时基于的一个协议扩展。你可能听过“面向协议编程”，这就是个很好的例子。
+
+观测量在EventProducer接口上添加了一个值属性，允许它去构建一个属性或变量。通过值属性可以使用‘get’或‘set’来操作这个值，并能观察它的变化，这得益于EventProducer的功能性。
+
+Bond扩展了UIKit，添加了响应观测量属性。比如UITextField有一个text属性，与之对应的就是观测量bnd_text。所以get或set‘bnd_text.value’就等价于对text属性进行相应的操作，使用观测量的话就可以观测到它的改变。
+
+最后一块拼图就是绑定了，bindTo方法连接一对观测量属性，用来同步变化。像下面这样将活动指示器的动画属性与field的text长度绑定:
+````swift
+searchTextField.bnd_text
+  .map { $0!.characters.count > 0 }
+  .bindTo(activityIndicator.bnd_animating)
+````
+
+##MVVM
+Bond使UI属性间的绑定变得很轻松，不过并不是想要的目标。Bond是一个支持模型-视图-视图模型(Model-View-ViewModel,MVVM)模式的框架，如果你没用过这种模式，我建议你看看我[以前的教程中的第一部分](http://www.raywenderlich.com/74106/mvvm-tutorial-with-reactivecocoa-part-1)。
+理论知识差不多了，来写写代码吧:]
+
+##添加一个View Model
+首先，移除ViewController.swift中的示例代码，一个可信度更高的应用结构应有如下的viewDidLoad()方法:
+````swift
+override func viewDidLoad() {
+  super.viewDidLoad()
+}
+````
+创建名为PhotoSearchViewModel.swift的文件, 添加如下代码:
+````swift
+import Foundation
+import Bond
+ 
+class PhotoSearchViewModel {
+  let searchString = Observable<String?>("")
+ 
+  init() {
+    searchString.value = "Bond"
+ 
+    searchString.observeNew {
+      text in
+      print(text)
+    }
+  }
+}
+````
+这里创建了一个简单的包含一个属性的view model，使用"Bond"作为值进行初始化。
+
+打开ViewController.swift，在类的顶部添加如下属性:
+````swift
+private let viewModel = PhotoSearchViewModel()
+````
+如下修改viewDidLoad():
+````swift
+override func viewDidLoad() {
+  super.viewDidLoad()
+  bindViewModel()
+}
+````
+在类中添加这个方法:
+````swift
+func bindViewModel() {
+  viewModel.searchString.bindTo(searchTextField.bnd_text)
+}
+````
+bindViewModel()方法就是之后需要添加绑定的地方，现在仅仅连接text field与view model就可以了。
+
+构建并运行应用，会看到显示了文本‘Bond’:
+
+![](https://cdn4.raywenderlich.com/wp-content/uploads/2015/12/FirstBinding-319x500.png)
