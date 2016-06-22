@@ -155,7 +155,7 @@ searchTextField.bnd_text
 Bond使UI属性间的绑定变得很轻松，不过并不是想要的目标。Bond是一个支持模型-视图-视图模型(Model-View-ViewModel,MVVM)模式的框架，如果你没用过这种模式，我建议你看看我[以前的教程中的第一部分](http://www.raywenderlich.com/74106/mvvm-tutorial-with-reactivecocoa-part-1)。
 理论知识差不多了，来写写代码吧:]
 
-##添加一个View Model
+##添加一个视图模型(View Model)
 首先，移除ViewController.swift中的示例代码，一个可信度更高的应用结构应有如下的viewDidLoad()方法:
 ````swift
 override func viewDidLoad() {
@@ -180,7 +180,7 @@ class PhotoSearchViewModel {
   }
 }
 ````
-这里创建了一个简单的包含一个属性的view model，使用"Bond"作为值进行初始化。
+这里创建了一个简单的包含一个属性的视图模型，使用"Bond"作为值进行初始化。
 
 打开ViewController.swift，在类的顶部添加如下属性:
 ````swift
@@ -199,8 +199,60 @@ func bindViewModel() {
   viewModel.searchString.bindTo(searchTextField.bnd_text)
 }
 ````
-bindViewModel()方法就是之后需要添加绑定的地方，现在仅仅连接text field与view model就可以了。
+bindViewModel()方法就是之后需要添加绑定的地方，现在仅仅连接text field与视图模型就可以了。
 
 构建并运行应用，会看到显示了文本‘Bond’:
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2015/12/FirstBinding-319x500.png)
+
+视图模型现在观测的是searchString的变化，不过你会发现在text field中输入时，视图模型并没有及时更新。怎么回事？
+
+现在的绑定是单向的，意味着变化仅仅由源头(视图模型属性)传递给终点(text field的bnd_text属性)
+
+怎么使反向也能传递变化呢? 很简单 — 如下修改绑定方法:
+````swift
+viewModel.searchString.bidirectionalBindTo(searchTextField.bnd_text)
+````
+真轻松!
+构建并运行, 输入“Bond Love”:
+````
+Optional("Bond ")
+Optional("Bond L")
+Optional("Bond Lo")
+Optional("Bond Lov")
+Optional("Bond Love")
+````
+很棒 — 现在确信了text field的变化会传递给视图模型了。
+##由观测量创建观测量
+是时候对观测量映射部分做一些有用的事情了。回到PhotoSearchViewModel.swift，在视图模型中添加如下属性:
+````swift
+let validSearchText = Observable<Bool>(false)
+````
+这个布尔属性标识着当前的searchString是否可用。
+
+依旧在视图模型中添加如下初始化代码:
+````swift
+searchString
+  .map { $0!.characters.count > 3 }
+  .bindTo(validSearchText)
+````
+在这里将searchString观测量映射到一个检测字符串长度是否大于3个字符的布尔值，接着与validSearchText属性相绑定。
+
+在ViewController.swift中找到bindViewModel方法添加如下代码:
+````swift
+viewModel.validSearchText
+  .map { $0 ? UIColor.blackColor() : UIColor.redColor() }
+  .bindTo(searchTextField.bnd_textColor)
+````
+这个map将validSearchText属性映射到了颜色，然后与text field的文本颜色属性相绑定。
+
+构建并运行:
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/12/ShortText-319x500.png)
+
+结果就是，当文本太短不能构成一个可用的搜索关键字时，就会被标注为红色。
+
+Bond将属性间的联系与变换变得非常简单，简单的就像…
+
+![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/01/Swift_bond_pie-480x244.png)
+派! 不错, 就像这么简单
