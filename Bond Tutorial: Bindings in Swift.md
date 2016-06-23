@@ -244,7 +244,7 @@ viewModel.validSearchText
   .map { $0 ? UIColor.blackColor() : UIColor.redColor() }
   .bindTo(searchTextField.bnd_textColor)
 ````
-这个map将validSearchText属性映射到了颜色，然后与text field的文本颜色属性相绑定。
+这里将validSearchText属性映射到了颜色，然后与text field的文本颜色属性相绑定。
 
 构建并运行:
 
@@ -256,3 +256,40 @@ Bond将属性间的联系与变换变得非常简单，简单的就像…
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/01/Swift_bond_pie-480x244.png)
 派! 不错, 就像这么简单
+
+##准备搜索
+
+这个app会根据用户的输入在[500px](http://500px.com/) 行检索对应的图片。 giving the same kind of immediate feedback users are used to from Google.
+每当searchString视图模型的属性改变时触发一次搜索，不过这可能会引起大量的请求。最好用节流的查询方法，限制每秒最多一次或两次查询。
+用Bond很轻松就能实现!
+
+在PhotoSearchViewModel.swift的初始化方法中添加如下代码:
+````swift
+searchString
+  .filter { $0!.characters.count > 3 }
+  .throttle(0.5, queue: Queue.Main)
+  .observe {
+    [unowned self] text in
+    self.executeSearch(text!)
+  }
+````
+这里过滤掉searchString中的不可用值(长度 <= 4), 得到我们需要的值，然后限制变化的速度，最快每0.5秒会接受一个通知。
+
+observe的闭包表达式中调用了executeSearch method, 因此需要在后面添加一下:
+````swift
+func executeSearch(text: String) {
+  print(text)
+}
+````
+现在这个方法只是打印出结果，可以清楚的看到节流的效果。
+
+构建并运行，试着输入一些文本。
+
+会看到如下的结果，一些经过节流处理的事件，最快每0.5秒显示一条文本
+````swift
+Bond
+Bond Th
+Bond Throttles
+Bond Throttles Good!
+````
+如果没有Bond，要实现这个功能会挺费劲的。
