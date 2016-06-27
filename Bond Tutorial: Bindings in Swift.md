@@ -293,3 +293,65 @@ Bond Throttles
 Bond Throttles Good!
 ````
 如果没有Bond，要实现这个功能会挺费劲的。
+
+##使用500px API
+
+在这个app中需要使用500px API。选择它是因为其具有相关的简易接口与认证机制。
+
+需要先注册成为开发者才能使用接口。非常快捷，易用，而且是免费！ 
+在这个地址中注册: [https://500px.com/signup](https://500px.com/signup)
+
+注册完成后会跳转到应用界面: https://500px.com/settings/applications. 在这里会看到一个允许你注册应用的接口。
+
+![](https://cdn4.raywenderlich.com/wp-content/uploads/2015/12/RegisterApp-700x201.png)
+
+填写注册表单 (有一小部分是必填) ，创建应用。
+
+![](https://cdn1.raywenderlich.com/wp-content/uploads/2015/12/AppRegistered-700x204.png)
+
+点击应用并复制一下key，每个请求都是使用这个key来访问500px的。
+
+开始工程中已经包含了所需要的在500px中查询的代码，会在Model群组中找到。都提到过，应该跟得上吧。
+
+回到PhotoSearchViewModel.swift文件,添加如下属性:
+
+````swift
+private let searchService: PhotoSearch = {
+  let apiKey = NSBundle.mainBundle().objectForInfoDictionaryKey("apiKey") as! String
+  return PhotoSearch(key: apiKey)
+}()
+````
+初始化了PhotoSearch类，这个类提供了一个500px的Swift检索API，通过key来访问。
+key应该在plist文件中所包含. 打开Info.plist编辑一下apiKey, 添加500px提供的key:
+
+![](https://cdn2.raywenderlich.com/wp-content/uploads/2015/12/ApiKey.png)
+
+在PhotoSearchViewModel.swift中如下更新executeSearch方法:
+
+````swift
+func executeSearch(text: String) {
+  var query = PhotoQuery()
+  query.text = searchString.value ?? ""
+ 
+  searchService.findPhotos(query) {
+    result in
+    switch result {
+    case .Success(let photos):
+      print("500px API returned \(photos.count) photos")
+    case .Error:
+      print("Sad face :-(")
+    }
+  }
+}
+````
+构建了一个PhotoQuery对象，包含了查询的参数。 接着调用了searchService的findPhotos方法执行搜索，使用异步回调的方式返回结果，通过枚举值来表现成功或失败的情况。
+
+构建并运行。视图模型会用结构化的方式来初始化查询，会看到如下的输出日志：
+````
+500px API returned 20 photos
+````
+如果出错了会输出:
+````
+Sad face :-(
+````
+如果出错了，检查下API key与网络连接，祈祷一下，然后再试一次! 如果还不行的话有可能500px的API挂掉了， 不过99%的情况下是你输错了API。仔细检查下输入的key是否与500px中应用的key相同。
