@@ -301,7 +301,7 @@ Bond Throttles Good!
 需要先注册成为开发者才能使用接口。非常快捷，易用，而且是免费！ 
 在这个地址中注册: [https://500px.com/signup](https://500px.com/signup)
 
-注册完成后会跳转到应用界面: https://500px.com/settings/applications. 在这里会看到一个允许你注册应用的接口。
+注册完成后会跳转到应用界面: https://500px.com/settings/applications. 在这里会看到一个允许你注册应用的界面。
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2015/12/RegisterApp-700x201.png)
 
@@ -311,7 +311,7 @@ Bond Throttles Good!
 
 点击应用并复制一下key，每个请求都是使用这个key来访问500px的。
 
-开始工程中已经包含了所需要的在500px中查询的代码，会在Model群组中找到。都提到过，应该跟得上吧。
+开始工程中已经包含了所需要的在500px中查询的代码，会在Model group中找到。
 
 回到PhotoSearchViewModel.swift文件,添加如下属性:
 
