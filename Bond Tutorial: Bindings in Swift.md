@@ -255,6 +255,7 @@ viewModel.validSearchText
 Bond将属性间的联系与变换变得非常简单，简单的就像…
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/01/Swift_bond_pie-480x244.png)
+
 派! 不错, 就像这么简单
 
 ##准备搜索
@@ -355,3 +356,80 @@ func executeSearch(text: String) {
 Sad face :-(
 ````
 如果出错了，检查下API key与网络连接，祈祷一下，然后再试一次! 如果还不行的话有可能500px的API挂掉了， 不过99%的情况下是你输错了API。仔细检查下输入的key是否与500px中应用的key相同。
+
+
+##渲染结果
+
+如果能看到查询结果返回的那些图像岂不是更有趣？让我们来实现它吧。
+
+在PhotoSearchViewModel.swift中添加如下属性:
+````swift
+let searchResults = ObservableArray<Photo>()
+````
+顾名思义，这时一个观测量的特殊类型，支持数组功能。
+
+在上手之前，我建议看一下ObservableArray的更多细节，按住cmd点击它看看有关的Bond API。
+
+ObservableArray与Observable类似，都属于一种EventProducer，意味着可以设置监测数组改变的事件。此时，事件会触发ObservableArrayEvent实例。
+
+ObservabelArrayEvent基于ObservableArrayOperation枚举对数组中发生的变化进行了编码。
+
+使用间接枚举定义枚举值的关联:
+````swift
+public indirect enum ObservableArrayOperation<ElementType> {
+  case Insert(elements: [ElementType], fromIndex: Int)
+  case Update(elements: [ElementType], fromIndex: Int)
+  case Remove(range: Range<Int>)
+  case Reset(array: [ElementType])
+  case Batch([ObservableArrayOperation<ElementType>])
+}
+````
+如你所见，由观测量数组触发的事件是很详细的，这些事件描述了发生的变化，并没有通知新数组值的观测者。
+
+这种程度的详尽是有充分的理由的。可以使用一个Bond观测量将一个数组绑定到UI，可能是一个列表视图。然而如果绑定到一个单一部件的话，观测量只能表明 *某些量* 改变了，作为结果整个UI都需要被重构。观测量数组所提供的详细状态提供了更加高效的UI更新方式。
+
+>注意：ReactiveCocoa没有观测量数组的概念， 这是我之前偶然发现的。你可以在我[博客](http://blog.scottlogic.com/2014/11/04/mutable-array-binding-reactivecocoa.html)中找到解决方案(很像Bond)。
+
+现在你知道观测量数组是什么了，是时候来使用它了。
+
+在PhotoSearchViewModel.swift中找到executeSearch方法，如下更新case Success中的代码:
+````swift
+  case .Success(let photos):
+    self.searchResults.removeAll()
+    self.searchResults.insertContentsOf(photos, atIndex: 0)
+````
+这里清空了数组，添加了新的结果。
+
+在ViewController.swift中的bindViewModel里添加如下代码:
+````swift
+viewModel.searchResults.lift().bindTo(resultsTable) { indexPath, dataSource, tableView in
+  let cell = tableView.dequeueReusableCellWithIdentifier("MyCell", forIndexPath: indexPath)
+                                                                      as! PhotoTableViewCell
+  let photo = dataSource[indexPath.section][indexPath.row]
+  cell.title.text = photo.title
+ 
+  let qualityOfServiceClass = QOS_CLASS_BACKGROUND
+  let backgroundQueue = dispatch_get_global_queue(qualityOfServiceClass, 0)
+  cell.photo.image = nil
+  dispatch_async(backgroundQueue) {
+    if let imageData = NSData(contentsOfURL: photo.url) {
+      dispatch_async(dispatch_get_main_queue()) {
+        cell.photo.image = UIImage(data: imageData)
+      }
+    }
+  }
+  return cell
+}
+````
+Bond中有一个为绑定观测量数组与列表视图所准备的EventProducerType扩展协议。这个绑定需要输入一个列表视图实例与一个闭包表达式，像上面看到的那样，闭包中的代码很像标准的列表视图datasource设置代码。
+
+再看看其中的细节，首先调用了观测量数组的lift方法。Bond支持以嵌套数组结构为目录的列表视图。lift操作将观测量数组转换成了一个无目录列表所有需要的嵌套表单。
+
+闭包表达式中是标准的列表视图列表项的关联代码，列表出列，设置多个属性。注意，图像的下载是基于一个后台队列，为了保持UI的持续响应。
+
+构建并运行应用:
+
+![](https://cdn1.raywenderlich.com/wp-content/uploads/2015/12/ArrayBinding-319x500.png)
+
+当在文本框内输入时，UI会自动更新，是不是很酷。
+
