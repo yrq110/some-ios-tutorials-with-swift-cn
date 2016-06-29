@@ -433,3 +433,89 @@ Bond中有一个为绑定观测量数组与列表视图所准备的EventProducer
 
 当在文本框内输入时，UI会自动更新，是不是很酷。
 
+##些许UI的天分
+
+是时候对UI做的什么了！
+
+在PhotoSearchViewModel.swift中添加如下属性y:
+````swift
+let searchInProgress = Observable<Bool>(false)
+````
+更新executeSearch方法中的代码t:
+````swift
+func executeSearch(text: String) {
+  var query = PhotoQuery()
+  query.text = searchString.value ?? ""
+ 
+  searchInProgress.value = true
+ 
+  searchService.findPhotos(query) {
+    [unowned self] result in
+    self.searchInProgress.value = false
+    switch result {
+    case .Success(let photos):
+      self.searchResults.removeAll()
+      self.searchResults.insertContentsOf(photos, atIndex: 0)
+    case .Error:
+      print("Sad face :-(")
+    }
+  }
+}
+````
+这里在进行查询操作之前将属性直接设为了true，当结果异步返回时则设为false。
+
+在ViewController.swift中，给bindViewModel添加如下代码:
+````swift
+viewModel.searchInProgress
+  .map { !$0 }
+  .bindTo(activityIndicator.bnd_hidden)
+ 
+viewModel.searchInProgress
+  .map { $0 ? CGFloat(0.5) : CGFloat(1.0) }
+  .bindTo(resultsTable.bnd_alpha)
+````
+在查询进行时会显示一个正在加载的指示器，并且会降低列表视图的透明度。
+
+构建并运行一下，看看效果:
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/12/SearchInProgress-319x500.png)
+
+现在应该体会到使用Bond的好处了吧！ 效果像马提尼一样美妙 :]
+
+##处理错误
+如果500px的查询失败了，ap仅仅会输出错误信息到控制台中。这里应该以一种有参考意义并规范的方式将失败信息反馈给用户。
+
+问题来了，怎么定义这个模型？一个错误不像视图模型属性是状态的改变，而是瞬态发生的事件。
+
+答案很简单: 一个EventProducer，而不是观测量。在PhotoSearchViewModel.swift中添加如下属性:
+
+````swift
+let errorMessages = EventProducer<String>()
+````
+接着，如下修改executeSearch中Error情况下的代码:
+````swift
+  case .Error:
+    self.errorMessages
+      .next("There was an API request issue of some sort. Go ahead, hit me with that 1-star review!")
+````
+在ViewController.swift中修改bindViewModel:
+````swift
+viewModel.errorMessages.observe {
+  [unowned self] error in
+ 
+  let alertController = UIAlertController(title: "Something went wrong :-(",
+                                                        message: error, preferredStyle: .Alert)
+  self.presentViewController(alertController, animated: true, completion: nil)
+  let actionOk = UIAlertAction(title: "OK", style: .Default,
+    handler: { action in alertController.dismissViewControllerAnimated(true, completion: nil) })
+ 
+  alertController.addAction(actionOk)
+}
+````
+这里设置了errorMessages属性触发的事件，使用UIAlert来显示错误信息。
+
+构建并运行应用，然后断开网络连接或者移除key来看看显示的错误信息:
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/12/ErrorMessage-319x500.png)
+
+完美 :]
