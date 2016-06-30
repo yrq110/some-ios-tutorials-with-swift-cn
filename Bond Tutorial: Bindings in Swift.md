@@ -519,3 +519,116 @@ viewModel.errorMessages.observe {
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/12/ErrorMessage-319x500.png)
 
 完美 :]
+
+##添加搜索设置
+
+当前应用的查询是基于500px API的简单搜索功能，如果看看API文档的话会发现它支持很多其他的参数。
+
+如果点击app中的Settings按钮，会看到已经有了一个简单的搜索设置UI，现在需要来实现它了。
+
+在视图模型group中添加一个名为PhotoSearchMetadataViewModel.swift的文件，输入如下内容:
+````swift
+import Foundation
+import Bond
+ 
+class PhotoSearchMetadataViewModel {
+  let creativeCommons = Observable<Bool>(false)
+  let dateFilter = Observable<Bool>(false)
+  let minUploadDate = Observable<NSDate>(NSDate())
+  let maxUploadDate = Observable<NSDate>(NSDate())
+}
+````
+在PhotoSearchViewModel.swift中添加如下属性:
+````swift
+let searchMetadataViewModel = PhotoSearchMetadataViewModel()
+````
+修改executeSearch方法，在设置query.text属性的那行后面添加:
+````swift
+query.creativeCommonsLicence = searchMetadataViewModel.creativeCommons.value
+query.dateFilter = searchMetadataViewModel.dateFilter.value
+query.minDate = searchMetadataViewModel.minUploadDate.value
+query.maxDate = searchMetadataViewModel.maxUploadDate.value
+````
+上面的代码将视图模型的状态拷贝给了PhotoQuery对象。
+
+这个视图模型将会与settings视图控制器绑定，是时候来实现了，打开SettingsViewController.swift添加如下属性:
+````swift
+var viewModel: PhotoSearchMetadataViewModel?
+````
+那么如何设置这个属性? 当Settings按钮被按下时，故事板会执行一个segue，可以“拦截”这个进程，给视图控制器输入一些数据。
+
+在ViewController.swift中添加如下方法:
+````swift
+override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+  if segue.identifier == "ShowSettings" {
+    let navVC = segue.destinationViewController as! UINavigationController
+    let settingsVC = navVC.topViewController as! SettingsViewController
+    settingsVC.viewModel = viewModel.searchMetadataViewModel
+  }
+}
+````
+这里保证了在ShowSettings segue执行时，目标视图控制器正确加载了视图模型。
+
+在SettingsViewController.swift中viewDidLoad()方法的尾部添加如下代码:
+````swift
+bindViewModel()
+````
+然后添加这个函数的实现:
+````swift
+func bindViewModel() {
+  guard let viewModel = viewModel else {
+    return
+  }
+  viewModel.creativeCommons.bidirectionalBindTo(creativeCommonsSwitch.bnd_on)
+}
+````
+上面的代码绑定了视图模型属性与响应的switch开关。
+
+构建并运行应用，打开Settings并触发开关。如果打开的话，会发现加载时返回的照片会有所不同。
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/12/Settings-319x500.png)
+
+##绑定日期
+
+Settings界面还有一些需要实现的功能，这就是接下来的任务。
+
+在SettingsViewController.swift中的bindViewModel()中添加如下代码:
+````swift
+viewModel.dateFilter.bidirectionalBindTo(filterDatesSwitch.bnd_on)
+ 
+let opacity = viewModel.dateFilter.map { $0 ? CGFloat(1.0) : CGFloat(0.5) }
+opacity.bindTo(minPickerCell.leftLabel.bnd_alpha)
+opacity.bindTo(maxPickerCell.leftLabel.bnd_alpha)
+opacity.bindTo(minPickerCell.rightLabel.bnd_alpha)
+opacity.bindTo(maxPickerCell.rightLabel.bnd_alpha)
+````
+将dateFilter开关与视图模型绑定在了一起，并减少了闲置的datePicker单元格的数量。
+
+datePicker单元格包含一个datePicker与几个标签，使用CocoaPod中的DatePickerCell实现，这里有个小问题：Bond并不支持绑定这种单元格类型所暴露的属性。
+
+如果你看看DatePickerCell API的话，会发现一个date属性包含标签与picker。可以对picker进行双向绑定，不过这样的话就意味着跳过了设置标签内容的逻辑。
+
+幸运的是可以“手动”的进行双向绑定，同时观测model与datePicker，很直接的方法。
+将如下方法添加到SettingsViewController.swift中:
+````swift
+private func bind(modelDate: Observable<NSDate>, picker: DatePickerCell) {
+  modelDate.observe {
+    event in
+    picker.date = event
+  }
+ 
+  picker.datePicker.bnd_date.observe {
+    event in
+    modelDate.value = event
+  }
+}
+````
+
+然后将这两行添加到bindViewModel()中:
+````swift
+bind(viewModel.minUploadDate, picker: minPickerCell)
+bind(viewModel.maxUploadDate, picker: maxPickerCell)
+````
+构建并运行，欢呼吧! 日期现在被正确绑定了:
+
+![](https://cdn2.raywenderlich.com/wp-content/uploads/2015/12/DateBinding-319x500.png)
