@@ -609,6 +609,7 @@ datePicker单元格包含一个datePicker与几个标签，使用CocoaPod中的D
 如果你看看DatePickerCell API的话，会发现一个date属性包含标签与picker。可以对picker进行双向绑定，不过这样的话就意味着跳过了设置标签内容的逻辑。
 
 幸运的是可以“手动”的进行双向绑定，同时观测model与datePicker，很直接的方法。
+
 将如下方法添加到SettingsViewController.swift中:
 ````swift
 private func bind(modelDate: Observable<NSDate>, picker: DatePickerCell) {
@@ -623,7 +624,6 @@ private func bind(modelDate: Observable<NSDate>, picker: DatePickerCell) {
   }
 }
 ````
-
 然后将这两行添加到bindViewModel()中:
 ````swift
 bind(viewModel.minUploadDate, picker: minPickerCell)
@@ -632,3 +632,51 @@ bind(viewModel.maxUploadDate, picker: maxPickerCell)
 构建并运行，欢呼吧! 日期现在被正确绑定了:
 
 ![](https://cdn2.raywenderlich.com/wp-content/uploads/2015/12/DateBinding-319x500.png)
+
+##数据约束
+
+现在，用户创建的日期过滤器可能不太符合逻辑，比如，最早日期比早晚日期要晚。
+
+实现对其的约束的确挺容易的。在PhotoSearchMetadataViewModel.swift中添加如下初始化方法:
+````swift
+init() {
+  maxUploadDate.observe {
+    [unowned self]
+    maxDate in
+    if maxDate.timeIntervalSinceDate(self.minUploadDate.value) < 0 {
+      self.minUploadDate.value = maxDate
+    }
+  }
+  minUploadDate.observe {
+    [unowned self]
+    minDate in
+    if minDate.timeIntervalSinceDate(self.maxUploadDate.value) > 0 {
+      self.maxUploadDate.value = minDate
+    }
+  }
+}
+````
+上面对每个日期都添加了observe，如果出现了最小>最大的情况，则值会根据情况发生改变。
+
+构建并运行一下，看看效果。故意设置最晚日期比最早日期要早，它会自动将其调整为最早日期。
+
+也许你会发现有一个违和的地方：当改变搜索设置时，app不会重复进行查询，这也许会困扰你的用户。理论上来说，app在设置改变时应该再次执行搜索。
+
+每个设置都是一个观测量属性，应该观测它们全部，然而这样需要大量的重复性代码。幸运地是这里有一种更好的方式!
+
+在PhotoSearchViewModel.swift中init()的底部添加如下代码:
+````swift
+combineLatest(searchMetadataViewModel.dateFilter, searchMetadataViewModel.maxUploadDate,
+  searchMetadataViewModel.minUploadDate, searchMetadataViewModel.creativeCommons)
+  .throttle(0.5, queue: Queue.Main)
+  .observe {
+    [unowned self] _ in
+    self.executeSearch(self.searchString.value!)
+  }
+````
+combineLatest函数整合了所有观测量，允许你将它们当做一个量来看待。上面的代码执行了整合，限流与执行查询的操作。 
+
+构建并运行一下，看看效果。尝试改变日期，或拨动开关。每当你改变一些东西时就会更新新的搜索结果!
+是不是很简单?! :]
+
+![](https://cdn2.raywenderlich.com/wp-content/uploads/2016/01/Swift_bond_cake-480x268.png)
