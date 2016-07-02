@@ -1,4 +1,4 @@
-# Some_IOS_Tutorial_With_Swift
+# Some_IOS_Tutorials_With_Swift
 
 >Translate some IOS tutorials with swift in Chinese
 
