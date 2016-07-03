@@ -429,3 +429,8 @@ func printMessage(message: String) -> String {
     return outputMessage
 }
 ````
+##总结
+
+这就是关于Swift 3的全部内容了。新版的Swift是一个重要的发行版，会使这个语言变得更好，它包含了大量的功能上的变化，对你的现有Swift代码有很大的影响。我希望这篇教程可以帮助你更好的理解这些变化，并且我希望这可以节省一些你移植Siwft项目的时间。
+
+这篇教程中的所有代码都可以在这个[Playground](https://github.com/appcoda/Swift3Playgrounds/blob/master/Swift%203.playground.zip?raw=true)工程中找到，我在Xcode8 beta中测试成功了，确保你使用的是Xcode 8然后再运行这个项目。
