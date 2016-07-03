@@ -1,6 +1,10 @@
 #What’s New in Swift 3
 ##Swift 3中的新特性
 
+[原文地址](http://www.appcoda.com/swift3-changes/)
+
+译者：[yrq110](https://github.com/yrq110)
+
 苹果在Xcode 8 beta版中集成了Swift 3，并且将在今年年末发布最终版本。这是3的第一个版本，开源并且可运行于MacOS与Linux。如果你从去年12月开始就跟进[Swift-Evolution](https://github.com/apple/swift-evolution)的话，甚至包括已经在[IBM沙盒](https://swiftlang.ng.bluemix.net/#/repl)中体验过的boy，应该知道这里面有很多的变化。如果现在在Xcode8中编译你的app的话，肯定会崩溃的。
 
 Swift 3中的变化可以被分为两类:
