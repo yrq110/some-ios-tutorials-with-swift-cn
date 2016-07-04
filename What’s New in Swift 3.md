@@ -404,10 +404,10 @@ Swift 3的API运用了简洁的哲♂学理念 – 省略了无用的单词, 因
 ##枚举
 Swift 3将枚举的cases看做属性，因此使用小写开头的驼峰式命名，而不是大写开头的驼峰式来标识:
 
-* .System becomes .system
-* .TouchUpInside becomes .touchUpInside
-* .FillStroke becomes .fillStroke
-* .CGColor becomes .cgColor
+* `.System` -> `.system`
+* `.TouchUpInside` -> .touchUpInside`
+* `.FillStroke` -> .fillStroke`
+* `.CGColor` -> .cgColor`
 
 ##@discardableResult 
 在Swift 3中，如果你没有使用函数或方法返回值的话Xcode会显示一个警告，举个栗子:
