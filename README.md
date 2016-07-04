@@ -10,3 +10,4 @@
 * Swift的OAuth 2.0使用指南(OAuth 2.0 with Swift Tutorial)
 * 使用Swift在Xcode7中的单元测试(Unit Testing in Xcode 7 with Swift)
 * Bond指南：Swift数据绑定(Bond Tutorial: Bindings in Swift)
+* Swift 3中的新特性(What’s New in Swift 3)
