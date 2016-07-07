@@ -1,8 +1,11 @@
 {
   "plugins": [
-      "disqus"
+      "disqus",
+      "splitter"
   ],
   "pluginsConfig": {
-      "shortName":"someiostutorialswithswift"
+      "disqus": {
+        "shortName": "gitbookuse"
+    }
   }   
 }
