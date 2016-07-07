@@ -10,3 +10,4 @@
 * [7.Bond Tutorial: Bindings in Swift](Bond Tutorial: Bindings in Swift.md)
 * [8.What’s New in Swift 3](What’s New in Swift 3.md)
 * [9.Building a Chat App in Swift Using Multipeer Connectivity Framework](Building a Chat App in Swift Using Multipeer Connectivity Framework.md) (work in progress)
+* [10.Using Sleep Analysis in HealthKit with Swift](Using Sleep Analysis in HealthKit with Swift.md)(work in progress)
