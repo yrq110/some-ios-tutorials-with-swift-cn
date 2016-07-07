@@ -11,3 +11,5 @@
 * 使用Swift在Xcode7中的单元测试(Unit Testing in Xcode 7 with Swift)
 * Bond指南：Swift数据绑定(Bond Tutorial: Bindings in Swift)
 * Swift 3中的新特性(What’s New in Swift 3)
+* 使用Multipeer Connectivity框架构建一个聊天app(Building a Chat App in Swift Using Multipeer Connectivity Framework)
+* 使用Swift与HealthKit的睡眠分析(Using Sleep Analysis in HealthKit with Swift)
