@@ -1,6 +1,7 @@
 #Building a Chat App in Swift Using Multipeer Connectivity Framework
 ##使用Multipeer Connectivity框架构建一个聊天app
 
+[原文地址](http://www.appcoda.com/chat-app-swift-tutorial/)
 Multipeer Connectivity-多点连接
 
 在iOS编程中，总有一些SDK相比其它而言更有意思更吸引开发者的注意，Multipeer Connectivity就是其中一个。如你所知，MPC框架并不是iOS8中的新东西，
@@ -58,3 +59,26 @@ MPC的逻辑是很简单的:  一台设备(一个节点)使用它的搜索器，
 第二步中，使新的类继承自NSObject类，命名为MPCManager
 
 ![](http://www.appcoda.com/wp-content/uploads/2015/01/t27_5_class_template_2.png)
+
+Proceed to get finished with the guide, and then make sure that you are working on the MPCManager.swift file.
+
+在代码的第一行，需要导入multipeer connectivity框架，因此在文件头部添加如下代码:
+````swift
+import MultipeerConnectivity
+````
+接着来声明需要用到的MPC框架中的类的对象，在类中的顶部添加如下行:
+````swift
+var session: MCSession!
+ 
+var peer: MCPeerID!
+ 
+var browser: MCNearbyServiceBrowser!
+ 
+var advertiser: MCNearbyServiceAdvertiser!
+````
+除了上面那些，还需要声明两个以后要用到的变量:
+````swift
+var foundPeers = [MCPeerID]()
+ 
+var invitationHandler: ((Bool, MCSession!)->Void)!
+````
