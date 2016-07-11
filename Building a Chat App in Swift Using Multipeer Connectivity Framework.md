@@ -2,6 +2,7 @@
 ##使用Multipeer Connectivity框架构建一个聊天app
 
 [原文地址](http://www.appcoda.com/chat-app-swift-tutorial/)
+
 Multipeer Connectivity-多点连接
 
 在iOS编程中，总有一些SDK相比其它而言更有意思更吸引开发者的注意，Multipeer Connectivity就是其中一个。如你所知，MPC框架并不是iOS8中的新东西，
@@ -60,7 +61,7 @@ MPC的逻辑是很简单的:  一台设备(一个节点)使用它的搜索器，
 
 ![](http://www.appcoda.com/wp-content/uploads/2015/01/t27_5_class_template_2.png)
 
-Proceed to get finished with the guide, and then make sure that you are working on the MPCManager.swift file.
+跟着向导走，确保你正在操作的是MPCManager.swift文件。
 
 在代码的第一行，需要导入multipeer connectivity框架，因此在文件头部添加如下代码:
 ````swift
@@ -82,3 +83,97 @@ var foundPeers = [MCPeerID]()
  
 var invitationHandler: ((Bool, MCSession!)->Void)!
 ````
+在foundPeers数组中会存放所有发现的节点。注意此时与这些节点间不会构建任何连接，只需要知道周围有这些节点。这个数组在声明的同时进行了初始化，因此不需要额外设置为nil，期望数组在发现新对象时已经准备就绪。
+
+invitationHandler是一个完整声明的处理程序，不过现在不会管它，等用的时候再说。
+
+接下来需要使自定义类满足特定的MPC协议。这些协议的委托方法使我们可以去处理multipeer connectivity的相关操作，比如搜索、广播、会话等。如下修改类的第一行，添加协议:
+````swift
+class MPCManager: NSObject, MCSessionDelegate, MCNearbyServiceBrowserDelegate, MCNearbyServiceAdvertiserDelegate
+````
+我觉得没必要解释每个协议的用途了。
+
+现在来创建一个初始化器来初始化所有的MPC对象。一个一个来，从peer对象开始，它代表了，在初始化时需要提供一个显示的名称(display name)，这个显示名称将会对其他节点可见，并且可以设置为任意字符串。为了使事情简单点，我直接将设备名称作为显示名称，不过我不建议在一个实际的app中这样做，也许你应该让用户自己来输入想要的名字，或者使用其他方法来生成唯一的节点名称。在代码中，如下进行初始化:
+````swift
+override init() {
+    super.init()
+ 
+    peer = MCPeerID(displayName: UIDevice.currentDevice().name)
+}
+````
+通过UIDevice类获得设备名称。
+
+在peer对象成功初始化后，接着进行其他对象的操作。注意peer必须最先被初始化，因为之后的对象都需要使用它。session对象:
+````swift
+override init() {
+    ...
+ 
+    session = MCSession(peer: peer)
+    session.delegate = self
+}
+````
+如你所见，一个session的初始化只需要一个参数，就是之前的peer。并且在初始化过程中将session对象委托给了当前类。
+
+接着是搜索器对象:
+````swift
+override init() {
+    ...
+ 
+    browser = MCNearbyServiceBrowser(peer: peer, serviceType: "appcoda-mpc")
+    browser.delegate = self
+}
+````
+这个对象的初始化接受两个参数：第一个是peer. 第二个是一个在初始化后无法改变的值，指明了搜索器能搜索到的服务类型(service type)。简单地讲，它用于在大量节点中的准确识别，这样MPC就知道需要搜索什么了，而广播器也必须设置成相同的服务类型(一会儿你会见到)。在设置这个值时需要遵守两条规则：(a)不能超过15个字符(b)只能包含小写的ASCII字符、数字与连字符。如果你不符合这个规则会跳出一个runtime的异常并且app将会崩溃。
+
+对于广播器:
+````swift
+override init() {
+    ...
+ 
+    advertiser = MCNearbyServiceAdvertiser(peer: peer, discoveryInfo: nil, serviceType: "appcoda-mpc")
+    advertiser.delegate = self
+}
+````
+注意，在这里设置与之前相同的服务类型，还有一个叫discoveryInfo的参数，这个参数是一个字典，当你想给发现的其他节点发送额外信息时所需要设置的，注意，这个字典的键值都必须是字符串类型。方便起见，将这个参数设为nil。
+
+初始化方法准备好了，这里是完整的代码:
+````swift
+override init() {
+    super.init()
+ 
+    peer = MCPeerID(displayName: UIDevice.currentDevice().name)
+ 
+    session = MCSession(peer: peer)
+    session.delegate = self
+ 
+    browser = MCNearbyServiceBrowser(peer: peer, serviceType: "appcoda-mpc")
+    browser.delegate = self
+ 
+    advertiser = MCNearbyServiceAdvertiser(peer: peer, discoveryInfo: nil, serviceType: "appcoda-mpc")
+    advertiser.delegate = self
+}
+````
+在结束这部分之前，来创建一个实现委托模式的协议。注意我们会声明当前在app的开发过程中所需要的所有委托方法，之后将不会再处理这个协议，直到需要它们的时候。
+
+在自定义类的上方添加如下代码段:
+````swift
+protocol MPCManagerDelegate {
+    func foundPeer()
+ 
+    func lostPeer()
+ 
+    func invitationWasReceived(fromPeer: String)
+ 
+    func connectedWithPeer(peerID: MCPeerID)
+}
+````
+接着会讨论上面每一个函数的作用，在下一个部分中会详细介绍。
+
+最后，在MPCManager类中声明一个delegate对象:
+````swift
+var delegate: MPCManagerDelegate?
+````
+目前为止成功完成了项目的第一个重要部分，可以歇歇脚了。我想说下，现在在Xcode中提示的错误是正常情况，在实现MPC的委托方法后就会消失了。
+
+##搜索节点
+
