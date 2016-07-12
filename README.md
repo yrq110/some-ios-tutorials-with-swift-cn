@@ -12,4 +12,5 @@
 * Bond指南：Swift数据绑定(Bond Tutorial: Bindings in Swift)
 * Swift 3中的新特性(What’s New in Swift 3)
 * (未完)使用Multipeer Connectivity框架构建一个聊天app(Building a Chat App in Swift Using Multipeer Connectivity Framework)
-* (未完)使用Swift与HealthKit的睡眠分析(Using Sleep Analysis in HealthKit with Swift)
+* 使用Swift与HealthKit的睡眠分析(Using Sleep Analysis in HealthKit with Swift)
+* (未完)使用Markdown文档化Xcode中的Swift代码(Documenting Your Swift Code in Xcode Using Markdown)
