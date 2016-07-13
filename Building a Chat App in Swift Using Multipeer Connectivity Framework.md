@@ -177,3 +177,125 @@ var delegate: MPCManagerDelegate?
 
 ##搜索节点
 
+MCNearbyServiceBrowserDelegate协议中有三个方法允许我们处理发现与丢失的节点，还有在搜索过程中可能发生的错误。下面要实现这些方法来继续开发这个demo app，不过这太简单了以至于不用花多少工夫。
+
+来从第一个方法开始吧，当发现附近的节点时(换句话说，当发现其他设备时)由MPC调用。先看看实现的代码:
+````swift
+func browser(browser: MCNearbyServiceBrowser!, foundPeer peerID: MCPeerID!, withDiscoveryInfo info: [NSObject : AnyObject]!) {
+    foundPeers.append(peerID)
+ 
+    delegate?.foundPeer()
+}
+````
+
+首先需要着手的一个重要的行为就是在foundPeers数组中添加找到的节点(在之前已经声明了，记得吗?)，之后将这个数组作为ViewController类中列表视图的数据源，列出所有找到的节点。要这么做的话需要调用MPCManagerDelegate协议中的foundPeer委托方法，这个方法需要在ViewController类中实现(下一节中)，在那儿会重载列表数据，给用户显示最新发现的节点。
+
+目前处理了发现一个节点时的情况，同样也需要考虑到相反的情况，需要关注若节点不再可用(可发现)时的状况。因此，来实现下一个代理方法:
+````swift
+func browser(browser: MCNearbyServiceBrowser!, lostPeer peerID: MCPeerID!) {
+    for (index, aPeer) in enumerate(foundPeers){
+        if aPeer == peerID {
+            foundPeers.removeAtIndex(index)
+            break
+        }
+    }
+ 
+    delegate?.lostPeer()
+}
+````
+没什么可说的，代码已经表达地很清楚了。首先找到了节点在foundPeers数组中的位置，然后移除它，这样在我们的列表里就不存在这个节点了，因此需要提醒ViewController刷新列表所显示的节点。因此需要调用lostPeer代理方法，在它的实现过程中会重载列表的数据。
+
+最后，还有一个代理方法需要实现，这个是用来管理可能发生的错误信息，搜索不可用的情况。显然，不会在这里处理严重的错误，只是显示错误的信息，像如下代码所示来实现它:
+````swift
+func browser(browser: MCNearbyServiceBrowser!, didNotStartBrowsingForPeers error: NSError!) {
+    println(error.localizedDescription)
+}
+````
+在这一节结束前，来注意一下：使用上面的委托方法来提示ViewController类对节点变化的响应，应使用键值编码与观察者机制来追踪foundPeers数组的变化。不过由于有MPCManagerDelegate协议，就不需要去写额外的代码了。如果不需要这个协议中的其他方法，使用KVC与KVO好一些而不是委托模式。在这里的情况，我们坚持实现有着更快速并简洁的执行过程的委托方法的做法(PS:我承认这里有问题(´･ω･｀))。
+
+做完上面的工作后，app就能够搜索节点了。 现在，来添加一些必要的代码，显示出找到的节点吧。
+
+##显示搜索到的节点
+至此这个demo应用可以发现周围的节点，并且添加(或移除)进foundPeers数组，接下来让我们在ViewController中的列表中显示它们吧。在此之前需要关注一下AppDelegate类，在那里声明MPCManager对象，这样在其他类中就可以通过app中的delegate实例来访问它了。
+
+在工程导航栏中点击AppDelegate.swift文件打开它。在类的顶部添加如下代码:
+````swift
+var mpcManager: MPCManager!
+````
+进入application(application:didFinishLaunchingWithOptions:)方法，进行MPCManager的初始化:
+````swift
+func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    // Override point for customization after application launch.
+ 
+    mpcManager = MPCManager()
+ 
+    return true
+}
+````
+现在，打开ViewController.swift文件，里面已经有了一个最小实现。显然还不够，需要添加更多代码，来填充与列表有关的方法，这样一切就能正常工作了。在类的顶部，从同时声明与初始化应用的delegate对象开始:
+````swift
+let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+````
+在声明的同时实例化或初始化一个对象时Swift的一个特点，因为这样会使代码变得很简洁，提高开发效率。下一步就是MPCManager类的delegate设置成ViewController，在ViewDidLoad方法中添加如下行:
+````swift
+override func viewDidLoad() {
+    ...
+ 
+    appDelegate.mpcManager.delegate = self
+ 
+}
+````
+在这行Xcode会显示一条错误，原因很简单:还没引入MPCManagerDelegate协议，在类的第一行如下添加一下即可:
+````swift
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, MPCManagerDelegate
+````
+接着来实现之前章节中使用过的两个委托方法，foundPeer和lostPeer。不管哪种情况下都需要要刷新列表即可，因此它们的实现代码很简单:
+````swift
+func foundPeer() {
+    tblPeers.reloadData()
+}
+ 
+ 
+func lostPeer() {
+    tblPeers.reloadData()
+}
+````
+上面这部分是关键的一步，不过如果我们不“告诉”列表数据源是什么的话依旧是空白的，不做适当的修改会直接显示周围节点的名字。因此，需要从修改列表的行数与区数开始。显然，行数就是所找到的所有节点数:
+````swift
+func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return appDelegate.mpcManager.foundPeers.count
+}
+````
+是时候显示每个节点的名字了:
+````swift
+func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    var cell = tableView.dequeueReusableCellWithIdentifier("idCellPeer") as UITableViewCell
+ 
+    cell.textLabel?.text = appDelegate.mpcManager.foundPeers[indexPath.row].displayName
+ 
+    return cell
+}
+````
+注意在上面的代码中访问了每个节点在foundPeers数组中的displayName属性。
+
+最后来设置每个行的高度:
+````swift
+func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    return 60.0
+}
+````
+上面的都搞定后，列表就能正常工作了。
+
+虽然在这里已经搞定了一项重要的工作了，不过还没有考虑另一个重要的细节: 搜索功能默认是关闭的，如果不进行指示，设备是不会去搜索的。可以随时启动搜索，取决于由你的应用需求。这里，我们在app启动后立刻开启，进入viewDidLoad方法添加如下行:
+````swift
+override func viewDidLoad() {
+    ...
+ 
+    appDelegate.mpcManager.browser.startBrowsingForPeers()
+}
+````
+要执行停止搜索的话，需要调用搜索器的stopBrowsingForPeers()方法。
+
+有关搜索器的都搞定了, 接下来进行设备的广播功能开发。
+
+##处理广播
