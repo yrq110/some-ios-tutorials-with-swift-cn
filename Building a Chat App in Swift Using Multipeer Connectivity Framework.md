@@ -366,3 +366,53 @@ override func viewDidLoad() {
 在之后的app测试中会看到上面的action方法时如何工作的。做完上面的工作后，就可以改变设备的可被发现状态了。
 
 ##邀请节点
+
+multipeer connectivity的目的就是使两个设备间建立连接然后交换数据，我们现在只做了一半工作，仅实现了节点的发现与广播功能。下一步就是邀请节点加入到会话中，这样，两个设备间就可以进行通信了。
+
+这里最重要的是手动来实现MPC，理解这个过程。何时来邀请找到的节点，并连接到会话中，都是由你决定的。并没有一个规定的、默认的时间，需要根据app的运行环境来选取合适的时机。比如说，当我们点击ViewController中的列表项时就会邀请对应的附近节点，也有其他情况，可能需要在搜索器发现节点后就发送邀请。何时来邀请取决于app中的实际需求。另外，还有一件同等重要的事你需要知道，发送邀请与监理连接可以在不请求用户许可的情况下进行，可以在后台执行，不过我建议你在连接其他设备或收发数据等情况时要提醒一下用户。
+
+回到demo中，下面是这一节的目标:
+
+1. 点击列表项时向对应名字的节点发送一个邀请。
+2. 接受邀请。
+3. 询问用户是否接受聊天邀请。
+4. 接受或拒绝邀请
+
+依旧在ViewController.swift文件中，来让列表来对点击事件产生响应。接着实现列表的委托方法(tableView:didSelectRowAtIndexPath:)，在这里需要执行一项重要的任务：给选择的节点发送邀请。如你所见，仅仅需要一行代码。来看看实现方法，后面会讨论它:
+````swift
+func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    let selectedPeer = appDelegate.mpcManager.foundPeers[indexPath.row] as MCPeerID
+ 
+    appDelegate.mpcManager.browser.invitePeer(selectedPeer, toSession: appDelegate.mpcManager.session, withContext: nil, timeout: 20)
+}
+````
+讲真，如果我们将选择的节点分配给一个本地变量的话就可以省去第一行代码。不管如何，第一行代码表达的更清楚，留着它吧。
+
+使用搜索器对象的invitePeer(peerID:toSession:withContext:timeout:)方法，使用multipeer connectivity框架给选择的节点发送一个邀请。接收如下参数:
+
+1. peerID: 想要发送邀请的节点。
+2. toSession: 在MPCManager类中初始化的session对象。
+3. withContext: 若要给邀请的节点发送额外数据时可以用这个参数，需要一个NSData对象。
+4. timeout: 这里设置邀请者等待节点答复的最长时间。默认是30秒，这里设置为20。在一个真正的app中需要“告诉”你具体的等待时间。
+
+现在跳转到类的顶部，导入MPC框架:
+````swift
+import MultipeerConnectivity
+````
+上述是第一步，接着必须实现MCNearbyServiceAdvertiserDelegate协议中的一对delegate方法，这样app就能处理一个接收到的邀请了。打开 MPCManager.swift文件。
+
+接下来看到的方法包含一个邀请处理者(invitation handler)，用来回复发送邀请的节点。这个处理者接受两个参数，第一个是指示邀请是否被接受的bool值，第二个是session对象，对应接受邀请的情况。在demo中不会立即给邀请者一个答复，需要先询问用户是否想要接受邀请。因此必须先将邀请处理暂时储存到一个属性中，在用户响应后再回复这个邀请。之前声明过如下的方法:
+````swift
+var invitationHandler: ((Bool, MCSession!)->Void)!
+````
+需要储存邀请处理者，像之前说的那样，第一个delegate方法实现如下代码所示:
+````swift
+func advertiser(advertiser: MCNearbyServiceAdvertiser!, didReceiveInvitationFromPeer peerID: MCPeerID!, withContext context: NSData!, invitationHandler: ((Bool, MCSession!) -> Void)!) {
+    self.invitationHandler = invitationHandler
+ 
+    delegate?.invitationWasReceived(peerID.displayName)
+}
+````
+使invitation handler与invitationHandler属性保持相同。注意这两个处理者名字相同，因此self的使用时必须的。
+
+此外，调用了MPCManagerDelegate协议中的另一个方法。 提醒ViewController类已经接收到了一个邀请，给用户显示出一个alert控制器来询问是否聊天。之后就会看到它的实现，现在只需要关注显示节点名称就行了。
