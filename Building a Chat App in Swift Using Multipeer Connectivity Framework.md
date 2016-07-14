@@ -296,6 +296,73 @@ override func viewDidLoad() {
 ````
 要执行停止搜索的话，需要调用搜索器的stopBrowsingForPeers()方法。
 
-有关搜索器的都搞定了, 接下来进行设备的广播功能开发。
+有关搜索器的都搞定了, 接下来实现设备的广播功能。
 
 ##处理广播
+
+除了搜索，multipeer connectivity框架还允许设备对附近的节点广播自身，没有广播的话搜索就没有意义。实际上，它们是相辅相成，同等重要的。广播，意味着一个设备是否对其他设备可见。如果app中启用广播功能，则该设备就对附近的其他节点可见，不启用的话其他节点就不会发现。在这一节中来看看其中的细节，启动与禁用demo app的广播功能。
+
+若你已经熟悉过开始工程了的话，肯定会记得在ViewController场景中有个包含一个按钮的工具栏。接着将使用这个按钮，通过实现startStopAdvertising(sender:)方法来进行开关广播功能的操作。点击按钮时会显示一个action表单，在这个action表单中有两个按钮：一个进行两种广播状态的切换，另一个控制是否打开action表单对话框。为了更有趣，使第一个按钮上的文字随着当前状态变化。
+
+在用代码实现上述之前，先声明一个新的Bool属性，用它来判断设备是否在广播状态。确保你是在操作ViewController.swift文件，在类的顶部添加如下行:
+
+````swift
+var isAdvertising: Bool!
+````
+在viewDidLoad中会给这个变量赋值，设为true，意味着设备当前在广播自己，不过同时也需要打开这个功能，因此在viewDidLoad方法需要同时实现:
+````swift
+override func viewDidLoad() {
+    ...
+ 
+    appDelegate.mpcManager.advertiser.startAdvertisingPeer()
+ 
+    isAdvertising = true    
+}
+````
+现在可以到action方法中实现它了。先亮出代码，之后再讲解:
+````swift
+@IBAction func startStopAdvertising(sender: AnyObject) {
+        let actionSheet = UIAlertController(title: "", message: "Change Visibility", preferredStyle: UIAlertControllerStyle.ActionSheet)
+ 
+        var actionTitle: String
+        if isAdvertising == true {
+            actionTitle = "Make me invisible to others"
+        }
+        else{
+            actionTitle = "Make me visible to others"
+        }
+ 
+        let visibilityAction: UIAlertAction = UIAlertAction(title: actionTitle, style: UIAlertActionStyle.Default) { (alertAction) -> Void in
+            if self.isAdvertising == true {
+                self.appDelegate.mpcManager.advertiser.stopAdvertisingPeer()
+            }
+            else{
+                self.appDelegate.mpcManager.advertiser.startAdvertisingPeer()
+            }
+ 
+            self.isAdvertising = !self.isAdvertising
+        }
+ 
+        let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) { (alertAction) -> Void in
+ 
+        }
+ 
+        actionSheet.addAction(visibilityAction)
+        actionSheet.addAction(cancelAction)
+ 
+        self.presentViewController(actionSheet, animated: true, completion: nil)
+    }
+````
+简要说下上面的实现代码都做了啥:
+
+* 首先，使用一条信息与合适的风格来初始化了一个action表单控制器。
+* 接着，根据isAdvertising的当前值，通过分配对应的值到actionTitle这个本地变量中来设置action表单中第一个按钮的标题。
+* 有了正确的标题后，创建一个新的提醒行为，当用户点击第一个按钮时触发。
+* 最重要的部分: 根据isAdvertising的值，停止或开始设备的广播。当然不要忘了将isAdvertising值设为相反的值。
+* 为cancel按钮创建一个(空的)action。
+* 两个action都添加倒了action表单控制器中。
+* 最后，开启显示动画设置跳转视图。
+
+在之后的app测试中会看到上面的action方法时如何工作的。做完上面的工作后，就可以改变设备的可被发现状态了。
+
+##邀请节点
