@@ -416,3 +416,34 @@ func advertiser(advertiser: MCNearbyServiceAdvertiser!, didReceiveInvitationFrom
 使invitation handler与invitationHandler属性保持相同。注意这两个处理者名字相同，因此self的使用时必须的。
 
 此外，调用了MPCManagerDelegate协议中的另一个方法。 提醒ViewController类已经接收到了一个邀请，给用户显示出一个alert控制器来询问是否聊天。之后就会看到它的实现，现在只需要关注显示节点名称就行了。
+
+MCNearbyServiceAdvertiserDelegate协议中的第二个委托方法被用来处理无法打开广播器的情况，在控制台打印出错误信息:
+````swift
+func advertiser(advertiser: MCNearbyServiceAdvertiser!, didNotStartAdvertisingPeer error: NSError!) {
+    println(error.localizedDescription)
+}
+````
+现在回到ViewController.swift文件，来实现invitationWasReceived(fromPeer:)委托方法。它会显示一条信息，提醒用户聊天的对象是什么(显示节点名称)，并且提供2种选择：接受与拒绝。不论用户选择的是什么，都要使用MPCManager类的invitationHandler属性来回复邀请者。来看看如何实现的:
+````swift
+func invitationWasReceived(fromPeer: String) {
+    let alert = UIAlertController(title: "", message: "\(fromPeer) wants to chat with you.", preferredStyle: UIAlertControllerStyle.Alert)
+ 
+    let acceptAction: UIAlertAction = UIAlertAction(title: "Accept", style: UIAlertActionStyle.Default) { (alertAction) -> Void in
+        self.appDelegate.mpcManager.invitationHandler(true, self.appDelegate.mpcManager.session)
+    }
+ 
+    let declineAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) { (alertAction) -> Void in
+        self.appDelegate.mpcManager.invitationHandler(false, nil)
+    }
+ 
+    alert.addAction(acceptAction)
+    alert.addAction(declineAction)
+ 
+    NSOperationQueue.mainQueue().addOperationWithBlock { () -> Void in
+        self.presentViewController(alert, animated: true, completion: nil)
+    }
+}
+````
+上面是一个典型的alert控制器的实现，没什么难的地方。接受邀请时，调用mpcManager对象的invitationHandler属性，将邀请的回复设为true，并提供session对象。如果用户不想聊天，则将邀请处理者的第一个参数设为false，第二个参数为空，这种情况下不需要发送session。
+
+又完成了一个关键步骤，接着来看看一个session的状态与当连接建立时会发生什么。
