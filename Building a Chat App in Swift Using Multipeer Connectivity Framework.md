@@ -447,3 +447,69 @@ func invitationWasReceived(fromPeer: String) {
 上面是一个典型的alert控制器的实现，没什么难的地方。接受邀请时，调用mpcManager对象的invitationHandler属性，将邀请的回复设为true，并提供session对象。如果用户不想聊天，则将邀请处理者的第一个参数设为false，第二个参数为空，这种情况下不需要发送session。
 
 又完成了一个关键步骤，接着来看看一个session的状态与当连接建立时会发生什么。
+
+##连接到会话
+
+会话使用MPCManager类中的session对象表示，是在用multipeer connectivity时的最终目标。2个节点都连接到一个会话中时，它们就可以互相交换数据与资源、执行流传输了。一个会话有三种状态：；已连接(Connecting)、正在连接(Connecting)与断开(Not Connected)。
+
+multipeer connectivity框架使我们对每一个状态都有控制权，通过MCSessionDelegate协议的委托方法来实现。通常这个方法的实现并不难，只需要对应每一种状态设置其相应的行为即可。在下面的代码段中，对于已连接状态，调用了一个其他的MPCManagerDelegate协议委托方法，而对于其他两种状态，仅仅在控制台显示了一条信息，这样就可以在测试过程中准确的得知当前会话的状态。粘贴下面代码的时候注意当前操作的文件是否是MPCManager.swift。
+````swift
+func session(session: MCSession!, peer peerID: MCPeerID!, didChangeState state: MCSessionState) {
+    switch state{
+    case MCSessionState.Connected:
+        println("Connected to session: \(session)")        
+        delegate?.connectedWithPeer(peerID)
+ 
+    case MCSessionState.Connecting:
+        println("Connecting to session: \(session)")        
+ 
+    default:
+        println("Did not connect to session: \(session)")
+    }
+}
+````
+使用connectedWithPeer(peerID:)委托方法通知ViewController类：设备已经与附近的一个节点(由上述的peerID参数决定)连接到了一个会话中了。
+
+再次回到ViewController.swift文件, 来实现connectedWithPeer(peerID:)方法。在这个demo中想要在节点连接到会话时就开始聊天，因此仅需要跳转到ChatViewController场景即可。很简单:
+````swift
+func connectedWithPeer(peerID: MCPeerID) {
+    NSOperationQueue.mainQueue().addOperationWithBlock { () -> Void in
+        self.performSegueWithIdentifier("idSegueChat", sender: self)
+    }
+}
+````
+注意这会使两个设备(邀请者与被邀者)都执行segue，两者的会话状态都会变为已连接。
+
+之后会去操作ChatViewController类，在操作前让我来强调一件事：我们不会去处理用户终止聊天邀请的情况，我觉得这不是很重要，交给你自己来实现吧。
+
+##一个发送数据的简便方法
+
+在这一节我们会创建MPCManager类的一个自定义方法，用来将数据发送给其他节点。实际上是调用MCSession类中一个负责发送数据的特殊方法，不过首先需要准备并配置好这个方法所需要的所有参数。创建这个自定义方法的原因是因为避免在多个地方进行配置，一次搞定。
+
+先给你实现的方法 (确保打开了MPCManager.swift文件):
+````swift
+func sendData(dictionaryWithData dictionary: Dictionary<String, String>, toPeer targetPeer: MCPeerID) -> Bool {
+    let dataToSend = NSKeyedArchiver.archivedDataWithRootObject(dictionary)
+    let peersArray = NSArray(object: targetPeer)
+    var error: NSError?
+ 
+    if !session.sendData(dataToSend, toPeers: peersArray, withMode: MCSessionSendDataMode.Reliable, error: &error) {
+        println(error?.localizedDescription)
+        return false
+    }
+ 
+    return true
+}
+````
+上面的sendData(data:toPeers:withMode:error:)就是所调用的MPCSession方法，它接受如下参数:
+
+* data: 一个NSData对象，实际发送的数据。
+* toPeers: 一个接收数据的节点数组 (NSArray)。
+* withMode: 数据发送模式，有两种模式: 可靠与不可靠。如果没收到的数据不会引起任何问题，这种数据不重要的情况下可以使用第二种模式。
+* error: 包含可能发生error的一个NSError对象。
+
+现在来看看上面的实现代码发生了什么，如你所见，这个方法有两个参数：(a)一个字典对象 (b)目标节点。首先，使用NSKeyedArchiver类对字典进行归档，将其转化成一个NSData对象，然后定义一个仅包含目标节点的单元素peersArray数组。声明error变量后，将上面提供的变量作为输入参数，调用session对象的数据发送方法。
+
+若在发送数据时有错误，会将其显示出来然后返回false，否则返回true，意味着一切正常。
+
+上面这个方法会在下一节用到。
