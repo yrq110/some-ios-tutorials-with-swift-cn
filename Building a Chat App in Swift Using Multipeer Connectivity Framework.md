@@ -513,3 +513,127 @@ func sendData(dictionaryWithData dictionary: Dictionary<String, String>, toPeer 
 若在发送数据时有错误，会将其显示出来然后返回false，否则返回true，意味着一切正常。
 
 上面这个方法会在下一节用到。
+
+##在节点间发送数据
+
+在聊天会话的过程中节点发送与接收的所有消息，都会显示在ChatViewController的列表中。最靠后显示的消息总是时刻最近的那条，每当一条消息被发送与接收时都会使列表重载。
+
+你可能猜到了，会使用一个数组来储存所有消息，显然这个数组会被作为列表的数据源。重要的是，这个数组中的每一个对象都是一个包含字符串类型键值的字典。为何是字典?因为需要为每个发送或接收的消息分配一对数据：消息的发送方与消息本身。当我们的设备是消息发送方时，设备中的消息发送方就会被设为"self"，我们的节点名就会发送给其他设备。
+
+回到编码的工作中，现在有一些事情要做了。第一步就是要声明并初始化消息数组(列表的数据源), 之后会声明并初始化一个应用的delegate对象，因此会访问APPDelegate类的mpcManager属性。打开ChatViewController.swift文件，在类顶部添加如下两行:
+````swift
+var messagesArray: [Dictionary<String, String>] = []
+ 
+let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+````
+messagesArray初始化为一个空数组，我们不打算将ChatViewController设为mpcManager的委托对象，将使用另一种途径来从MPCManager类中获取消息。
+
+在聊天时，每当一个新消息完成编辑并且发送按钮被按下时会触发一些行为，下面这些是我们需要做的:
+1. 隐藏键盘。
+2. 根据消息创建一个字典，调用上一节的自定义方法将消息发送给其他节点。
+3. 创建另一个字典，将发送方与消息作为其内容，然后储存进messagesArray数组中。
+4. 刷新列表。
+5. 消息发送后清空输入栏。
+
+上述这些发生在UITextFieldDelegate协议中的委托方法textFieldShouldReturn(textField:)中。如果看看viewDidLoad方法，会发现ChatViewController类已经被设为了textfield的委托对象。
+
+代码实现如下:
+````swift
+func textFieldShouldReturn(textField: UITextField) -> Bool {
+    textField.resignFirstResponder()
+ 
+    let messageDictionary: [String: String] = ["message": textField.text]
+ 
+    if appDelegate.mpcManager.sendData(dictionaryWithData: messageDictionary, toPeer: appDelegate.mpcManager.session.connectedPeers[0] as MCPeerID){
+ 
+        var dictionary: [String: String] = ["sender": "self", "message": textField.text]
+        messagesArray.append(dictionary)
+ 
+        self.updateTableview()
+    }
+    else{
+        println("Could not send data")
+    }
+ 
+    textField.text = ""
+ 
+    return true
+}
+````
+A couple of notes now: You see that we call the sendData(dictionaryWithData:toPeer:) custom method by providing it with the messageDictionary we created right above of it. Also, it’s interesting how we specify the target peer using the appDelegate.mpcManager.session.connectedPeers[0] object. To make this a bit more clear, it’s necessary to say that the MCSession class contains an array property named connectedPeers, to which all the peers connected to our device are added. In our implementation, we know that only one peer will be connected to the session, so it’s safe to access it directly using in the first index of that array.
+
+If the data is successfully sent, then we prepare a new dictionary with the sender and the message. As this is our message, the “self” value is set as the sender. Then, using the append method of the messagesArray we add the dictionary to the array. Lastly, we call the updateTableview method to update the tableview. It’s a custom one, and we’ll implement it right next.
+
+If any error occurs, then we just display a message to the console. No matter what will happen, at the end of the above method we clear the textfield.
+
+The updateTableview method that we are about to write has double purpose: Firstly, to reload the tableview data, so any new message to be displayed there. Secondly, to automatically scroll to the end of the tableview, so the most recent message to be always visible. Here it is:
+````swift
+func updateTableview(){
+    self.tblChat.reloadData()
+ 
+    if self.tblChat.contentSize.height > self.tblChat.frame.size.height {
+        tblChat.scrollToRowAtIndexPath(NSIndexPath(forRow: messagesArray.count - 1, inSection: 0), atScrollPosition: UITableViewScrollPosition.Bottom, animated: true)
+    }
+}
+````
+If the height of the tableview’s content size becomes greater than the height of the tableview’s frame, then we must scroll. We do so by using the method you see above.
+
+Now, at the top of the class import the multipeer connectivity framework to fix the error issued by Xcode in the textFieldShouldReturn(textField:) method:
+````swift
+import MultipeerConnectivity
+````
+There’s one final job we must do before we end this part. We must fix the tableview-related methods. First of all, the number of the rows must match to the total objects existing in the messagesArray array:
+````swift
+func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return messagesArray.count
+}
+````
+In the tableView(tableView:cellForRowAtIndexPath:) method, we are going to check which the sender of the message is. If the sender’s value is the “self” value, then we’ll set the purple color to the subtitle label and we’ll display the message “I said:”. In the opposite case, we’ll specify the orange color and we’ll display the message “X said:”, where X is the display name of the other peer. Here it is:
+````swift
+func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    var cell = tableView.dequeueReusableCellWithIdentifier("idCell") as UITableViewCell
+ 
+    let currentMessage = messagesArray[indexPath.row] as Dictionary<String, String>
+ 
+    if let sender = currentMessage["sender"] {
+        var senderLabelText: String
+        var senderColor: UIColor
+ 
+        if sender == "self"{
+            senderLabelText = "I said:"
+            senderColor = UIColor.purpleColor()
+        }
+        else{
+            senderLabelText = sender + " said:"
+            senderColor = UIColor.orangeColor()
+        }
+ 
+        cell.detailTextLabel?.text = senderLabelText
+        cell.detailTextLabel?.textColor = senderColor
+    }
+ 
+    if let message = currentMessage["message"] {
+        cell.textLabel?.text = message
+    }
+ 
+    return cell
+}
+````
+There is nothing difficult at all in the above method, therefore there’s nothing else to discuss about it.
+
+It would be interesting at this point to mention something about the height of the tableview rows. It’s obvious that we can’t tell for sure what the height should be, as the length of the messages will vary, and the height of each row should be dynamically set. For this reason, we use a new feature of iOS 8, named self sizing cells. You can find a great tutorial on this by Simon here. What it gets is simple: We set the number of lines in the cell’s text label to zero, and then in the viewDidLoad method we set the next two properties:
+````swift
+tblChat.estimatedRowHeight = 60.0
+tblChat.rowHeight = UITableViewAutomaticDimension
+````
+iOS will take care of the rest. You can find the above already existing in the viewDidLoad.
+
+With the above said, we can carry on and handle the received data.
+
+##接收数据
+````swift
+````
+
+````swift
+````
+
