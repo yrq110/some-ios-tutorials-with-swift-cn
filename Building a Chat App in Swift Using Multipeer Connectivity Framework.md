@@ -560,13 +560,13 @@ func textFieldShouldReturn(textField: UITextField) -> Bool {
     return true
 }
 ````
-A couple of notes now: You see that we call the sendData(dictionaryWithData:toPeer:) custom method by providing it with the messageDictionary we created right above of it. Also, it’s interesting how we specify the target peer using the appDelegate.mpcManager.session.connectedPeers[0] object. To make this a bit more clear, it’s necessary to say that the MCSession class contains an array property named connectedPeers, to which all the peers connected to our device are added. In our implementation, we know that only one peer will be connected to the session, so it’s safe to access it directly using in the first index of that array.
+需要注意的点: 调用了自定义方法sendData(dictionaryWithData:toPeer:)，输入之前创建的messageDictionary。有趣的是我们使用appDelegate.mpcManager.session.connectedPeers[0]对象来指明目标节点，需要说明的是MCSession类包含一个叫connectedPeers的数组属性，每个连接到我们设备的节点都会被记录下来。在我们的代码中，由于已经知道只有1个节点会加入到会话中， 因此直接访问数组的第一个元素即可。
 
-If the data is successfully sent, then we prepare a new dictionary with the sender and the message. As this is our message, the “self” value is set as the sender. Then, using the append method of the messagesArray we add the dictionary to the array. Lastly, we call the updateTableview method to update the tableview. It’s a custom one, and we’ll implement it right next.
+如果数据被成功发送了，则为发送方与消息准备一个新的字典。如果是我们的消息，则sender被设为“self”，接着使用messagesArray的append方法将字典添加到数组中。最后调用updateTableview方法刷新列表，这是个自定义方法，一会儿会实现它。
 
-If any error occurs, then we just display a message to the console. No matter what will happen, at the end of the above method we clear the textfield.
+如果有错误发生，会在控制台显示一条信息。不管发生什么，在上述方法的最后都会清空输入栏。
 
-The updateTableview method that we are about to write has double purpose: Firstly, to reload the tableview data, so any new message to be displayed there. Secondly, to automatically scroll to the end of the tableview, so the most recent message to be always visible. Here it is:
+要编写的updateTableview方法有两个目的:首先是刷新列表，显示新的消息。其次，自动滚动到列表底部，这样最新的消息就能时刻显示了 。代码如下:
 ````swift
 func updateTableview(){
     self.tblChat.reloadData()
@@ -576,19 +576,19 @@ func updateTableview(){
     }
 }
 ````
-If the height of the tableview’s content size becomes greater than the height of the tableview’s frame, then we must scroll. We do so by using the method you see above.
+当列表的content size大于列表的框体高度时，则必须要滚动，使用上面的方法实现。
 
-Now, at the top of the class import the multipeer connectivity framework to fix the error issued by Xcode in the textFieldShouldReturn(textField:) method:
+现在，在类的顶部导入multipeer connectivity框架， 修复在textFieldShouldReturn(textField:)中的错误:
 ````swift
 import MultipeerConnectivity
 ````
-There’s one final job we must do before we end this part. We must fix the tableview-related methods. First of all, the number of the rows must match to the total objects existing in the messagesArray array:
+在这一节结束前还需要做一件事，需要完善列表相关的方法。首先需要将messagesArray数组中已存在的元素个数分配给行数:
 ````swift
 func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return messagesArray.count
 }
 ````
-In the tableView(tableView:cellForRowAtIndexPath:) method, we are going to check which the sender of the message is. If the sender’s value is the “self” value, then we’ll set the purple color to the subtitle label and we’ll display the message “I said:”. In the opposite case, we’ll specify the orange color and we’ll display the message “X said:”, where X is the display name of the other peer. Here it is:
+在tableView(tableView:cellForRowAtIndexPath:)方法中需要检查发送方的消息。如果发送方的值是“self”，则将子标签设为紫色，会显示消息的前缀“I said:”。否则设为橘黄色，显示“X said:”，X是其他节点的名称。代码如下:
 ````swift
 func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     var cell = tableView.dequeueReusableCellWithIdentifier("idCell") as UITableViewCell
@@ -616,19 +616,19 @@ func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexP
         cell.textLabel?.text = message
     }
  
-    return cell
+    return cellc
 }
 ````
-There is nothing difficult at all in the above method, therefore there’s nothing else to discuss about it.
+上面的方法中没什么难的地方，因此不讨论它了。
 
-It would be interesting at this point to mention something about the height of the tableview rows. It’s obvious that we can’t tell for sure what the height should be, as the length of the messages will vary, and the height of each row should be dynamically set. For this reason, we use a new feature of iOS 8, named self sizing cells. You can find a great tutorial on this by Simon here. What it gets is simple: We set the number of lines in the cell’s text label to zero, and then in the viewDidLoad method we set the next two properties:
+需要关注一个列表行的高度，很明显我们不能确定高度是多少，因为消息的长度是变化的，每行的高度都需要动态变化。因此使用一个iOS 8的特性，叫做self sizing cells(ps:早知道这个就好了...)，可以看看Simon的这个教程。将列表栏的文本标签的行数设为0，然后在viewDidLoad方法中设置以下两个属性:
 ````swift
 tblChat.estimatedRowHeight = 60.0
 tblChat.rowHeight = UITableViewAutomaticDimension
 ````
-iOS will take care of the rest. You can find the above already existing in the viewDidLoad.
+上述代码在viewDidLoad中已经有了，交给iOS处理吧。
 
-With the above said, we can carry on and handle the received data.
+把上面的搞定后就可以进行接收数据的工作了。
 
 ##接收数据
 ````swift
