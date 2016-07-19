@@ -631,9 +631,85 @@ tblChat.rowHeight = UITableViewAutomaticDimension
 把上面的搞定后就可以进行接收数据的工作了。
 
 ##接收数据
-````swift
-````
+现在app可以发送消息了，现在需要处理接收数据的环节了。接着要操作MPCManager与ChatViewController类。首先，来实现一个MPCSessionDelegate协议中的一个新方法。
 
+打开MPCManager.swift文件，添加如下方法:
 ````swift
+func session(session: MCSession!, didReceiveData data: NSData!, fromPeer peerID: MCPeerID!) {
+    let dictionary: [String: AnyObject] = ["data": data, "fromPeer": peerID]
+    NSNotificationCenter.defaultCenter().postNotificationName("receivedMPCDataNotification", object: dictionary)
+}
 ````
+只包括仅仅两行却至关重要的代码。首先将接收到的数据与发送方节点添加到一个字典中，接着提交一个名为receivedMPCDataNotificaton的通知(NSNotification)，在ChatViewController中监听这个通知，作出适当的处理，在列表中显示发送方的名称与消息。在上一节中我说过不要将ChatViewController设为MPCManager的委托对象，会通过另一种途径从这个类中获取消息，这里的不同的途径就是上面我们提交的通知。
 
+现在让我们回到ChatViewController.swift文件中，在viewDidLoad方法中来监听上面的通知。这很简单，只需要下面几行代码即可:
+````swift
+override func viewDidLoad() {
+    ...    
+ 
+    NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleMPCReceivedDataWithNotification:", name: "receivedMPCDataNotification", object: nil)
+}
+````
+这么做了后，每当收到新数据时都会提交一个通知，ChatViewController会做出响应。
+
+还剩最后一步：实现handleMPCReceivedDataWithNotification(notification:)，当检测到通知时会调用它。
+
+在实现它之前，先来大概说说在其中发生了什么:
+* 第一步，需要得到通知中带有的字典，“提取”其中的数据与节点。
+* 将数据对象转换为字典，即可访问其中的数据。
+* 设置一个规则，指明聊天终止的一个特殊短语，这个短语即为“end_chat”消息。
+* 若消息不是上述的特殊值，则创建一个包含发送方名称与消息的字典，将其添加进messagesArray数组中，并刷新列表。
+* 若消息表示聊天的终点，即提醒用户另一个节点终止了聊天，则会返回当前视图控制器。在下一节中会编写这一步的代码。
+
+来看看上述代码的实现，代码中的额外注释会帮助你理解:
+````swift
+func handleMPCReceivedDataWithNotification(notification: NSNotification) {
+    // Get the dictionary containing the data and the source peer from the notification.
+    let receivedDataDictionary = notification.object as Dictionary<String, AnyObject>
+ 
+    // "Extract" the data and the source peer from the received dictionary.
+    let data = receivedDataDictionary["data"] as? NSData
+    let fromPeer = receivedDataDictionary["fromPeer"] as MCPeerID
+ 
+    // Convert the data (NSData) into a Dictionary object.
+    let dataDictionary = NSKeyedUnarchiver.unarchiveObjectWithData(data!) as Dictionary<String, String>
+ 
+    // Check if there's an entry with the "message" key.
+    if let message = dataDictionary["message"] {
+        // Make sure that the message is other than "_end_chat_".
+        if message != "_end_chat_"{
+            // Create a new dictionary and set the sender and the received message to it.
+            var messageDictionary: [String: String] = ["sender": fromPeer.displayName, "message": message]
+ 
+            // Add this dictionary to the messagesArray array.
+            messagesArray.append(messageDictionary)
+ 
+            // Reload the tableview data and scroll to the bottom using the main thread.
+            NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                self.updateTableview()
+            })
+        }
+        else{
+ 
+        }
+    }
+}
+````
+准备好了。现在若有消息来到时，app就会在列表中显示它了。
+
+##终止聊天
+离应用中功能全部实现的工作所剩无几了，其中一个就是终止聊天，发生在其中一个节点想要终止或会话不是已连接状态。
+
+在ChatView Controller场景中最顶部的工具栏上有一个按钮，点击后会调用endChat(sender:)方法。使用这个方法给其他节点发送终止消息告诉它们聊天结束，然后返回到上一个视图控制器。当然，这个消息即为上一节所说的 “_end_chat”短语。
+
+来看看具体实现:
+````swift
+@IBAction func endChat(sender: AnyObject) {
+    let messageDictionary: [String: String] = ["message": "_end_chat_"]
+    if appDelegate.mpcManager.sendData(dictionaryWithData: messageDictionary, toPeer: appDelegate.mpcManager.session.connectedPeers[0] as MCPeerID){
+        self.dismissViewControllerAnimated(true, completion: { () -> Void in
+            self.appDelegate.mpcManager.session.disconnect()
+        })
+    }
+}
+````
