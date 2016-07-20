@@ -3,7 +3,9 @@
 
 [原文地址](http://www.appcoda.com/chat-app-swift-tutorial/)
 
-Multipeer Connectivity-多点连接
+译者:[yrq110](https://github.com/yrq110)
+
+`Multipeer Connectivity`-`多点连接`
 
 在iOS编程中，总有一些SDK相比其它而言更有意思更吸引开发者的注意，Multipeer Connectivity就是其中一个。如你所知，MPC框架并不是iOS8中的新东西，
 在7中就出现了。之前我写过一些相关的教程，不过说实话，我很惊讶大家对它如此的感兴趣。现在过了一段时间后，又写了一篇新的教程，相信这其中还
@@ -713,3 +715,74 @@ func handleMPCReceivedDataWithNotification(notification: NSNotification) {
     }
 }
 ````
+如你所见，在这里dismiss了视图控制器然后使用MCSession类的disconnect()方法断开了与节点间的会话。在跳转动画完成后才断开会话连接，给了会话足够的存活时间。
+
+在最后一节中实现了自定义方法handleMPCReceivedDataWithNotification(notification:)中的部分代码，为何我会说“部分”，因为还没有添加任何处理当发送终止聊天消息时的代码。是时候添加了，在做之前需要注意，要给用户显示一个alert控制器提醒他其它节点结束了聊天，在那之后，我们会从会话中断开并dismiss视图控制器。这里是代码中缺失的部分:
+````swift
+func handleMPCReceivedDataWithNotification(notification: NSNotification) {
+    ...
+ 
+    // Check if there's an entry with the "message" key.
+    if let message = dataDictionary["message"] {
+        ...
+        else{
+            // In this case an "_end_chat_" message was received.
+            // Show an alert view to the user.
+            let alert = UIAlertController(title: "", message: "\(fromPeer.displayName) ended this chat.", preferredStyle: UIAlertControllerStyle.Alert)
+ 
+            let doneAction: UIAlertAction = UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default) { (alertAction) -> Void in
+                self.appDelegate.mpcManager.session.disconnect()
+                self.dismissViewControllerAnimated(true, completion: nil)
+            }
+ 
+            alert.addAction(doneAction)
+ 
+            NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+                self.presentViewController(alert, animated: true, completion: nil)
+            })            
+        }
+    }
+}
+````
+当其它节点关闭app时也会导致聊天被终止，或者由于某些原因两设备间的连接丢失，这时需要考虑的情况。要做的就是在MPCManager.swift类的browser(browser:lostPeer:)代理方法中添加一个新的通知，然后还需要监听并处理它，就像之前的那个通知一样。不过这次我就不给你看具体的实现了，作为练习麻烦你自己动手完成吧。
+
+快成功了，再进行一些小小的增补就可以测试了。
+
+##最后修整
+离测试app只剩一步了，还有一些事没有做。需要在MPCManager类中定义一些MCSessionDelegate协议中的委托方法，虽然用不上。这样做了的话，一些Xcode中的错误就会消失了。
+
+不要犹豫，打开MCPManager.swift文件copy下面的方法即可:
+````swift
+func session(session: MCSession!, didStartReceivingResourceWithName resourceName: String!, fromPeer peerID: MCPeerID!, withProgress progress: NSProgress!) { }
+ 
+func session(session: MCSession!, didFinishReceivingResourceWithName resourceName: String!, fromPeer peerID: MCPeerID!, atURL localURL: NSURL!, withError error: NSError!) { }
+ 
+func session(session: MCSession!, didReceiveStream stream: NSInputStream!, withName streamName: String!, fromPeer peerID: MCPeerID!) { }
+
+````
+##测试app
+可以在两台设备(至少)上运行demo，也可以在一台设备与一个虚拟机上运行。首先通过开关app中的广播功能来操作搜索器与广播器，然后选择一个节点来开始聊天，发送、接收消息，最后终止对话。如果你完成了测试，可以改改代码，添加一些你想要的功能。
+
+我要展示一些app的截图，注意我是在iPhone模拟器上运行的。
+
+发现一个附近的节点:
+
+![](http://www.appcoda.com/wp-content/uploads/2015/01/t27_1_list_peers.png)
+
+关闭广播器:
+
+![](http://www.appcoda.com/wp-content/uploads/2015/01/t27_6_turn_off_advertiser.png)
+
+询问用户是否聊天:
+
+![](http://www.appcoda.com/wp-content/uploads/2015/01/t27_2_ask_chat_alert.png)
+
+进行聊天:
+
+![](http://www.appcoda.com/wp-content/uploads/2015/01/t27_3_chatting.png)
+
+结束聊天:
+
+![](http://www.appcoda.com/wp-content/uploads/2015/01/t27_7_end_of_chat.png)
+
+可以在[这里](https://www.dropbox.com/s/sdi6h5xosssbkei/MPCRevisited.zip?dl=0)下载最后的工程。
