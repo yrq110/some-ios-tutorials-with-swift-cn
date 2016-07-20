@@ -9,5 +9,6 @@
 * [6.Unit Testing in Xcode 7 with Swift](Unit Testing in Xcode 7 with Swift.md)
 * [7.Bond Tutorial: Bindings in Swift](Bond Tutorial: Bindings in Swift.md)
 * [8.What’s New in Swift 3](What’s New in Swift 3.md)
-* [9.Building a Chat App in Swift Using Multipeer Connectivity Framework](Building a Chat App in Swift Using Multipeer Connectivity Framework.md) (work in progress)
-* [10.Using Sleep Analysis in HealthKit with Swift](Using Sleep Analysis in HealthKit with Swift.md)(work in progress)
+* [9.Building a Chat App in Swift Using Multipeer Connectivity Framework](Building a Chat App in Swift Using Multipeer Connectivity Framework.md)
+* [10.Using Sleep Analysis in HealthKit with Swift](Using Sleep Analysis in HealthKit with Swift.md)
+* [11.Documenting Your Swift Code in Xcode Using Markdown](Documenting Your Swift Code in Xcode Using Markdown.md)(work in progress)
