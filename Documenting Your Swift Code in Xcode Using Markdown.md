@@ -26,7 +26,7 @@
 
 你可以找到其他有关Markdown语句的资源，我这里只要求最低要求的基础语句，提供完整全面的引导教程不是我所关注的，将注意力放在最常用标注语句的表现上。
 
-你可能知道(或者你刚学了) Markdown语句是通过使用特殊的字符来格式化文本、添加资源(例如链接或图像)与标注特殊区域或文本(例如有序或无序列表，代码块)。这些字符很好记，可以通过反复使用或查询下面的列表来加深记忆。当你习惯了Markdown语句后会发现很有趣，通过使用合适的表及其可以产生不同格式的文档：比如HTML网页、PDF文档等等。说到HTML，Markdown支持内联的HTML，意味着你可以直接在文本中加入HTML标签，然后会进行适当的渲染。不过HTML并不是Markdown的本质，因此只关注markdown本身的语句。
+你可能知道(或者你刚学了) Markdown语句是通过使用特殊的字符来格式化文本、添加资源(例如链接或图像)与标注特殊区域或文本(例如有序或无序列表，代码块)。这些字符很好记，可以通过反复使用或查询下面的列表来加深记忆。当你习惯了Markdown语句后会发现很有趣，通过使用合适的表及其可以产生不同格式的文档：比如HTML网页、PDF文档等等。说到HTML，Markdown支持内联的HTML，意味着你可以直接在文本中加入HTML标签，然后会进行适当的渲染。不过HTML并不是Markdown的本质，因此只关注Markdown本身的语句。
 
 下面这个列表包含了常用的Markdown语句:
 
@@ -37,4 +37,83 @@
 * 1\. text: 创建一个有序列表项 (数字列表)。
 * \[linked text\]\(http://some-url.com\): 当文本转换为一个链接。
 * \> text: 创建一个块引用
-* 使用4个空格或tab标记书写的代码块，与HTML中的<pre></pre>标签，如果想添加缩写需要添加额外的4个空格或1个tab字符。
+* 使用4个空格或tab标记书写的代码块，与HTML中的`<pre>``</pre>`标签，如果想添加缩写需要添加额外的4个空格或1个tab字符。
+* 如果你不想被空格和tab搞混，可以将代码写在“\`” 字符中。比如说\`var myProperty\`会显示成: `var myProperty`。
+* 另一种创建代码块的方式是添加4个(“\`”)符号，然后开始代码的书写，在代码的最后一行添加另外4个(“\`”)。
+* 使用反斜杠禁用Markdown语句中特殊字符的渲染。例如：/**this/**就不会显示成加粗的字体。
+
+上述是需要了解的Markdown语句中最重要的元素，其实还有更多，给你介绍的这些足够入门了，想了解更多细节的话请自己去查阅更多的资料。
+
+对Markdown产生兴趣后，寻找一个免费的编辑器(在线的或者是Mac软件)，来上手尝试一下。如果你找的编辑器支持实时预览的话，就可以观察到你的输入会直接转换成HTML，立即看到输出。
+
+>编者的话: 可以尝试如下编辑器StackEdit (在线), Typora, Macdown, Focused 与 Ulysses。
+
+##使用Markdown
+
+在Swift中对各类实体编写文档需要遵守一些特性的规则，可以对属性(变量与常量)、方法、函数、类、结构体、结构体、枚举、协议、扩展与其他代码结构或实体编写文档。文档块需要在实体的声明或头文件后来编写，使用3个斜杠或将代码块包含在如下的结构中:
+````
+/**
+ 
+*/
+````
+双斜杠(//)会被Xcode无视，不会渲染任何文档。在你的代码块(一个方法的body)中使用双斜杠，而不是在编写整个实体的文档时。 
+
+来看一个使用Markdown语句的简单例子，在下面的代码中文档化一个简单的属性。建议你在Xcode中新建一个Playground，在里面把玩示例。
+````swift
+/// This is an **awesome** documentation line for a really *useful* variable.
+var someVar = "This is a variable"
+````
+效果如下:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/05/t52_1_quickhelp1.png)
+
+注意 “awesome” 被显示成了加粗的状态，因为它被双星号所包含，"useful"被星号包含因此被显示成了斜体。
+
+来看看另一个例子，这次使用一个函数:
+
+````swift
+/**
+    It calculates and returns the outcome of the division of the two parameters.
+ 
+    ## Important Notes ##
+    1. Both parameters are **double** numbers.
+    2. For a proper result the second parameter *must be other than 0*.
+    3. If the second parameter is 0 then the function will return nil.
+ 
+*/
+func performDivision(number1: Double, number2: Double) -> Double! {
+    if number2 != 0 {
+        return number1 / number2
+    }
+    else {
+        return nil
+    }
+}
+````
+把上述代码复制粘贴进playground中，按住Option点击函数名的话，会看到显示出的快速帮助:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/05/t52_2_quickhelp2.png)
+
+这里使用了两个新的Markdown元素，header与有序列表，在有序列表中的列表项应用了加粗与斜体格式。注意到使用Markdown的特殊字符来丰富文档中的文本样式是很轻松的一件事。在Quick Help Inspector中如下所示:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/05/t52_3_help_inspector1.png)
+
+接下来，要在函数的文档中添加一个代码块。“\`”符号除了可以创建代码块外，也常常用于在行内标记函数名
+````swift
+/**
+    It doubles the value given as a parameter.
+ 
+    ### Usage Example: ###
+    ````
+    let single = 5
+    let double = doubleValue(single)
+    print(double)
+    ````
+ 
+    * Use the `doubleValue(_:)` function to get the double value of any number.
+    * Only ***Int*** properties are allowed.
+*/
+func doubleValue(value: Int) -> Int {
+    return value * 2
+}
+````
