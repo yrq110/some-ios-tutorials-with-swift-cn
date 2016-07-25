@@ -117,3 +117,63 @@ func doubleValue(value: Int) -> Int {
     return value * 2
 }
 ````
+效果如下:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/05/t52_4_quickhelp3.png)
+
+最后让我们来给枚举添加一些文档，然后在另一个函数的函数体中使用它。在这里有意思的是枚举中的每一个元素都有对应的文档:
+````swift
+/**
+    My own alignment options.
+ 
+    ````
+    case Left
+    case Center
+    case Right
+    ````
+*/
+enum AlignmentOptions {
+    /// It aligns the text on the Left side.
+    case Left
+ 
+    /// It aligns the text on the Center.
+    case Center
+ 
+    /// It aligns the text on the Right side.
+    case Right
+}
+
+
+func doSomething() {
+    var alignmentOption: AlignmentOptions!
+ 
+    alignmentOption = AlignmentOptions.Left
+}
+````
+现在，每当使用枚举中的元素时Xcode就会显示对应元素的文档:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/05/t52_5_quickhelp4.png)
+
+##使用关键字
+
+使用Markdown语句只是文档化代码的其中一个方面，显然丰富文本的格式是很棒的，可以产生一个不错的文档，不过如果只干到这儿的话会落下一些东西的，来看看文档化代码的另一个方面————使用关键字。
+
+每当使用一个关键字时Xcode会自动识别它，用一个默认的格式去渲染文档(用第三方库时同理)。在标注文档中通用的代码结构来区分它们时使用关键字是很有效的。比如说，有用于高亮方法参数的、返回值的、类作者的、函数版本的关键字，还有很多，不用全部都使用，有些是很不常用的。熟悉一些常用的关键字，其他的可以用的时候再去查阅。
+
+说了这么多，是时候来通过一些例子来练习一下关键字的使用了，第一个关键字用来标注一个方法或函数接受的参数:
+
+````swift
+/**
+    This is an extremely complicated method that concatenates the first and last name and produces the full name.
+ 
+    - Parameter firstname: The first part of the full name.
+    - Parameter lastname: The last part of the fullname.
+*/
+func createFullName(firstname: String, lastname: String) {
+    let fullname = "\(firstname) \(lastname)"
+    print(fullname)
+}
+````
+效果如下:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/05/t52_6_keywords1.png)
