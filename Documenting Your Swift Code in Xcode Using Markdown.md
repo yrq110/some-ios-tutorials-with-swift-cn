@@ -177,3 +177,115 @@ func createFullName(firstname: String, lastname: String) {
 效果如下:
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/05/t52_6_keywords1.png)
+
+注意关键字前的破折号(-)，还有它们之间的空格，之后的内容则是实际的参数与其描述。在这里存在多少个参数就应该描述多少个参数(与合适的描述)。
+
+来稍微修改一下上述的函数，让其返回fullname而不是仅仅打印它。这时，需要添加一个描述函数返回值的新关键字:
+````swift
+/**
+    This is an extremely complicated method that concatenates the first and last name and produces the full name.
+ 
+    - Parameter firstname: The first part of the full name.
+    - Parameter lastname: The last part of the fullname.
+    - Returns: The full name as a string value.
+*/
+func createFullName(firstname: String, lastname: String) -> String {
+    return "\(firstname) \(lastname)"
+}
+````
+效果如下:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/05/t52_7_keywords2.png)
+
+上面的两个关键字(parameter和returns)是最常用的。接着来看一个函数，执行与上述函数相逆的过程，将一个fullname拆分为firstname和lastname:
+````swift
+/**
+    Another complicated function.
+ 
+    - Parameter fullname: The fullname that will be broken into its parts.
+    - Returns: A *tuple* with the first and last name.
+ 
+    - Remark:
+        There's a counterpart function that concatenates the first and last name into a full name.
+ 
+    - SeeAlso:  `createFullName(_:lastname:)`
+ 
+*/
+func breakFullName(fullname: String) -> (firstname: String, lastname: String) {
+    let fullnameInPieces = fullname.componentsSeparatedByString(" ")
+    return (fullnameInPieces[0], fullnameInPieces[1])
+}
+````
+上面出现了两个新元素：Remark和SeeAlso关键字. 使用第一个关键字你可以高亮任何重要或特殊的点，来吸引阅读的人的注意。SeeAlso关键字常常用来添加与其他代码部分的关联(比如在这个例子中添加了之前一个函数的关联)，或提供一个真实URL的链接。在快速帮助中如下所示:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/05/t52_8_keywords3.png)
+
+想象一下上述函数只是你分享给其他开发者的一部分，尽量将这个工作做得尽善尽美吧，你想要使用这个函数的人知道两个事实(或要求)：fullname参数不能为nil，fisrtname与lastname需要包含在fullname中，由空格分隔开，这样函数才能正常工作。你可以使用另外两个关键字：Precondition与Requires，将文档更新一下，如下所示:
+
+````swift
+/**
+    Another complicated function.
+ 
+    - Parameter fullname: The fullname that will be broken into its parts.
+    - Returns: A *tuple* with the first and last name.
+ 
+    - Remark:
+        There's a counterpart function that concatenates the first and last name into a full name.
+ 
+    - SeeAlso:  `createFullName(_:lastname:)`
+ 
+    - Precondition: `fullname` should not be nil.
+    - Requires: Both first and last name should be parts of the full name, separated with a *space character*.
+ 
+*/
+func breakFullName(fullname: String) -> (firstname: String, lastname: String) {
+    let fullnameInPieces = fullname.componentsSeparatedByString(" ")
+    return (fullnameInPieces[0], fullnameInPieces[1])
+}
+````
+
+![](http://www.appcoda.com/wp-content/uploads/2016/05/t52_9_keywords4.png)
+
+着眼未来，你也许会记录一下以后要实现的功能:
+
+````swift
+- Todo: Support middle name in the next version.
+````
+也可以添加警告、版本、作者与提醒:
+````swift
+/**
+    Another complicated function.
+ 
+    - Parameter fullname: The fullname that will be broken into its parts.
+    - Returns: A *tuple* with the first and last name.
+ 
+    - Remark:
+        There's a counterpart function that concatenates the first and last name into a full name.
+ 
+    - SeeAlso:  `createFullName(_:lastname:)`
+ 
+    - Precondition: `fullname` should not be nil.
+    - Requires: Both first and last name should be parts of the full name, separated with a *space character*.
+ 
+    - Todo: Support middle name in the next version.
+ 
+    - Warning: A wonderful **crash** will be the result of a `nil` argument.
+ 
+    - Version: 1.1
+ 
+    - Author: Myself Only
+ 
+    - Note: Too much documentation for such a small function.
+ */
+func breakFullName(fullname: String) -> (firstname: String, lastname: String) {
+    let fullnameInPieces = fullname.componentsSeparatedByString(" ")
+    return (fullnameInPieces[0], fullnameInPieces[1])
+}
+````
+这是快速帮助中的显示:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/05/t52_10_keywords5.png)
+
+上述的细节理解程度取决于你的接受能力，对于重要的代码应该像前面代码片段中展示的那样来撰写文档，其他不太重要的部分使用基本的元素即可。
+
+苹果提供了一个包含所有可用关键字的文档，可以在[这里](https://developer.apple.com/library/ios/documentation/Xcode/Reference/xcode_markup_formatting_ref/MarkupFunctionality.html#//apple_ref/doc/uid/TP40016497-CH54-SW1)看到比较详细的介绍，不要错过哟。
