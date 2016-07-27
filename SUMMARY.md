@@ -11,4 +11,5 @@
 * [8.What’s New in Swift 3](What’s New in Swift 3.md)
 * [9.Building a Chat App in Swift Using Multipeer Connectivity Framework](Building a Chat App in Swift Using Multipeer Connectivity Framework.md)
 * [10.Using Sleep Analysis in HealthKit with Swift](Using Sleep Analysis in HealthKit with Swift.md)
-* [11.Documenting Your Swift Code in Xcode Using Markdown](Documenting Your Swift Code in Xcode Using Markdown.md)(work in progress)
+* [11.Documenting Your Swift Code in Xcode Using Markdown](Documenting Your Swift Code in Xcode Using Markdown.md)
+* [12.Creating Gradient Colors Using CAGradientLayer](Creating Gradient Colors Using CAGradientLayer.md)(work in progress)
