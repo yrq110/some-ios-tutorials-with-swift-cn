@@ -3,6 +3,8 @@
 
 [原文地址](http://www.appcoda.com/swift-markdown/)
 
+译者:[yrq110](https://github.com/yrq110)
+
 在Xcode 7所包含的所有特性中，有一个新的革命毋庸置疑：以一个更好的方式去书写代码文档。开发者可以使用强大的Markdown语句写出含有多种文本样式的文档，结合特定的关键字标识出特殊部分(比如参数、函数结果等等)，会有意想不到的结果。新的启用Markdown的文档风格有如下优点：提供了更高等级的自定义文本能力，更加灵活，当然也更加有趣。不过如果你对老式的文档风格感兴趣，可以看看我们之前的[教程](http://www.appcoda.com/documenting-source-code-in-xcode/)。
 
 撰写代码文档对每个开发者来说都是一项重要的任务，虽然看上去这会拖慢开发的进度，不过确实是开发中的一部分。我不觉得对每一个属性、函数、类、结构体与其他项目中存在的项撰写合适的、便于理解的文档是件容易的事情。可以通过以下要点来书写文档：
@@ -289,3 +291,42 @@ func breakFullName(fullname: String) -> (firstname: String, lastname: String) {
 上述的细节理解程度取决于你的接受能力，对于重要的代码应该像前面代码片段中展示的那样来撰写文档，其他不太重要的部分使用基本的元素即可。
 
 苹果提供了一个包含所有可用关键字的文档，可以在[这里](https://developer.apple.com/library/ios/documentation/Xcode/Reference/xcode_markup_formatting_ref/MarkupFunctionality.html#//apple_ref/doc/uid/TP40016497-CH54-SW1)看到比较详细的介绍，不要错过哟。
+
+##使用Jazzy生成文档页面
+
+Jazzy是个用来为你的代码(不管是swift还是oc)生成苹果风格文档的一个好工具，实际上Jazzy创建了一个包含所有代码文档的独立页面。虽然它是个命令行工具，不过挺易用的。
+
+下面来分析一下Jazzy的具体工作细节，可以看看GitHub上的介绍，也能看到它的环境要求与安装方法，只需要如下操作即可开始使用:
+
+1. 打开你的终端。
+2. 输入: [sudo] gem install jazzy.
+3. 输入密码
+4. 等待…
+
+为了方便你测试Jazzy，我准备了一个小型app，可以在[这里](https://github.com/appcoda/SwiftDocSample)下载，包含之前例子中的函数-组合与拆分fullname。
+
+![](http://www.appcoda.com/wp-content/uploads/2016/05/t52_11_app_sample.png)
+
+假设你已经下了app，来看看Jazzy怎么用。首先在终端里使用cd命令进入工程文件夹:
+````
+cd path_to_project_folder
+````
+最简单的用法是只需输入Jazzy，然后等待它执行完成，不过这些不会包含代码中没被标记为public的类或其他结构。因此如果你想包含所有的结构，需要输入如下命令:
+````
+jazzy --min-acl internal
+````
+另外，如果你的swift不是最新版的则看不到Jazzy的输出，这样的话需要添加一个参数来指定xcode所支持的swift版本:
+````
+jazzy --swift-version 2.1.1 --min-acl internal
+````
+强烈建议你输入jazzy --help来看看Jazzy中所有可用的参数，也许会发现很多有用的东西可以按照自己的喜好来得到想要的结果。
+
+执行生成文档页面，完成后的效果如下所示：
+
+![](http://www.appcoda.com/wp-content/uploads/2016/05/t52_13_terminal_jazzy.png)
+
+默认输出文件夹命名docs，保存在工程的根目录下(可以修改)。
+
+使用Finder查看文件夹，用浏览器打开index.html，会看到默认的页面风格很像苹果文档的风格，点击链接试试看文档如何显示。好了，试试在你的工程中使用Jazzy吧。
+
+![](http://www.appcoda.com/wp-content/uploads/2016/05/t52_15_jazzy_results.png)
