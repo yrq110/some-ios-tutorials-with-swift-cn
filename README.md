@@ -15,3 +15,4 @@
 * 使用Swift与HealthKit的睡眠分析(Using Sleep Analysis in HealthKit with Swift)
 * 使用Markdown文档化Xcode中的Swift代码(Documenting Your Swift Code in Xcode Using Markdown)
 * (未完)使用CAGradientLayer创建渐变色(Creating Gradient Colors Using CAGradientLayer)
+* (未完)如何使用HTML模板与UIPrintPageRenderer生成PDF(How to Generate PDF using HTML Templates and UIPrintPageRenderer in iOS)
