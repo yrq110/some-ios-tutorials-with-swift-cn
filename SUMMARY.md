@@ -13,3 +13,4 @@
 * [10.Using Sleep Analysis in HealthKit with Swift](Using Sleep Analysis in HealthKit with Swift.md)
 * [11.Documenting Your Swift Code in Xcode Using Markdown](Documenting Your Swift Code in Xcode Using Markdown.md)
 * [12.Creating Gradient Colors Using CAGradientLayer](Creating Gradient Colors Using CAGradientLayer.md)(work in progress)
+* [13.How to Generate PDF using HTML Templates and UIPrintPageRenderer in iOS](How to Generate PDF using HTML Templates and UIPrintPageRenderer in iOS.md)(work in progress)
