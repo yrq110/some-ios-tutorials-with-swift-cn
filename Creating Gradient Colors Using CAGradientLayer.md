@@ -59,7 +59,7 @@ override func viewWillAppear(animated: Bool) {
 
 ##渐变色
 
-虽然上面的代码很简答，其中包含一个重要的属性:色彩属性。首先我觉得我不需要解释，若你不设置色彩的话就不会用一丝渐变效果。其次，这个属性需要接受一个色彩数组，而不是一个UIColor对象。在上面的例子中只用了两种颜色，你可以用更多的颜色。比如说设置如下的色彩集:
+虽然上面的代码很简单，不过其中包含一个重要的属性:色彩属性。首先我觉得我不需要解释，若你不设置色彩的话就不会用一丝渐变效果。其次，这个属性需要接受一个色彩数组，而不是一个UIColor对象。在上面的例子中只用了两种颜色，你可以用更多的颜色。比如说设置如下的色彩集:
 ````swift
 gradientLayer.colors = [UIColor.redColor().CGColor, UIColor.orangeColor().CGColor, UIColor.blueColor().CGColor, UIColor.magentaColor().CGColor, UIColor.yellowColor().CGColor]
 ````
