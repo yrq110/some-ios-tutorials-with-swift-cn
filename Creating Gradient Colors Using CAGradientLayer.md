@@ -13,7 +13,7 @@ CAGradientLayer是一个CALayer类的子类，顾名思义，用来产生渐变�
 
 ##创建一个渐变层
 
-创建一个渐变色彩层是项快速并且简易的任务，必须要制定一些参数。实际上你需要先设置少量的属性后就可以接着进行后面的操作，最花时间的也许是在操作渐变层时对最终结果参数的微调，对层属性设定不同的值会产生完全不同的效果。
+创建一个渐变色彩层是项快速并且简单的任务，必须要制定一些参数。实际上你需要先设置少量的属性后就可以接着进行后面的操作，最花时间的也许是在操作渐变层时对最终结果参数的微调，对层属性设定不同的值会产生完全不同的效果。
 
 让我们来逐步看看其中的细节，首先需要一个演示的app。打开Xcode创建一个新应用，确保选择的是单视图界面模板，跟着向导完成创建。
 
@@ -88,3 +88,74 @@ func createColorSets() {
     currentColorSet = 0
 }
 ````
+上面的方法中，将由不同色彩组成的数组添加进了colorSets数组中，并且还设置了currentColorSet属性的初始值。
+
+来在viewDidLoad()方法中调用它:
+````swift
+override func viewDidLoad() {
+    super.viewDidLoad()
+ 
+    createColorSets()
+}
+````
+还需要稍微修改下这个createGradientLayer()方法:
+````swift
+gradientLayer.colors = [UIColor.redColor().CGColor, UIColor.orangeColor().CGColor, UIColor.blueColor().CGColor, UIColor.magentaColor().CGColor, UIColor.yellowColor().CGColor]
+````
+…用下面的代码替换:
+````swift
+gradientLayer.colors = colorSets[currentColorSet]
+````
+这样就会使用通过currentColorSet属性所指定的色彩集，而不是之前使用的默认色彩。
+
+之前我提到过：点击视图可以在不同色彩集间通过动画的方式变换，这意味着需要给视图添加一个点击的手势识别器，在viewDidLoad()中添加如下代码:
+````swift
+override func viewDidLoad() {
+    ...
+ 
+    let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.handleTapGesture(_:)))
+    self.view.addGestureRecognizer(tapGestureRecognizer)
+}
+````
+若视图接收到点击手势时会调用handleTapGesture(_:)方法，离完成不远了。注意到下面代码中用到的CABasicAnimation，使用它来产生层色彩属性变换的动画效果，这里我认为你已经具备了有关CABasicAnimation的知识，了解动画是如何实现的，如果不是的话请去google下。没有包含某些属性，只使用了执行动画所需的基本属性。
+````swift
+func handleTapGesture(gestureRecognizer: UITapGestureRecognizer) {
+    if currentColorSet < colorSets.count - 1 {
+        currentColorSet! += 1
+    }
+    else {
+        currentColorSet = 0
+    }
+ 
+    let colorChangeAnimation = CABasicAnimation(keyPath: "colors")
+    colorChangeAnimation.duration = 2.0
+    colorChangeAnimation.toValue = colorSets[currentColorSet]
+    colorChangeAnimation.fillMode = kCAFillModeForwards
+    colorChangeAnimation.removedOnCompletion = false
+    gradientLayer.addAnimation(colorChangeAnimation, forKey: "colorChange")
+}
+````
+首先我们要决定下一个色彩集的索引，如果当前选择的色彩集是colorSets数组中的最后一个，则从最开始(currentColorSet = 0)选取，否则给currentColorSet属性+1.
+
+下一部分的代码代表动画，duration与toValue是最重要的属性，duration意味着动画持续多久，toValue则是设置的期望目标色彩集。kCAFillModeForwards属性使动画结束后保持最后的状态，不会变为初始色彩，不过这并不是永久的，需要明确设置新的渐变色彩，何时设置？在动画完成后即可，使用下面这个方法，当CABasicAnimation完成时会调用它:
+````swift
+override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
+    if flag {
+        gradientLayer.colors = colorSets[currentColorSet]
+    }
+}
+````
+再修改下handleTapGesture(_:)方法，这样上面的方法就起作用了:
+````swift
+func handleTapGesture(gestureRecognizer: UITapGestureRecognizer) {
+    ...
+ 
+    // Add this line to make the ViewController class the delegate of the animation object.
+    colorChangeAnimation.delegate = self
+ 
+    gradientLayer.addAnimation(colorChangeAnimation, forKey: &quot;colorChange&quot;)
+}
+````
+搞定了。可以自由的调整动画持续时间，我设成了2秒，可以看到渐变的效果很明显:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_3_color_change_2.gif)
