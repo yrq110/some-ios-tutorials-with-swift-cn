@@ -214,3 +214,28 @@ func handleTwoFingerTapGesture(gestureRecognizer: UITapGestureRecognizer) {
 注意默认情况下locations属性是空的，需要考虑到可能会崩溃的问题。虽然现在在demo中为了方便起见只使用了两种颜色，在使用更多颜色产生渐变效果时上面的方法同样适用。
 
 ##渐变方向
+
+已经知道了渐变层颜色属性的一些相关操作，来着手学习一下如何处理渐变效果的方向吧。首先看看下面这张图:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_1_first_gradient.png)
+
+一眼就能看出渐变效果是从顶部开始朝向底部，实际上这是渐变层颜色的默认方向，跟其他属性一样，可以通过重写得到一个不同的方向。
+
+CAGradientLayer类提供了两个指定渐变方向的属性:
+
+* startPoint-起始点
+* endPoint-终止点
+
+一般用CGPoint值来表示上面的属性，x与y值的范围都应为0.0到1.0之间。起始点描述了第一个颜色的起始坐标，终止点描述了最后一个颜色的终止坐标，用这种方式来决定渐变的方向。这里有个重要的细节:坐标是与操作系统的坐标空间一致的。
+
+这意味着什么?
+
+为了更好理解，看看下面这张图:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_8_iPhone_image-585x1024.png)
+
+在iOS中，零点(起始点)是屏幕左上角的点(x = 0.0, y = 0.0)，终止点是右下角的点(x = 1.0, y = 1.0)，其它点都在这个坐标系中。
+
+上面的坐标系与其他操作系统的并不相同，比如说Mac上的一个窗口(这里是个文本编辑器):
+
+![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_9_mac_window.png)
