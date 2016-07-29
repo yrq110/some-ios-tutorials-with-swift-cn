@@ -135,9 +135,9 @@ func handleTapGesture(gestureRecognizer: UITapGestureRecognizer) {
     gradientLayer.addAnimation(colorChangeAnimation, forKey: "colorChange")
 }
 ````
-首先我们要决定下一个色彩集的索引，如果当前选择的色彩集是colorSets数组中的最后一个，则从最开始(currentColorSet = 0)选取，否则给currentColorSet属性+1.
+首先我们要决定下一个色彩集的索引，如果当前选择的色彩集是colorSets数组中的最后一个，则从最开始(currentColorSet = 0)选取，否则给currentColorSet属性+1。
 
-下一部分的代码代表动画，duration与toValue是最重要的属性，duration意味着动画持续多久，toValue则是设置的期望目标色彩集。kCAFillModeForwards属性使动画结束后保持最后的状态，不会变为初始色彩，不过这并不是永久的，需要明确设置新的渐变色彩，何时设置？在动画完成后即可，使用下面这个方法，当CABasicAnimation完成时会调用它:
+第二部分的代码是与动画相关的，duration与toValue是最重要的属性，duration意味着动画持续多久，toValue则是设置的期望目标色彩集。kCAFillModeForwards属性使动画结束后保持最后的状态，不会变为初始色彩，不过这并不是永久的，需要明确设置新的渐变色彩，何时设置？在动画完成后即可，使用下面这个方法，当CABasicAnimation完成时会调用它:
 ````swift
 override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
     if flag {
@@ -159,3 +159,58 @@ func handleTapGesture(gestureRecognizer: UITapGestureRecognizer) {
 搞定了。可以自由的调整动画持续时间，我设成了2秒，可以看到渐变的效果很明显:
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_3_color_change_2.gif)
+
+##颜色位置
+
+知道渐变效果中颜色的设置与改变是渐变层的基础，离最终的目标还是有一段距离的。还需要知道如何修改层中每个色彩所覆盖的区域，这也是很重要的。
+
+如果你看看之前创建的那些渐变效果的话会发现默认情况下每个颜色都会占据层中的一半区域:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_1_first_gradient.png)
+
+可以使用CAGradientLayer类中的locations属性来改变这个区域，locations属性接受一个由NSNumber对象组成的数组，每个数字都决定一个色彩的起始位置，并且还需要手动设置为0.0到1.0范围内的数。
+
+百闻不如一见，在createGradientLayer()方法中添加如下行:
+
+````swift
+gradientLayer.locations = [0.0, 0.35]
+````
+再次运行app，看看渐变效果的变化:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_5_locations_1.png)
+
+第二个颜色的起始位置是根据我们在locations数组中设置的第二个值而定的，相当于第二个颜色覆盖了层的65%(1.0 – 0.35 = 0.65)的区域。采取一项预防措施，确保每个颜色的位置不会比下一个颜色位置的值大，否则会发生的非期望的重叠现象:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_6_locations_overlap.png)
+
+若你想在app中看到上图的效果，只需要把色彩的location设置成[0.5, 0.35]即可。
+
+来给demo再加点料吧，给视图添加一个点击手势识别器。这次将点击事件设为需要两个手指的操作，在viewDidLoad()中添加如下行:
+
+````swift
+override func viewDidLoad() {
+    ...
+ 
+    let twoFingerTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.handleTwoFingerTapGesture(_:)))
+    twoFingerTapGestureRecognizer.numberOfTouchesRequired = 2
+    self.view.addGestureRecognizer(twoFingerTapGestureRecognizer)
+}
+````
+在handleTwoFingerTapGesture(_:)方法中会给不同色彩分配随机的位置，需要确保firstColorLocation总小于secondColorLocation，另外在改变位置时会将新的位置值实时打印在控制台中:
+````swift
+func handleTwoFingerTapGesture(gestureRecognizer: UITapGestureRecognizer) {
+    let secondColorLocation = arc4random_uniform(100)
+    let firstColorLocation = arc4random_uniform(secondColorLocation - 1)
+ 
+    gradientLayer.locations = [NSNumber(double: Double(firstColorLocation)/100.0), NSNumber(double: Double(secondColorLocation)/100.0)]
+ 
+    print(gradientLayer.locations!)
+}
+````
+使用两个手指操作的效果如下:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_7_change_locations.gif)
+
+注意默认情况下locations属性是空的，需要考虑到可能会崩溃的问题。虽然现在在demo中为了方便起见只使用了两种颜色，在使用更多颜色产生渐变效果时上面的方法同样适用。
+
+##渐变方向
