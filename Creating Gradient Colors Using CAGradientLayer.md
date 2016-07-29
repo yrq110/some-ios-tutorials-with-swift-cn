@@ -59,7 +59,7 @@ override func viewWillAppear(animated: Bool) {
 
 ##渐变色
 
-虽然上面的代码很简单，不过其中包含一个重要的属性:色彩属性。首先我觉得我不需要解释，若你不设置色彩的话就不会用一丝渐变效果。其次，这个属性需要接受一个色彩数组，而不是一个UIColor对象。在上面的例子中只用了两种颜色，你可以用更多的颜色。比如说设置如下的色彩集:
+虽然上面的代码很简单，不过其中包含一个重要的属性:色彩属性。首先我觉得我不需要解释:不设置色彩的话就不会有一丝渐变效果。其次，这个属性需要接受一个色彩数组，而不是一个UIColor对象。在上面的例子中只用了两种颜色，你可以用更多的颜色。比如说设置如下的色彩集:
 ````swift
 gradientLayer.colors = [UIColor.redColor().CGColor, UIColor.orangeColor().CGColor, UIColor.blueColor().CGColor, UIColor.magentaColor().CGColor, UIColor.yellowColor().CGColor]
 ````
@@ -67,7 +67,7 @@ gradientLayer.colors = [UIColor.redColor().CGColor, UIColor.orangeColor().CGColo
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_2_second_gradient.png)
 
-色彩属性有个很棒的特性就是有动画效果，意味着你可以使用动画转换的方式变换渐变效果，为了证明它，来创建一个可用的由色彩数组组成的集合，点击视图时切换执行色彩的色彩集，不过色彩集之间的变换是具有动画效果的。
+色彩属性有个很棒的特性就是可以设置动画，意味着你可以使用动画转换的方式变换渐变效果，为了证明它，来创建一个可用的由色彩数组组成的集合，点击视图时切换执行色彩的色彩集，不过色彩集之间的变换是具有动画效果的。
 
 首先，在ViewController类的顶部，在gradientLayer属性之后声明两种新属性:
 
