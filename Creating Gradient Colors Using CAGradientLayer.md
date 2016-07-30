@@ -262,10 +262,10 @@ x值从0.0变为了1.0，y值不变，产生了一个向右的渐变效果:
 * 向下
 * 向右
 * 向左
-* 从左上到右下From Top-Left to Bottom-Right
-* 从右上到左下From Top-Right to Bottom-Left
-* 从左下到右上From Bottom-Left to Top-Right
-* 从右下到左上From Bottom-Right to Top-Left
+* 从左上到右下
+* 从右上到左下
+* 从左下到右上
+* 从右下到左上
 
 回到工程中，新建一个枚举来表示所有的方向:
 ````swift
@@ -284,9 +284,9 @@ enum PanDirections: Int {
 ````swift
 var panDirection: PanDirections!
 ````
-panDirection属性会获取手势移动的方向，The panDirection property will get the proper value depending on the movement of the finger. We are going to handle that as a two-step task: Initially we’ll determine the desired direction and we’ll assign it to the above property. Next, and right after the pan gesture is finished, we’ll set the proper values to the startPoint and endPoint properties, taking into account of course the indicated direction.
+panDirection属性会获取手势移动的方向，下面需要处理一个分为两个步骤的任务:首先决定期望的方向分配给上面的属性，然后等拖动手势结束后设置对应的起始值与终止值。
 
-Before doing all that, we need to create a new pan gesture recogniser object and add it to the view. For that, go to the viewDidLoad() method and add the lines you see next:
+还需要给视图添加一个拖动手势的识别器，在viewDidLoad()方法中添加如下代码:
 ````swift
 override func viewDidLoad() {
     ...
@@ -295,7 +295,7 @@ override func viewDidLoad() {
     self.view.addGestureRecognizer(panGestureRecognizer)
 }
 ````
-In the implementation of the handlePanGestureRecognizer(_:) we will use the velocity property of the gesture recogniser. If that velocity is more than 300.0 points towards any direction (x or y), that direction will be taken into account. The logic is simple to understand: The primary case is to check the velocity on the horizontal axis. The velocity on the vertical axis is a check being made in a secondary level. See the comments to get it:
+在实现handlePanGestureRecognizer(_:)方法时使用了手势识别器的速度(velocity)属性，若某一方向(x或y)上的速度大于300.0，则取这个方向。逻辑很好理解: 优先检测水平方向的速度，第二层中检测垂直方向的速度，代码如下:
 ````swift
 func handlePanGestureRecognizer(gestureRecognizer: UIPanGestureRecognizer) {
     let velocity = gestureRecognizer.velocityInView(self.view)
@@ -357,7 +357,7 @@ func handlePanGestureRecognizer(gestureRecognizer: UIPanGestureRecognizer) {
     }
 }
 ````
-There are two things to notice above (further than how we determine the pan gesture direction of course):
+上述代码中需要注意两点(不仅仅是决定拖动手势的方向):
 
-1. The panDirection becomes nil if none of the other conditions is satisfied.
-2. The direction is specified in the Changed state of the gesture. When the gesture is ended, a call to the changeGradientDirection() method is taking place, so the new direction to apply based on the value of the panDirection property.
+1. 若没有满足任何条件则panDirection为nil。
+2. 方向由手势改变的状态所决定，手势结束时调用了changeGradientDirection()方法，从panDirection属性中得到新的方向。
