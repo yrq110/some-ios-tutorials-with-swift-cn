@@ -239,3 +239,125 @@ CAGradientLayer类提供了两个指定渐变方向的属性:
 上面的坐标系与其他操作系统的并不相同，比如说Mac上的一个窗口(这里是个文本编辑器):
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_9_mac_window.png)
+
+这里的起始点是在左下角，终止点是右上角，坐标系与iOS的是不同的。
+
+默认的起始点是(0.5, 0.0)，终止点是(0.5, 1.0)，注意到x值没变，y值从0.0(顶部)变成了1.0(底部)，创建了向下的方向。来尝试一下不同的方向，在createGradientLayer()方法中添加如下两行:
+
+````swift
+func createGradientLayer() {
+    ...
+ 
+    gradientLayer.startPoint = CGPointMake(0.0, 0.5)
+    gradientLayer.endPoint = CGPointMake(1.0, 0.5)
+}
+````
+x值从0.0变为了1.0，y值不变，产生了一个向右的渐变效果:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_10_gradient_right.png)
+
+为了更好的理解渐变方向，在0.0到1.0的范围内随意修改x和y的值看看改变后产生的效果。我们来给demo中添加一个新功能，使用拖动手势来改变方向，支持如下方向:
+
+* 向上
+* 向下
+* 向右
+* 向左
+* 从左上到右下From Top-Left to Bottom-Right
+* 从右上到左下From Top-Right to Bottom-Left
+* 从左下到右上From Bottom-Left to Top-Right
+* 从右下到左上From Bottom-Right to Top-Left
+
+回到工程中，新建一个枚举来表示所有的方向:
+````swift
+enum PanDirections: Int {
+    case Right
+    case Left
+    case Bottom
+    case Top
+    case TopLeftToBottomRight
+    case TopRightToBottomLeft
+    case BottomLeftToTopRight
+    case BottomRightToTopLeft
+}
+````
+之后再ViewController类中声明一个标示渐变方向的新属性:
+````swift
+var panDirection: PanDirections!
+````
+panDirection属性会获取手势移动的方向，The panDirection property will get the proper value depending on the movement of the finger. We are going to handle that as a two-step task: Initially we’ll determine the desired direction and we’ll assign it to the above property. Next, and right after the pan gesture is finished, we’ll set the proper values to the startPoint and endPoint properties, taking into account of course the indicated direction.
+
+Before doing all that, we need to create a new pan gesture recogniser object and add it to the view. For that, go to the viewDidLoad() method and add the lines you see next:
+````swift
+override func viewDidLoad() {
+    ...
+ 
+    let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(ViewController.handlePanGestureRecognizer(_:)))
+    self.view.addGestureRecognizer(panGestureRecognizer)
+}
+````
+In the implementation of the handlePanGestureRecognizer(_:) we will use the velocity property of the gesture recogniser. If that velocity is more than 300.0 points towards any direction (x or y), that direction will be taken into account. The logic is simple to understand: The primary case is to check the velocity on the horizontal axis. The velocity on the vertical axis is a check being made in a secondary level. See the comments to get it:
+````swift
+func handlePanGestureRecognizer(gestureRecognizer: UIPanGestureRecognizer) {
+    let velocity = gestureRecognizer.velocityInView(self.view)
+ 
+    if gestureRecognizer.state == UIGestureRecognizerState.Changed {
+        if velocity.x > 300.0 {
+            // In this case the direction is generally towards Right.
+            // Below are specific cases regarding the vertical movement of the gesture.
+ 
+            if velocity.y > 300.0 {
+                // Movement from Top-Left to Bottom-Right.
+                panDirection = PanDirections.TopLeftToBottomRight
+            }
+            else if velocity.y < -300.0 {
+                // Movement from Bottom-Left to Top-Right.
+                panDirection = PanDirections.BottomLeftToTopRight
+            }
+            else {
+                // Movement towards Right.
+                panDirection = PanDirections.Right
+            }
+        }
+        else if velocity.x < -300.0 {
+            // In this case the direction is generally towards Left.
+            // Below are specific cases regarding the vertical movement of the gesture.
+ 
+            if velocity.y > 300.0 {
+                // Movement from Top-Right to Bottom-Left.
+                panDirection = PanDirections.TopRightToBottomLeft
+            }
+            else if velocity.y < -300.0 {
+                // Movement from Bottom-Right to Top-Left.
+                panDirection = PanDirections.BottomRightToTopLeft
+            }
+            else {
+                // Movement towards Left.
+                panDirection = PanDirections.Left
+            }
+        }
+        else {
+            // In this case the movement is mostly vertical (towards bottom or top).
+ 
+            if velocity.y > 300.0 {
+                // Movement towards Bottom.
+                panDirection = PanDirections.Bottom
+            }
+            else if velocity.y < -300.0 {
+                // Movement towards Top.
+                panDirection = PanDirections.Top
+            }
+            else {
+                // Do nothing.
+                panDirection = nil
+            }
+        }
+    }
+    else if gestureRecognizer.state == UIGestureRecognizerState.Ended {
+        changeGradientDirection()
+    }
+}
+````
+There are two things to notice above (further than how we determine the pan gesture direction of course):
+
+1. The panDirection becomes nil if none of the other conditions is satisfied.
+2. The direction is specified in the Changed state of the gesture. When the gesture is ended, a call to the changeGradientDirection() method is taking place, so the new direction to apply based on the value of the panDirection property.
