@@ -3,6 +3,7 @@
 
 [原文地址](http://www.appcoda.com/cagradientlayer/)
 
+译者:[yrq110](https://github.com/yrq110)
 每个开发者在开发app时都会使用图像的色彩融合来得到一个赏心悦目的UI效果，尝试达到最佳的用户体验。然而有时需要做一些额外的工作，普通的颜色可能不会得到较好的展示效果，而使用渐变色则会产生更好的效果。我有一些使用渐变色的经验以及关于它的建议，在这里跟大家分享下。创建渐变色是很简单的因此开发者不去用的话是较可惜的。
 
 那么，如何可以快速轻松地创建一个渐变效果？这里有三种方法。第一种，也是最不推荐的一种，使用具有渐变效果的图像，最大的缺陷就是如果没有设计出一系列不同状态的渐变的话就不能在运行过程中随意修改渐变效果。第二种方法是使用Core Graphics技术，需要掌握相关的知识(比如图形上下文、色彩空间等等)，并且Core Graphics框架是给相对高级的用户准备的，新人开发者可能用起来比较费劲。最后一种，也是最快速最简便的一种方式:使用CAGradientLayer对象。
@@ -361,3 +362,53 @@ func handlePanGestureRecognizer(gestureRecognizer: UIPanGestureRecognizer) {
 
 1. 若没有满足任何条件则panDirection为nil。
 2. 方向由手势改变的状态所决定，手势结束时调用了changeGradientDirection()方法，从panDirection属性中得到新的方向。
+
+下面是个简单的实现，仅设置了渐变层的一些起始点与终止点，观察一下x与y是如何随着手势方向变化的:
+
+````swift
+func changeGradientDirection() {
+    if panDirection != nil {
+        switch panDirection.rawValue {
+        case PanDirections.Right.rawValue:
+            gradientLayer.startPoint = CGPointMake(0.0, 0.5)
+            gradientLayer.endPoint = CGPointMake(1.0, 0.5)
+ 
+        case PanDirections.Left.rawValue:
+            gradientLayer.startPoint = CGPointMake(1.0, 0.5)
+            gradientLayer.endPoint = CGPointMake(0.0, 0.5)
+ 
+        case PanDirections.Bottom.rawValue:
+            gradientLayer.startPoint = CGPointMake(0.5, 0.0)
+            gradientLayer.endPoint = CGPointMake(0.5, 1.0)
+ 
+        case PanDirections.Top.rawValue:
+            gradientLayer.startPoint = CGPointMake(0.5, 1.0)
+            gradientLayer.endPoint = CGPointMake(0.5, 0.0)
+ 
+        case PanDirections.TopLeftToBottomRight.rawValue:
+            gradientLayer.startPoint = CGPointMake(0.0, 0.0)
+            gradientLayer.endPoint = CGPointMake(1.0, 1.0)
+ 
+        case PanDirections.TopRightToBottomLeft.rawValue:
+            gradientLayer.startPoint = CGPointMake(1.0, 0.0)
+            gradientLayer.endPoint = CGPointMake(0.0, 1.0)
+ 
+        case PanDirections.BottomLeftToTopRight.rawValue:
+            gradientLayer.startPoint = CGPointMake(0.0, 1.0)
+            gradientLayer.endPoint = CGPointMake(1.0, 0.0)
+ 
+        default:
+            gradientLayer.startPoint = CGPointMake(1.0, 1.0)
+            gradientLayer.endPoint = CGPointMake(0.0, 0.0)
+        }
+    }
+}
+````
+
+若panDirection为nil，则没有任何响应产生。
+
+运行app，移动你的手指，渐变效果会随着你移动的方向而变化。
+
+![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_11_direction_change_2.gif)
+
+[GitHub上的代码](https://github.com/appcoda/GradientLayer)
