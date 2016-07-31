@@ -12,5 +12,5 @@
 * [9.Building a Chat App in Swift Using Multipeer Connectivity Framework](Building a Chat App in Swift Using Multipeer Connectivity Framework.md)
 * [10.Using Sleep Analysis in HealthKit with Swift](Using Sleep Analysis in HealthKit with Swift.md)
 * [11.Documenting Your Swift Code in Xcode Using Markdown](Documenting Your Swift Code in Xcode Using Markdown.md)
-* [12.Creating Gradient Colors Using CAGradientLayer](Creating Gradient Colors Using CAGradientLayer.md)(work in progress)
+* [12.Creating Gradient Colors Using CAGradientLayer](Creating Gradient Colors Using CAGradientLayer.md)
 * [13.How to Generate PDF using HTML Templates and UIPrintPageRenderer in iOS](How to Generate PDF using HTML Templates and UIPrintPageRenderer in iOS.md)(work in progress)
