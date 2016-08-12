@@ -162,3 +162,102 @@ func renderInvoice(invoiceNumber: String, invoiceDate: String, recipientInfo: St
  
 }
 ````
+这些参数是在demo中创建一个发票时需要手动设置的，也是生成发票时所需要的数据。返回的字符串值是包含实际内容的最终的HTML代码。
+
+来实现这个方法并进行第一项重要的任务。在下面的代码段中有两个关键的地方:首先是将invoice.html文件中的模板内容加载在字符串变量中以便修改。另一个是替换掉除了发票条目外的占位符，注释会帮助你理解:
+```swift
+func renderInvoice(invoiceNumber: String, invoiceDate: String, recipientInfo: String, items: [[String: String]], totalAmount: String) -> String! {
+    // Store the invoice number for future use.
+    self.invoiceNumber = invoiceNumber
+ 
+    do {
+        // Load the invoice HTML template code into a String variable.
+        var HTMLContent = try String(contentsOfFile: pathToInvoiceHTMLTemplate!)
+ 
+        // Replace all the placeholders with real values except for the items.
+        // The logo image.
+        HTMLContent = HTMLContent.stringByReplacingOccurrencesOfString("#LOGO_IMAGE#", withString: logoImageURL)
+ 
+        // Invoice number.
+        HTMLContent = HTMLContent.stringByReplacingOccurrencesOfString("#INVOICE_NUMBER#", withString: invoiceNumber)
+ 
+        // Invoice date.
+        HTMLContent = HTMLContent.stringByReplacingOccurrencesOfString("#INVOICE_DATE#", withString: invoiceDate)
+ 
+        // Due date (we leave it blank by default).
+        HTMLContent = HTMLContent.stringByReplacingOccurrencesOfString("#DUE_DATE#", withString: dueDate)
+ 
+        // Sender info.
+        HTMLContent = HTMLContent.stringByReplacingOccurrencesOfString("#SENDER_INFO#", withString: senderInfo)
+ 
+        // Recipient info.
+        HTMLContent = HTMLContent.stringByReplacingOccurrencesOfString("#RECIPIENT_INFO#", withString: recipientInfo.stringByReplacingOccurrencesOfString("\n", withString: "<br>"))
+ 
+        // Payment method.
+        HTMLContent = HTMLContent.stringByReplacingOccurrencesOfString("#PAYMENT_METHOD#", withString: paymentMethod)
+ 
+        // Total amount.
+        HTMLContent = HTMLContent.stringByReplacingOccurrencesOfString("#TOTAL_AMOUNT#", withString: totalAmount)
+ 
+    }
+    catch {
+        print("Unable to open and use HTML template files.")
+    }
+ 
+    return nil
+}
+```
+替换占位符的方法如上面那样简单，使用stringByReplacingOccurrencesOfString(...)字符串方法即可，将placeholder作为第一个参数，实际值作为第二个参数。替换大量的占位符可能有些乏味，不过毕竟这样做不难。
+
+注意到所有工作都在一个do-catch语句中进行，从初始化文件路径的HTMLContent字符串开始，若出错了则返回nil，目前不会返回包含实际值的HTML内容，后面再说。
+
+来关注发票条目的设置，由于它们的数量是可变的，因此我们使用一个循环来处理。对于除了最后一个的所有条目，打开single\_item.html模板替换其中的占位符。对于最后一个条目，使用last\_item.html模板，因为底部存在一条线。最终的HTML代码会添加到另一个字符串中(后面的allItems变量)。当这个字符串与所有条目的详细信息整合在一起后，会被用来替换HTMLContent字符串中的#ITEMS#占位符，在方法的最后会返回这个字符串。
+
+在`do`的body中添加代码，如下:
+```swift
+func renderInvoice(invoiceNumber: String, invoiceDate: String, recipientInfo: String, items: [[String: String]], totalAmount: String) -> String! {
+     ...
+ 
+    do {
+        ...       
+ 
+        // The invoice items will be added by using a loop.
+        var allItems = ""
+ 
+        // For all the items except for the last one we'll use the "single_item.html" template.
+        // For the last one we'll use the "last_item.html" template.
+        for i in 0..&lt;items.count {
+            var itemHTMLContent: String!
+ 
+            // Determine the proper template file.
+            if i != items.count - 1 {
+                itemHTMLContent = try String(contentsOfFile: pathToSingleItemHTMLTemplate!)
+            }
+            else {
+                itemHTMLContent = try String(contentsOfFile: pathToLastItemHTMLTemplate!)
+            }
+ 
+            // Replace the description and price placeholders with the actual values.
+            itemHTMLContent = itemHTMLContent.stringByReplacingOccurrencesOfString("#ITEM_DESC#", withString: items[i]["item"]!)
+ 
+            // Format each item's price as a currency value.
+            let formattedPrice = AppDelegate.getAppDelegate().getStringValueFormattedAsCurrency(items[i]["price"]!)
+            itemHTMLContent = itemHTMLContent.stringByReplacingOccurrencesOfString("#PRICE#", withString: formattedPrice)
+ 
+            // Add the item's HTML code to the general items string.
+            allItems += itemHTMLContent
+        }
+ 
+        // Set the items.
+        HTMLContent = HTMLContent.stringByReplacingOccurrencesOfString("#ITEMS#", withString: allItems)
+ 
+        // The HTML code is ready.
+        return HTMLContent
+    }
+    catch {
+        print("Unable to open and use HTML template files.")
+    }
+ 
+    return nil
+}
+```
