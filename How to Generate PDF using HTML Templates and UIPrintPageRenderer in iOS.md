@@ -261,3 +261,59 @@ func renderInvoice(invoiceNumber: String, invoiceDate: String, recipientInfo: St
     return nil
 }
 ```
+模板代码在适当的时候会被修改以产生一个包含实际内容的发票，下面我们要利用上述方法的结果做一些事情。
+
+##预览HTML
+
+在创建发票的实际内容后，是时候来验证之前所做的工作是否达标了，因此，在这一节我们的目标是将HTML字符串加载到PreviewViewController中的web view中看看效果。注意这只是一个可选的步骤，在实际的app中没必要在输出PDF之前去使用一个web view去预览HTML，这里这么做是为了demo app的完整性。
+
+来看看PreviewViewController.swift文件，来到类顶部，首先声明一些新属性:
+```swift
+class PreviewViewController: UIViewController {
+ 
+    ...
+ 
+    var invoiceComposer: InvoiceComposer!
+ 
+    var HTMLContent: String!
+ 
+}
+```
+第一个对象的类是之前我们创建好的，这里进行一个简单的初始化即可。HTMLContent字符串变量在之后被用来存放时间的HTML代码。
+
+接着按如下步骤创建一个新方法:
+1. 初始化invoiceComposer对象。
+2. 调用renderInvoice(...)方法生成发票的HTML代码。
+3. web view加载HTML。
+4. 将返回的HTML字符串分配给HTMLContent属性。
+
+具体实现:
+```swift
+func createInvoiceAsHTML() {
+    invoiceComposer = InvoiceComposer()
+    if let invoiceHTML = invoiceComposer.renderInvoice(invoiceInfo["invoiceNumber"] as! String,
+                                                       invoiceDate: invoiceInfo["invoiceDate"] as! String,
+                                                       recipientInfo: invoiceInfo["recipientInfo"] as! String,
+                                                       items: invoiceInfo["items"] as! [[String: String]],
+                                                       totalAmount: invoiceInfo["totalAmount"] as! String) {
+ 
+        webPreview.loadHTMLString(invoiceHTML, baseURL: NSURL(string: invoiceComposer.pathToInvoiceHTMLTemplate!)!)
+        HTMLContent = invoiceHTML
+    }
+}
+```
+没啥难的地方，注意一下renderInvoice(...)方法的输入参数，当我们得到返回的实际HTML字符串后回家再加载web view中。
+
+是时候调用新方法了:
+```swift
+override func viewWillAppear(animated: Bool) {
+    super.viewWillAppear(animated)
+ 
+    createInvoiceAsHTML()
+}
+```
+
+若想看看效果，运行app新建一个发票，在列表中选中点击，看看在web view中出现的发票，如下所示:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/07/t54_5_invoice_webview.png)
+
