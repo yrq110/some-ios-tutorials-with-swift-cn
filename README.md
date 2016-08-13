@@ -17,3 +17,7 @@
 * 使用CAGradientLayer创建渐变色(Creating Gradient Colors Using CAGradientLayer)
 * (未完)如何使用HTML模板与UIPrintPageRenderer生成PDF(How to Generate PDF using HTML Templates and UIPrintPageRenderer in iOS)
 * (未完)使用iOS 10的Speech框架构建一个语音转文本app(Building a Speech-to-Text App Using Speech Framework in iOS 10)
+
+###Sources
+* [Ray Wenderlich](https://www.raywenderlich.com/)
+* [AppCoda](http://www.appcoda.com/)
