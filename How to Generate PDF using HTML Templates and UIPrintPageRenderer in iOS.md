@@ -267,7 +267,7 @@ func renderInvoice(invoiceNumber: String, invoiceDate: String, recipientInfo: St
 
 在创建发票的实际内容后，是时候来验证之前所做的工作是否达标了，因此，在这一节我们的目标是将HTML字符串加载到PreviewViewController中的web view中看看效果。注意这只是一个可选的步骤，在实际的app中没必要在输出PDF之前去使用一个web view去预览HTML，这里这么做是为了demo app的完整性。
 
-来看看PreviewViewController.swift文件，来到类顶部，首先声明一些新属性:
+打开PreviewViewController.swift文件，来到类顶部，首先声明一些新属性:
 ```swift
 class PreviewViewController: UIViewController {
  
@@ -317,3 +317,108 @@ override func viewWillAppear(animated: Bool) {
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/07/t54_5_invoice_webview.png)
 
+##准备生成
+
+已经搞定一半的工作了，现在来着手将一个发票生成PDF的过程。为了达到目的需要使用一个特殊的类: UIPrintPageRenderer，如果你没听说过它不要紧，这个类是可用于渲染打印内容的一种可靠方式，官方文档在[这里](https://developer.apple.com/library/ios/documentation/iPhone/Reference/UIPrintPageRenderer_Class/)，浏览一下查看更多的信息。
+
+UIPrintPageRenderer类提供了多种绘制方法，一般情况下我们不需要去重写它。那些绘制方法只能被UIPrintPageRenderer的子类中的方法所重写，这些额外的努力是值得的，可以使我们灵活的控制输出的实际页面的内容: 比如页眉和页脚。在demo app中我们需要创建并使用它的子类，因为要绘制自定义的页眉和页脚(同时)。 
+
+回到Xcode中创建一个新的类，需要注意两件事:
+1. 设置为UIPrintPageRenderer的子类.
+2. 命名为CustomPrintPageRenderer.
+
+准备好了后(已经在工程导航栏中看到CustomPrintPageRenderer.swift文件)，为下面的步骤做一些简单的准备。首先，指定A4页面的宽度和高度(单位为像素)，记住我们是想将发票提取成PDF，并且PDF是可以被正常打印出来的，所以限制页面大小是很重要的。
+
+```swift
+class CustomPrintPageRenderer: UIPrintPageRenderer {
+ 
+    let A4PageWidth: CGFloat = 595.2
+ 
+    let A4PageHeight: CGFloat = 841.8
+ 
+}
+```
+
+上述值描述了精确的普通A4纸的宽度与高度。
+
+指定纸张框架与CustomPrintPageRenderer类所绘制的打印区域是很必要的。在init()方法中进行这一步，使用上面定义的两个属性:
+```swift
+override init() {
+    super.init()
+ 
+    // Specify the frame of the A4 page.
+    let pageFrame = CGRect(x: 0.0, y: 0.0, width: A4PageWidth, height: A4PageHeight)
+ 
+    // Set the page frame.
+    self.setValue(NSValue(CGRect: pageFrame), forKey: "paperRect")
+ 
+    // Set the horizontal and vertical insets (that's optional).
+    self.setValue(NSValue(CGRect: pageFrame), forKey: "printableRect")
+}
+```
+The above consists of a quite straightforward, and at the same time a standard technique for setting the frame of the paper and the area where content will be printed. Both the paperRect and printableRect properties are read-only, and that’s why we set their values that way.paperRect与printableRect属性都是只读的，所以这就是为何这么来设置它们的值。
+
+在上面的代码段中，将纸张框架与打印区域设为了相同的值。然而也许你想给打印区域外面增加一些留白(小于纸张边界)，这样会得到更好的打印效果。这时，可以使用下面这行替换掉上述方法的最后一行代码:
+```swift
+   self.setValue(NSValue(CGRect: CGRectInset(pageFrame, 10.0, 10.0)), forKey: "printableRect")
+```
+上述代码在水平和垂直坐标方向各增加了10个像素的偏移，注意，这一节中所做的设置即使没有创建UIPrintPageRenderer的子类也是有效果的，换句话说，不论何时都不要忘记设置打印对象的纸张与打印区域。
+
+##生成PDF
+
+说“打印成PDF”的意思实际上是绘制一些内容到PDF的图形上下文中去，一旦这一步发生后，那么绘制的内容就会被发送到一个打印机或者被保存到一个文件中。我们仅考虑第二种情况，将HTML内容绘制到一个PDF上下文中，接着将得到的结果保存到NSData对象中，最后将这个对象保存到一个文件(后缀.pdf文件)中。这个过程变化很多，不过步骤很简单。
+
+打开InvoiceComposer.swift文件，实现exportHTMLContentToPDF(...)这个仅接受一个参数(提取成PDF所需的HTML内容)的新方法。在实现这个方法之前有必要介绍另一个与打印相关的概念——print formatter(UIPrintFormatter类). 苹果文档中有如下描述:
+
+>UIPrintFormatter is an abstract base class for print formatters: objects that lay out custom printable content that can cross page boundaries. Given a print formatter, the printing system can automate the printing of the type of content associated with the print formatter.
+
+这意味着对于我们来说只需要将HTML内容作为打印格式(print formatter)添加到打印页面的渲染器中，iOS的打印系统就会负责页面实际的布局与打印的内容。建议你看看[官方的这个页面](https://developer.apple.com/reference/uikit/uiprintformatter?language=objc)，说的很详细。有一点需要说明的是虽然UIPrintFormatter是一个抽象类，不过iOS SDK提供了可以利用的具体的子类，比如说UIMarkupTextPrintFormatter，我们需要用这个类来添加HTML内容到打印页面的渲染器对象中去，更多细节与其它的子类可以在上面的官方链接中找到。
+
+说完了，是时候实现新方法了:
+```swift
+func exportHTMLContentToPDF(HTMLContent: String) {
+    let printPageRenderer = CustomPrintPageRenderer()
+ 
+    let printFormatter = UIMarkupTextPrintFormatter(markupText: HTMLContent)    
+    printPageRenderer.addPrintFormatter(printFormatter, startingAtPageAtIndex: 0)
+ 
+    let pdfData = drawPDFUsingPrintPageRenderer(printPageRenderer)
+ 
+    pdfFilename = "\(AppDelegate.getAppDelegate().getDocDir())/Invoice\(invoiceNumber).pdf"
+    pdfData.writeToFile(pdfFilename, atomically: true)
+ 
+    print(pdfFilename)
+}
+```
+逐步分析下:
+
+* 首先初始化一个CustomPrintPageRenderer对象，使用它进行实际的绘制(也就是打印(printing))。
+* 接着初始化一个UIMarkupTextPrintFormatter对象，输入HTML内容作为初始化的参数。
+* 将page formatter添加到打印页面的渲染器对象中，addPrintFormatter(...)方法的第二个参数用来指定打印格式执行时的起始页面，这里我们设为0，并且只有1个页面。
+* 下面进行实际的PDF绘制，drawPDFUsingPrintPageRenderer(...)是个自定义方法，后面会定义它。绘制PDF的结果会保存到pdfData对象中，pdfData实际上是个NSData对象。
+* 将PDF数据保存到一个文件中。首先指定文件路径，同时给予一个合适的文件名(这里使用的是invoiceNumber属性)，然后将PDF数据写入该文件。
+* 最后一步可选，打印出文件路径对在Finder中找到新创建的PDF文件是很有帮助的。运行app时，文件路径就会在控制器中打印出来，可以打开PDF进行预览并验证结果。
+
+在一个更加复杂的app中可以使用多种打印格式对象，可以为每个格式指定不同的起始页面，不过现在在demo中不需要那么做，清晰地说明问题即可。
+
+现在来实现自定义方法，执行绘制一个实际PDF上下文的工作。如你所见，下面用到了Core Graphics技术去实现，整个过程不长而且能望码生义:
+
+```swift
+func drawPDFUsingPrintPageRenderer(printPageRenderer: UIPrintPageRenderer) -&gt; NSData! {
+    let data = NSMutableData()
+ 
+    UIGraphicsBeginPDFContextToData(data, CGRectZero, nil)
+ 
+    UIGraphicsBeginPDFPage()
+ 
+    printPageRenderer.drawPageAtIndex(0, inRect: UIGraphicsGetPDFContextBounds())
+ 
+    UIGraphicsEndPDFContext()
+ 
+    return data
+}
+```
+首先初始化一个可变的数据对象，将PDF输出数据写入其中。第二行中命令代码去创建PDF的图形上下文。接着创建一个新的PDF页面，实际绘制操作发生在下面这行:
+```swift
+printPageRenderer.drawPageAtIndex(0, inRect: UIGraphicsGetPDFContextBounds())
+```
