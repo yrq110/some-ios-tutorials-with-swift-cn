@@ -1,7 +1,13 @@
 #How to Generate PDF using HTML Templates and UIPrintPageRenderer in iOS
 ##如何使用HTML模板与UIPrintPageRenderer生成PDF
 
-[原文地址](http://www.appcoda.com/pdf-generation-ios/)
+***
+
+>* 原文链接 : [How to Generate PDF using HTML Templates and UIPrintPageRenderer in iOS](http://www.appcoda.com/pdf-generation-ios/)
+* 原文作者 : [GABRIEL THEODOROPOULOS](http://www.appcoda.com/author/gabrielth/)
+* 译者 : [yrq110](https://github.com/yrq110)
+
+***
 
 你曾被要求过生成包含app内容的PDF文档吗？
 
@@ -13,15 +19,24 @@
 
 1. 创建生成PDF所需的表单与content模板
 2. 使用HTML模板产生content(也可用web view显示出来)
-3. 输出PDF
+3. 导出PDF
 
 在最后一步，iOS会替你搞定所有麻烦事。
+
+**目录**
+* [开始工程](#开始工程)
+* [HTML模板文件](#html-template)
+* [组合内容](#组合内容)
+* [预览HTML](#html-preview)
+* [准备导出](#准备导出)
+* [生成PDF](#pdf-output)
+* [绘制自定义页眉和页脚](#绘制自定义页眉和页脚)
 
 ##开始工程
 
 使用一个发票生成器工具demo来进行教程中的演示。开始前请先下载[开始工程](https://github.com/appcoda/Print2PDF/blob/master/Starter_Project.zip?raw=true)然后用Xcode打开。
 
-在工程中已经完成了一些必要的工作，InvoiceListViewController用来显示app中创建与保存的的发票列表，在这里通过右上角的加号按钮可以创建一个新的发票。点击任一列表项会进入发票信息的预览界面，可以输出成PDF格式的文档，注意，这部分功能还没有在开始工程中实现，需要我们在接下来完成它。还有，向左拖动列表项会出现删除选项，如下图:
+在工程中已经完成了一些必要的工作，InvoiceListViewController用来显示app中创建与保存的的发票列表，在这里通过右上角的加号按钮可以创建一个新的发票。点击任一列表项会进入发票信息的预览界面，可以导出成PDF格式的文档，注意，这部分功能还没有在开始工程中实现，需要我们在接下来完成它。还有，向左拖动列表项会出现删除选项，如下图:
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/07/t54_1_invoice_list_viewcontroller.png)
 
@@ -29,7 +44,7 @@
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/07/t54_2_creator_viewcontroller.png)
 
-输出之前，一个发票会生成所需要填写的一些变量值，有些是可以在视图控制器中手动设置的，有些事自动生成的，还有一些是硬编码，写死的。在demo app中需要手动设置的值有:
+导出之前，一个发票会生成所需要填写的一些变量值，有些是可以在视图控制器中手动设置的，有些事自动生成的，还有一些是硬编码，写死的。在demo app中需要手动设置的值有:
 
 * 接收者信息，上面表格中的灰色区域。
 * 发票条目, 每个条目都包含两部分: 所提供服务的描述与价格。为了方便起见，这里不考虑增值税。使用底部的加号按钮来添加条目。
@@ -60,11 +75,12 @@
 
 对于现有的代码乏善可陈，你需要做的就是看懂每个视图控制器中的流程与实现的细节。我想提的一点就是AppDelegate.swift文件，这里有三个方法：一个用于快速访问应用的delegate，一个用于得到文件路径，一个用于将总价用包含货币符号的字符串表示。这些方法已经在开始工程中用到了，之后还会使用它们。在AppDelegate中有一个currencyCode属性，默认设置的是“eur”(欧元)，可以根据自行情况设置。
 
-点击InvoiceListViewController中列表中的一个发票，这个发票数据会传给PreviewViewController，在这里有一个预览发票的webview，预览被渲染成HTML文档的效果，有一个输出成PDF的按钮。这些函数在开始工程中没有，需要之后来实现它们，数据都是现成的可以直接使用。
+点击InvoiceListViewController中列表中的一个发票，这个发票数据会传给PreviewViewController，在这里有一个预览发票的webview，预览被渲染成HTML文档的效果，有一个导出成PDF的按钮。这些函数在开始工程中没有，需要之后来实现它们，数据都是现成的可以直接使用。
 
+<a name="html-template"></a>
 ##HTML模板文件
 
-接着我们要使用HTML模板来初始化一个发票，然后最终的HTML代码会输出成PDF文件。这里的主要逻辑就是先用占位符去填充HTML文件中的一些位置，然后再用真实的数据去替换，因此需要产生一个自定义的HTML表单来生成最终的结果。鉴于这篇教程的目的我们不会去创建任何发票的HTML模板，使用一个现成的模板(特别感谢作者)，并稍微修改了一下。
+接着我们要使用HTML模板来初始化一个发票，然后最终的HTML代码会导出成PDF文件。这里的主要逻辑就是先用占位符去填充HTML文件中的一些位置，然后再用真实的数据去替换，因此需要产生一个自定义的HTML表单来生成最终的结果。鉴于这篇教程的目的我们不会去创建任何发票的HTML模板，使用一个现成的模板(特别感谢作者)，并稍微修改了一下。
 
 在开始工程中有三个HTML文件:
 
@@ -100,7 +116,7 @@ HTML模板文件中的占位符是被#号包含的特殊关键字。比如下面
 
 最后两个占位符只在single_item.html和last_item.html文件中有，#ITEMS#占位符被替换后每个item会使用其他2各HTML模板文件来创建各自的代码。
 
-如你所见，准备多个HTML模板是为了创建自定义输出的表格，这并不难。进行完整个过程后你会发现，基于这些模板生成实际内容并提取成PDF文件是很简便并高效的。
+如你所见，准备多个HTML模板是为了创建自定义导出的表格，这并不难。进行完整个过程后你会发现，基于这些模板生成实际内容并提取成PDF文件是很简便并高效的。
 
 ##组合内容
 
@@ -263,9 +279,10 @@ func renderInvoice(invoiceNumber: String, invoiceDate: String, recipientInfo: St
 ```
 模板代码在适当的时候会被修改以产生一个包含实际内容的发票，下面我们要利用上述方法的结果做一些事情。
 
+<a name="html-preview"></a>
 ##预览HTML
 
-在创建发票的实际内容后，是时候来验证之前所做的工作是否达标了，因此，在这一节我们的目标是将HTML字符串加载到PreviewViewController中的web view中看看效果。注意这只是一个可选的步骤，在实际的app中没必要在输出PDF之前去使用一个web view去预览HTML，这里这么做是为了demo app的完整性。
+在创建发票的实际内容后，是时候来验证之前所做的工作是否达标了，因此，在这一节我们的目标是将HTML字符串加载到PreviewViewController中的web view中看看效果。注意这只是一个可选的步骤，在实际的app中没必要在导出PDF之前去使用一个web view去预览HTML，这里这么做是为了demo app的完整性。
 
 打开PreviewViewController.swift文件，来到类顶部，首先声明一些新属性:
 ```swift
@@ -317,11 +334,11 @@ override func viewWillAppear(animated: Bool) {
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/07/t54_5_invoice_webview.png)
 
-##准备生成
+##准备导出
 
 已经搞定一半的工作了，现在来着手将一个发票生成PDF的过程。为了达到目的需要使用一个特殊的类: UIPrintPageRenderer，如果你没听说过它不要紧，这个类是可用于渲染打印内容的一种可靠方式，官方文档在[这里](https://developer.apple.com/library/ios/documentation/iPhone/Reference/UIPrintPageRenderer_Class/)，浏览一下查看更多的信息。
 
-UIPrintPageRenderer类提供了多种绘制方法，一般情况下我们不需要去重写它。那些绘制方法只能被UIPrintPageRenderer的子类中的方法所重写，这些额外的努力是值得的，可以使我们灵活的控制输出的实际页面的内容: 比如页眉和页脚。在demo app中我们需要创建并使用它的子类，因为要绘制自定义的页眉和页脚(同时)。 
+UIPrintPageRenderer类提供了多种绘制方法，一般情况下我们不需要去重写它。那些绘制方法只能被UIPrintPageRenderer的子类中的方法所重写，这些额外的努力是值得的，可以使我们灵活的控制导出的实际页面的内容: 比如页眉和页脚。在demo app中我们需要创建并使用它的子类，因为要绘制自定义的页眉和页脚(同时)。 
 
 回到Xcode中创建一个新的类，需要注意两件事:
 1. 设置为UIPrintPageRenderer的子类.
@@ -356,7 +373,6 @@ override init() {
     self.setValue(NSValue(CGRect: pageFrame), forKey: "printableRect")
 }
 ```
-The above consists of a quite straightforward, and at the same time a standard technique for setting the frame of the paper and the area where content will be printed. Both the paperRect and printableRect properties are read-only, and that’s why we set their values that way.paperRect与printableRect属性都是只读的，所以这就是为何这么来设置它们的值。
 
 在上面的代码段中，将纸张框架与打印区域设为了相同的值。然而也许你想给打印区域外面增加一些留白(小于纸张边界)，这样会得到更好的打印效果。这时，可以使用下面这行替换掉上述方法的最后一行代码:
 ```swift
@@ -364,7 +380,8 @@ The above consists of a quite straightforward, and at the same time a standard t
 ```
 上述代码在水平和垂直坐标方向各增加了10个像素的偏移，注意，这一节中所做的设置即使没有创建UIPrintPageRenderer的子类也是有效果的，换句话说，不论何时都不要忘记设置打印对象的纸张与打印区域。
 
-##生成PDF
+<a name="pdf-output"></a>
+##生成PDF 
 
 说“打印成PDF”的意思实际上是绘制一些内容到PDF的图形上下文中去，一旦这一步发生后，那么绘制的内容就会被发送到一个打印机或者被保存到一个文件中。我们仅考虑第二种情况，将HTML内容绘制到一个PDF上下文中，接着将得到的结果保存到NSData对象中，最后将这个对象保存到一个文件(后缀.pdf文件)中。这个过程变化很多，不过步骤很简单。
 
@@ -418,7 +435,152 @@ func drawPDFUsingPrintPageRenderer(printPageRenderer: UIPrintPageRenderer) -&gt;
     return data
 }
 ```
-首先初始化一个可变的数据对象，将PDF输出数据写入其中。第二行中命令代码去创建PDF的图形上下文。接着创建一个新的PDF页面，实际绘制操作发生在下面这行:
+首先初始化一个可变的数据对象，将导出的PDF数据写入其中。第二行命令代码去创建PDF的图形上下文。接着创建一个新的PDF页面，实际的绘制操作发生在下面这行:
 ```swift
 printPageRenderer.drawPageAtIndex(0, inRect: UIGraphicsGetPDFContextBounds())
 ```
+使用这一行，打印页面的渲染器对象就会在PDF上下文的框架中绘制其内容。注意在drawPageAtIndex(...)调用打印页面渲染器对象的绘制方法时，自定义的页眉与页脚也会被自动绘制出来。
+
+最后关闭PDF图形上下文，返回绘制的最终数据到调用此方法的exportHTMLContentToPDF方法中去。
+
+上述方法打印了一个单页面，若需要打印多个页面，则可以将PDF页面的创建与渲染放入一个循环中，若你想扩展这个demo app或想将多个页面打印到一个PDF文件中的话留心一下这一点。
+
+这时与PDF导出有关的所有工作就告一段落了，下一节将要给你展示如果在打印页面中添加自定义的页眉和页脚，在那之前，先操作一下，看看导出PDF的效果。
+
+打开PreviewViewController.swift文件，定位到exportToPDF(...) IBAction方法中，添加如下代码，这样的话点击工具栏上的PDF按钮时就可以预览将发票提取成PDF后的效果了:
+
+```swift
+@IBAction func exportToPDF(sender: AnyObject) {
+    invoiceComposer.exportHTMLContentToPDF(HTMLContent)
+}
+```
+现在可以测试一个app，为了快捷我建议使用模拟器。选择一个发票来预览，点击右上角PDF按钮:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/07/t54_6_pdf_button.png)
+
+如此而为就会打印出PDF，当所有工作完成时，导出文件的路径会打印在控制器中。复制这个路径(不包括文件名)，打开一个新的Finder窗口，使用Shift-Command-G组合键，粘贴路径，则会看到刚刚生成的PDF文件，文件名为发票的编号。
+
+![](http://www.appcoda.com/wp-content/uploads/2016/07/t54_7_pdf_in_finder.png)
+
+双击它在Preview app中预览(或选择你喜欢的app):
+
+![](http://www.appcoda.com/wp-content/uploads/2016/07/t54_8_pdf_preview-771x1024.png)
+
+##绘制自定义页眉和页脚
+
+现在来稍微扩展一下这个示例，给打印页面添加自定义的页眉和页脚，毕竟这是为何我们最初要创建UIPrintPageRenderer的子类。由于是自定义的，那么这意味着并不是HTML模板的一部分，不与HTML内容一同被渲染。我们想要实现的是在页面的右上角添加“Invoice”字样(作为页眉)，在页面底部添加短句“Thank you!”(页脚)与上方的水平线，目标如下图:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/07/t54_9_pdf_with_header_footer-771x1024.png)
+
+在实现页眉与页脚的细节之前，必须指定期望的页眉与页脚的高度。打开CustomPrintPageRenderer.swift文件，在init()方法中添加如下两行(注意两个属性都来自UIPrintPageRenderer类):
+
+```swift
+override init() {
+    ...
+ 
+    self.headerHeight = 50.0
+    self.footerHeight = 50.0
+}
+```
+
+从页面的页眉开始入手。重写UIPrintPageRenderer类的方法:
+
+```swift
+override func drawHeaderForPageAtIndex(pageIndex: Int, inRect headerRect: CGRect) {
+ 
+}
+```
+将在函数体内做的步骤如下所述:
+
+1. 指定在页眉中绘制的文本(单词“Invoice”)。
+2. 指定文本格式的属性，例如字体、颜色与字母间距离。
+3. 计算包含执行格式化后文本的矩形尺寸，指定距页面右侧边界的偏移。
+4. 决定文本的绘制起点。
+5. 绘制文本(最终)。
+
+来实现一下上述的步骤，有一些注释可以帮助理解:
+```swift
+override func drawHeaderForPageAtIndex(pageIndex: Int, inRect headerRect: CGRect) {
+    // Specify the header text.
+    let headerText: NSString = "Invoice"
+ 
+    // Set the desired font.
+    let font = UIFont(name: "AmericanTypewriter-Bold", size: 30.0)
+ 
+    // Specify some text attributes we want to apply to the header text.
+    let textAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor(red: 243.0/255, green: 82.0/255.0, blue: 30.0/255.0, alpha: 1.0), NSKernAttributeName: 7.5]
+ 
+    // Calculate the text size.
+    let textSize = getTextSize(headerText as String, font: nil, textAttributes: textAttributes)
+ 
+    // Determine the offset to the right side.
+    let offsetX: CGFloat = 20.0
+ 
+    // Specify the point that the text drawing should start from.
+    let pointX = headerRect.size.width - textSize.width - offsetX
+    let pointY = headerRect.size.height/2 - textSize.height/2
+ 
+    // Draw the header text.
+    headerText.drawAtPoint(CGPointMake(pointX, pointY), withAttributes: textAttributes)
+}
+```
+
+上述代码中有一点我没提到，就是getTextSize(...)方法的使用。如你所想，这个自定义方法用来计算并返回文本框架的尺寸。之所以把它写成一个额外的方法是因为在接下来绘制页脚时也需要用到它。
+
+这是getTextSize(...)方法:
+```swift
+func getTextSize(text: String, font: UIFont!, textAttributes: [String: AnyObject]! = nil) -&gt; CGSize {
+    let testLabel = UILabel(frame: CGRectMake(0.0, 0.0, self.paperRect.size.width, footerHeight))
+    if let attributes = textAttributes {
+        testLabel.attributedText = NSAttributedString(string: text, attributes: attributes)
+    }
+    else {
+        testLabel.text = text
+        testLabel.font = font!
+    }
+ 
+    testLabel.sizeToFit()
+ 
+    return testLabel.frame.size
+}
+```
+上面这个方法是个计算文本框架尺寸的通用方法。通过使用一个临时Label，赋予一个简单文本与字体或带属性的文本，然后使用sizeToFit()方法来计算其准确的尺寸。
+
+来着手进行页面页脚的绘制，大致步骤跟页眉差不多，无需多言了。注意一下在文本的上方有一条水平线，并且文本颜色不同，文本的字符间距也不同:
+```swift
+override func drawFooterForPageAtIndex(pageIndex: Int, inRect footerRect: CGRect) {
+    let footerText: NSString = "Thank you!"
+ 
+    let font = UIFont(name: "Noteworthy-Bold", size: 14.0)
+    let textSize = getTextSize(footerText as String, font: font!)
+ 
+    let centerX = footerRect.size.width/2 - textSize.width/2
+    let centerY = footerRect.origin.y + self.footerHeight/2 - textSize.height/2
+    let attributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor(red: 205.0/255.0, green: 205.0/255.0, blue: 205.0/255, alpha: 1.0)]
+ 
+    footerText.drawAtPoint(CGPointMake(centerX, centerY), withAttributes: attributes)
+}
+```
+这段代码创建了“Thank you!”，不过没有添加水平线，需要使用更多的代码来画线:
+```swift
+override func drawFooterForPageAtIndex(pageIndex: Int, inRect footerRect: CGRect) {
+    ...
+ 
+    // Draw a horizontal line.
+    let lineOffsetX: CGFloat = 20.0
+    let context = UIGraphicsGetCurrentContext()
+    CGContextSetRGBStrokeColor(context, 205.0/255.0, 205.0/255.0, 205.0/255, 1.0)
+    CGContextMoveToPoint(context, lineOffsetX, footerRect.origin.y)
+    CGContextAddLineToPoint(context, footerRect.size.width - lineOffsetX, footerRect.origin.y)
+    CGContextStrokePath(context)
+}
+```
+现在就有一条水平线了！
+
+在这一节结束前，关于页眉和页脚还有一点我想说一下，若你注意到的话会发现两个文本都是NSString对象，而不是String对象，这里有个特别的原因: drawAtPoint(...)方法是属于NSString类的绘制方法，如果使用String对象的话，需要先转换一下类型，如下所示:
+```swift
+(text as! NSString).drawAtPoint(...)
+```
+再次运行app，预览导出的PDF，这次就有页眉和页脚了。
+
+可以在[这里](https://github.com/appcoda/Print2PDF)下载到完整的Xcode工程。
