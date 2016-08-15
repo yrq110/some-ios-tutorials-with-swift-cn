@@ -15,8 +15,11 @@
 * 使用Swift与HealthKit的睡眠分析(Using Sleep Analysis in HealthKit with Swift)
 * 使用Markdown文档化Xcode中的Swift代码(Documenting Your Swift Code in Xcode Using Markdown)
 * 使用CAGradientLayer创建渐变色(Creating Gradient Colors Using CAGradientLayer)
-* (未完)如何使用HTML模板与UIPrintPageRenderer生成PDF(How to Generate PDF using HTML Templates and UIPrintPageRenderer in iOS)
+* 如何使用HTML模板与UIPrintPageRenderer生成PDF(How to Generate PDF using HTML Templates and UIPrintPageRenderer in iOS)
 * (未完)使用iOS 10的Speech框架构建一个语音转文本app(Building a Speech-to-Text App Using Speech Framework in iOS 10)
+* (未完)如何创建一个Uber启动动画(How To Create an Uber Splash Screen)
+* (未完)在Xamarin与Visual Studio中构建iOS应用(Building iOS Apps with Xamarin and Visual Studio)
+
 
 ###Sources
 * [Ray Wenderlich](https://www.raywenderlich.com/)
