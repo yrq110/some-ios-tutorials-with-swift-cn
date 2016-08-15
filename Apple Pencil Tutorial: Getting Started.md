@@ -1,6 +1,8 @@
 #Apple Pencil Tutorial: Getting Started
 ##Apple Pencil指南：入门
 
+***
+
 >* 原文链接 : [Apple Pencil Tutorial: Getting Started](https://www.raywenderlich.com/121834/apple-pencil-tutorial)
 * 原文作者 : [Caroline Begbie](https://www.raywenderlich.com/u/caroline)
 * 译者 : [yrq110](https://github.com/yrq110)
@@ -30,7 +32,15 @@
 **目录**
 * [前提](#前提)
 * [入门](#入门)
-
+* [第一次使用Pencil绘制](#first-pencil)
+* [更加平滑的绘制](#更加平滑的绘制)
+* [倾斜Pencil](#tilt-pencil)
+  * [高度、方位与单位向量](#height-azimuth-vector)
+* [绘制阴影](#绘制阴影)
+* [使用纹理](#使用纹理)
+* [使用方位角调整宽度](#使用方位角调整宽度)
+* [玩玩透明度](#玩玩透明度)
+* [降低延迟](#降低延迟)
 
 
 ##前提
@@ -60,7 +70,10 @@ touchesMoved(_:withEvent:)中会调用drawStroke(_:touch:)在context中的前一
 touchesMoved(_:withEvent:)将画板视图显示的图像替换为context中最新的图像。 
 
 看到没？就是这么简单。
+
+<a name="first-pencil"></a>
 ##第一次使用Pencil绘制
+
 就算在数字环境中，用你的手指绘画从未是一件优雅的事。使用Pencil来绘制就像传统的模拟方法，使用一个铅笔与纸张的基础UI。
 
 现在准备好见识Pencil的第一个特性——force。当你用力触摸屏幕时得到的线条就比较宽。这个特性并不适用于你的手指，这里有一个小九九之后你就会看到。
@@ -138,9 +151,11 @@ for touch in touches {
 
 你还会发现使用Pencil画的圆更圆，这就是由于iPad Pro感应到Pencil时会扫描出双倍的触摸点。
 
+<a name="tilt-pencil"></a>
 ##倾斜Pencil
 现在你可以熟练的在app里作画了。然而如果你读过任何Pencil评测的话，你会记得讨论过它有阴影绘制的能力。用户们需要做的就是将笔倾斜，殊不知这种阴影是不会自动产生，取决于我们这些聪明的开发者如何利用代码去让它工作。
 
+<a name="height-azimuth-vector"></a>
 ###高度、方位与单位向量
 在这节中，我会向你描述如何测量这种倾斜，你会在下一节添加简易的阴影效果。
 
