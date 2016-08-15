@@ -1,7 +1,13 @@
 #Bond Tutorial: Bindings in Swift
 ##学习Bond：Swift中的数据绑定
 
-[原文地址](https://www.raywenderlich.com/123108/bond-tutorial)
+***
+
+>* 原文链接 : [Bond Tutorial: Bindings in Swift](https://www.raywenderlich.com/123108/bond-tutorial)
+* 原文作者 : [Colin Eberhardt](https://www.raywenderlich.com/u/colineberhardt)
+* 译者 : [yrq110](https://github.com/yrq110)
+
+***
 
 >注意: 升级到Xcode 7.3, iOS 9.3, Swift 2.2. 2016.04.08
 
@@ -15,6 +21,23 @@ Swift Bond是一个绑定框架，可以免去在绑定UI时的繁琐工作，�
 
 >注意: 对于不知道Swift Bond的读者，这是一个框架的名字,来源于小说中的间谍-James Bond, 他总是这样介绍自己“Bond … James Bond.” ，
 他很喜欢干马天尼，“摇匀，不要搅拌”。放轻松！准备进入Swift Bond的世界！
+
+**目录**
+* [快速绑定](#快速绑定)
+* [数据操作](#数据操作)
+* [工作原理](#工作原理)
+* [MVVM](#mvvm)
+* [添加一个视图模型](#添加一个视图模型)
+* [由观测量创建观测量](#由观测量创建观测量)
+* [准备搜索](#准备搜索)
+* [使用500px API](#500px)
+* [渲染结果](#渲染结果)
+* [些许UI的天分](#ui-talent)
+* [处理错误](#处理错误)
+* [添加搜索设置](#添加搜索设置)
+* [绑定日期](#绑定日期)
+* [数据约束](#数据约束)
+
 
 ##快速绑定
 
@@ -151,11 +174,12 @@ searchTextField.bnd_text
   .bindTo(activityIndicator.bnd_animating)
 ````
 
+<a name="mvvm"></a>
 ##MVVM
 Bond使UI属性间的绑定变得很轻松，不过并不是想要的目标。Bond是一个支持模型-视图-视图模型(Model-View-ViewModel,MVVM)模式的框架，如果你没用过这种模式，我建议你看看我[以前的教程中的第一部分](http://www.raywenderlich.com/74106/mvvm-tutorial-with-reactivecocoa-part-1)。
 理论知识差不多了，来写写代码吧:]
 
-##添加一个视图模型(View Model)
+##添加一个视图模型
 首先，移除ViewController.swift中的示例代码，一个可信度更高的应用结构应有如下的viewDidLoad()方法:
 ````swift
 override func viewDidLoad() {
@@ -223,6 +247,7 @@ Optional("Bond Lov")
 Optional("Bond Love")
 ````
 很棒 — 现在确信了text field的变化会传递给视图模型了。
+
 ##由观测量创建观测量
 是时候对观测量映射部分做一些有用的事情了。回到PhotoSearchViewModel.swift，在视图模型中添加如下属性:
 ````swift
@@ -295,6 +320,7 @@ Bond Throttles Good!
 ````
 如果没有Bond，要实现这个功能会挺费劲的。
 
+<a name="500px"></a>
 ##使用500px API
 
 在这个app中需要使用500px API。选择它是因为其具有相关的简易接口与认证机制。
@@ -433,6 +459,7 @@ Bond中有一个为绑定观测量数组与列表视图所准备的EventProducer
 
 当在文本框内输入时，UI会自动更新，是不是很酷。
 
+<a name="ui-talent"></a>
 ##些许UI的天分
 
 是时候对UI做的什么了！
