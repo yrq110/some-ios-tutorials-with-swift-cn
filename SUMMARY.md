@@ -13,5 +13,7 @@
 * [10.Using Sleep Analysis in HealthKit with Swift](Using Sleep Analysis in HealthKit with Swift.md)
 * [11.Documenting Your Swift Code in Xcode Using Markdown](Documenting Your Swift Code in Xcode Using Markdown.md)
 * [12.Creating Gradient Colors Using CAGradientLayer](Creating Gradient Colors Using CAGradientLayer.md)
-* [13.How to Generate PDF using HTML Templates and UIPrintPageRenderer in iOS](How to Generate PDF using HTML Templates and UIPrintPageRenderer in iOS.md)(work in progress)
+* [13.How to Generate PDF using HTML Templates and UIPrintPageRenderer in iOS](How to Generate PDF using HTML Templates and UIPrintPageRenderer in iOS.md)
 * [14.Building a Speech-to-Text App Using Speech Framework in iOS 10](Building a Speech-to-Text App Using Speech Framework in iOS 10.md)(work in progress)
+* [15.How To Create an Uber Splash Screen](How To Create an Uber Splash Screen.md)(work in progress)
+* [16.Building iOS Apps with Xamarin and Visual Studio](Building iOS Apps with Xamarin and Visual Studio.md)(work in progress)
