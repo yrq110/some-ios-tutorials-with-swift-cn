@@ -1,9 +1,13 @@
 #Building a Chat App in Swift Using Multipeer Connectivity Framework
 ##使用Multipeer Connectivity框架构建一个聊天app
 
-[原文地址](http://www.appcoda.com/chat-app-swift-tutorial/)
+***
 
-译者:[yrq110](https://github.com/yrq110)
+>* 原文链接 : [Building a Chat App in Swift Using Multipeer Connectivity Framework](http://www.appcoda.com/chat-app-swift-tutorial/)
+* 原文作者 : [GABRIEL THEODOROPOULOS](http://www.appcoda.com/author/gabrielth/)
+* 译者 : [yrq110](https://github.com/yrq110)
+
+***
 
 `Multipeer Connectivity`-`多点连接`
 
@@ -37,6 +41,22 @@ MPC的逻辑是很简单的:  一台设备(一个节点)使用它的搜索器，
 
 最后，如果你从未使用过MPC框架，我建议你扫一眼苹果的官方文档与我之前的教程。哦了不浪费时间了，开始编程吧。
 
+**目录**
+* [关于Demo App](#demo)
+* [一个自定义类](#一个自定义类)
+* [搜索节点](#搜索节点)
+* [显示搜索到的节点](#显示搜索到的节点)
+* [处理广播](#处理广播)
+* [邀请节点](#邀请节点)
+* [连接到会话](#连接到会话)
+* [一个发送数据的简便方法](#一个发送数据的简便方法)
+* [在节点间发送数据](#在节点间发送数据)
+* [接收数据](#接收数据)
+* [终止聊天](#终止聊天)
+* [最后修整](#最后修整)
+* [测试app](#test)
+
+<a name="demo"></a>
 ##关于Demo App
 
 来稍微说下demo应用，一个聊天app。好吧这与之前MPC教程中的聊天app有很大的共同之处，不过让我解释一下:不管我怎么想，都找不到一个比这个更合适的类型，聊天app一直会是首选，我相信在教程的最后你会认同我的看法的。
@@ -760,6 +780,7 @@ func session(session: MCSession!, didFinishReceivingResourceWithName resourceNam
 func session(session: MCSession!, didReceiveStream stream: NSInputStream!, withName streamName: String!, fromPeer peerID: MCPeerID!) { }
 
 ````
+<a name="test"></a>
 ##测试app
 可以在两台设备(至少)上运行demo，也可以在一台设备与一个虚拟机上运行。首先通过开关app中的广播功能来操作搜索器与广播器，然后选择一个节点来开始聊天，发送、接收消息，最后终止对话。如果你完成了测试，可以改改代码，添加一些你想要的功能。
 
