@@ -1,8 +1,13 @@
 #OAuth 2.0 with Swift Tutorial
 ##Swift的OAuth 2.0使用指南
-[原文地址](https://www.raywenderlich.com/99431/oauth-2-with-swift-tutorial)
 
-译者:[yrq110](https://github.com/yrq110)
+***
+
+>* 原文链接 : [OAuth 2.0 with Swift Tutorial](https://www.raywenderlich.com/99431/oauth-2-with-swift-tutorial)
+* 原文作者 : [Corinne Krych](https://www.raywenderlich.com/u/ckrych)
+* 译者 : [yrq110](https://github.com/yrq110)
+
+***
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2015/05/oauth2-epalined-4b-250x250.png)
 
@@ -10,6 +15,24 @@
 不过你知道如何使用OAuth2连接你的服务与iOS app吗？
 
 在这篇教程中，你会使用一个名为Incognito的分享型app来学习如何使用[AeroGear OAuth2](https://github.com/aerogear/aerogear-ios-oauth2), [AFOAuth2Manager](https://github.com/AFNetworking/AFOAuth2Manager)和[OAuthSwift](https://github.com/dongri/OAuthSwift)这些开源OAuth2库来将你的资源分享到GoogleDrive上。
+
+**目录**
+* [入门](#入门)
+* [讲讲为何需要OAuth2](#why-need)
+* [授权之舞](#授权之舞)
+  * [Step 0: 注册](#step-0)
+  * [Step 1: 授权](#step-1)
+  * [Step 2: 交换授权码与令牌](#step-2)
+  * [Step 3: 取得资源](#step-3)
+* [注册OAuth2提供商](#regis)
+* [使用AeroGear与外部浏览器授权](#aerogear)
+* [配置URL Scheme](#url-scheme)
+* [使用嵌入的Web视图](#web-view)
+* [使用嵌入web视图的OAuthSwift](#oauthswift)
+* [配置URL](#con-url)
+* [显示UIWebView](#display-webview)
+* [使用AFOAuth2Manager授权](#afoauthma)
+
 ##入门
 
 [下载Incognito开始工程](http://www.raywenderlich.com/wp-content/uploads/2015/04/Incognito.aerogear_start.zip)。开始工程使用CocoaPods来安装AeroGear与其他你需要的一切，包括生成pods与xcworkspace目录。
@@ -30,6 +53,7 @@
 
 让我来给你讲个故事吧，而非让你看RFC6749 OAuth2的规范以至于太无聊。
 
+<a name="why-need"></a>
 ##讲讲为何需要OAuth2
 周一的清晨，我们的开发小哥Bob在咖啡机前碰到了友好的极客Alice。Bob拿着一大摞文件，好像挺忙的样子，他的老板想让他研究一下OAuth2规范并加入到Incognito应用中。
 
@@ -65,8 +89,11 @@ OAuth2规范使用授权流(grant flows)来描述交互行为。
 
 这里是授权认证之舞的步骤：
 
+<a name="step-0"></a>
 ###Step 0: 注册
 app需要注册需要访问的服务。对你来说，Incognito需要注册Google Drive。别担心，之后会介绍具体怎么做。
+
+<a name="step-1"></a>
 ###Step 1: 授权
 舞蹈开始时Incognito会给第三方服务端发一个请求的授权码，包含以下信息：
 * 客户端ID: 在注册服务阶段提供。定义与服务会话的app。
@@ -78,13 +105,17 @@ app之后会切换到浏览器界面。一旦用户登入，则Google授权服�
 
 ![](https://cdn2.raywenderlich.com/wp-content/uploads/2015/05/oauth2-explained-3.png)
 
+<a name="step-2"></a>
 ###Step 2: 交换授权码与令牌
 授权码是临时的，因此OAuth2库需要用临时码交换得到一个合适的访问令牌，是随机生成的。
+
+<a name="step-3"></a>
 ###Step 3: 取得资源
 使用访问令牌，Incognito可以访问服务器上受保护的资源-用户所授权访问的资源，可以自由的上传图片。
 
 准备好实践了吗？首先，你需要注册OAuth2的提供商-Google。
 
+<a name="regis"></a>
 ##注册OAuth2提供商
 如果你没有Google账户，现在就去创建一个吧。我们会等你:]
 
@@ -119,6 +150,7 @@ app之后会切换到浏览器界面。一旦用户登入，则Google授权服�
 
 现在成功注册了Google服务，可以开始使用第一个OAuth2库来实现OAuth2了：依赖外部浏览器的AeroGear。
 
+<a name="aerogear"></a>
 ##使用AeroGear与外部浏览器授权
 打开ViewController.swift在文件头部添加如下代码：
 ````swift
@@ -186,6 +218,7 @@ URL scheme。
 
 >注意：Safari将你的授权响应信息存放在了模拟器的cookie中，所以别立即就重新授权，为了清空模拟器的这些cookie需要重置iOS模拟器的内容与设置。
 
+<a name="url-scheme"></a>
 ##配置URL Scheme
 允许你的用户重定向回到Incognito中，你需要自定义一个关联的URL scheme。
 在Info.plist.文件中点击右键选择Open As\Source Code，在plist的底部，</dict>标签的右边加入如下代码：
@@ -232,6 +265,8 @@ func application(application: UIApplication,
 你可以从[这里](http://www.raywenderlich.com/wp-content/uploads/2015/05/Incognito.aerogear_final.zip)下载完成后的应用。
 
 在OAuth2授权过程中跳转到外部浏览器未免显得太笨重，应该有一个简化的实现方法...
+
+<a name="web-view"></a>
 ##使用嵌入的Web视图
 
 嵌入的web视图有更好的用户体验。使用UIWebView来实现而不是跳转到Safari中。从安全的角度来讲，使用app的代码来处理登录表单与提供商的数据会使安全性降低。当用户输入信息时app可以使用JS去访问用户证书，如果你的终端用户信任app的安全性的话是一个可考虑的方案。
@@ -240,6 +275,7 @@ func application(application: UIApplication,
 
 来使用OAuthSwift库重新实现分享的方法，不过这次使用的是嵌入的web视图。
 
+<a name="oauthswift"></a>
 ##使用嵌入web视图的OAuthSwift
 
 将会开始一个不同的新工程，所以先关闭Xcode的工作区，下载Incognito初始工程的版本，用Xcode打开Incognito.xcworkspace文件。
@@ -294,6 +330,7 @@ oauthswift.authorizeWithCallbackURL(
 4. 这个域名是你请求访问的Drive API。
 5. 如果授权成功则可以开始上传图片了。
 
+<a name="con-url"></a>
 ##配置URL
 如之前的工程那样的，需要设置一个Incognito接受的URL scheme，你所要做的就是实现处理自定义URL的代码。
 
@@ -315,6 +352,7 @@ func application(application: UIApplication,
 
 构建并运行你的工程，创建一个新的自拍然后上传。喔! 再一次成功了! 挺简单的吧 :]
 
+<a name="display-webview"></a>
 ##显示UIWebView
 现在就要如约添加web view了。点击Incognito文件夹，在Xcode中的工程导航栏处选择File\New\File，然后选择iOS\Source\Swift File，将其命名为 WebViewController然后保存进工程中。
 
@@ -370,6 +408,7 @@ UIApplication.sharedApplication().keyWindow?.rootViewController?.dismissViewCont
 
 在这个教程中还剩下一件事。来重新审视share()方法，使用著名的HTTP库AFNetworking在OAuth2中的应用。
 
+<a name="afoauthma"></a>
 ##使用AFOAuth2Manager授权
 AFOAuth2Manager使用一种与其他OAuth2库完全不同的方式：使用基于著名的AFNetworking框架的底层API。至于你想用一个UIWebView还是打开一个外部的浏览器完全由你来决定，开发者可自由选择在OAuth2之舞中第1步的初始化方式。
 
