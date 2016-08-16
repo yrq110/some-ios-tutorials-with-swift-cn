@@ -182,6 +182,7 @@ print(originalNames)
 
 在这一节中，你将会学习到函数式编程中几个常见的高阶函数——filter、map与reduce。
 
+<a name="Filter"></a>
 ####Filter
 在swift中，filter(:)是CollectionType型值的一个方法，比如说数组(array),它可以将另一个函数作为参数输入，若数组中的值执行这个函数后的值为真，则返回。
 
@@ -210,6 +211,8 @@ shortWaitTimeRides = parkRides.filter { $0.waitTime < 15.0 }
 print(shortWaitTimeRides)
 ````
 在这里，.filter()会去除parkRides数组中的每一个ride，观察它的waitTime属性并计算它是否小于15。你声明式地告诉程序你想让它做什么而不是怎么做，这一开始看起来有点神秘。
+
+<a name="Map"></a>
 ####Map
 CollectionType类型的方法map(:)也接受一个函数作为参数，在对每一个参数中的元素进行操作后返回一个与之前相同长度的数组。map函数的返回值类型可以不与参数元素的类型相同。
 
@@ -223,6 +226,8 @@ print(rideNames)
 print(rideNames.sort(<))
 ````
 你的sortedNames(:)方法得益于map、sort与一个闭包，现在变成了仅仅两行！
+
+<a name="Reduce"></a>
 ####Reduce
 CollectionType类型方法reduce(:,:)接受两个参数。第一个是一个类型T的值，第二个是函数，它将T的值与另一个元素融合产生一个具有新值的T，输入函数会处理调用的集合中的每一个元素。
 
