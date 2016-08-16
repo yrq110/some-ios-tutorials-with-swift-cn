@@ -1,5 +1,13 @@
 #Sprite Kit Swift 2 Tutorial for Beginners
 ##Sprite Kit Swift 2 初学指南
+
+***
+
+>* 原文链接 : [Building a Chat App in Swift Using Multipeer Connectivity Framework](http://www.appcoda.com/chat-app-swift-tutorial/)
+* 原文作者 : [GABRIEL THEODOROPOULOS](http://www.appcoda.com/author/gabrielth/)
+* 译者 : [yrq110](https://github.com/yrq110)
+
+***
 [原文地址](https://www.raywenderlich.com/119815/sprite-kit-swift-2-tutorial-for-beginners)
 
 译者:[yrq110](https://github.com/yrq110/)
