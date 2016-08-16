@@ -1,8 +1,13 @@
 #Introduction to Functional Programming in Swift
 ##Swift函数式编程介绍
-[原文地址](https://www.raywenderlich.com/114456/introduction-functional-programming-swift)
 
-译者:[yrq110](https://github.com/yrq110)
+***
+
+>* 原文链接 : [Introduction to Functional Programming in Swift](https://www.raywenderlich.com/114456/introduction-functional-programming-swift)
+* 原文作者 : [Joe Howard](https://www.raywenderlich.com/u/macsimus)
+* 译者 : [yrq110](https://github.com/yrq110)
+
+***
 
 ![title](https://cdn2.raywenderlich.com/wp-content/uploads/2015/08/intro-250x250.png)
 
@@ -13,7 +18,24 @@
 >注意。如果你想深入了解swift的函数式编程，可以看看[Swift by Tutorials](http://www.raywenderlich.com/store/swift-by-tutorials)中的函数式编程章节，[这里](http://www.raywenderlich.com/82599/swift-functional-programming-tutorial)也可以。
 
 **目录**
-* [关于Demo App](#demo)
+* [入门](#入门)
+* [什么是函数式编程?](#what-is-fp)
+* [函数式编程概念](#函数式编程概念)
+  * [不变性与副作用](#不变性与副作用)
+  * [模块化](#模块化)
+  * [第一类与高阶函数](#第一类与高阶函数)
+    * [Filter](#Filter)
+    * [Map](#Map)
+    * [Reduce](#Reduce)
+  * [柯里化](#柯里化)
+  * [纯函数](#纯函数)
+  * [引用透明](#引用透明)
+  * [递归](#递归)
+* [命令式 vs 声明式](#im-vs-de)
+  * [命令式方法](#命令式方法)
+  * [函数式方法1](#fp-11)
+  * [函数式方法2](#fp-2)
+
 ##入门
 在Xcode中创建一个新的playground命名为IntroFunctionalProgramming，其他选项默认，选择iOS平台，点击create创建。
 
@@ -40,6 +62,7 @@ struct Ride {
 
 现在你也许会想象出玩海盗船时失重的恐怖，过山车的激情。不过相信我，没有一种设施的感觉像从其他编程风格到函数式编程的转换。
 
+<a name="what-is-fp"></a>
 ##什么是函数式编程？
 函数式编程与其他表现方式的区别常常被描述为命令式与声明式思想的区别。
 
@@ -93,7 +116,7 @@ let parkRides = [
 parkRides[0] = Ride(name: "Functional Programming", types: [.Thrill], waitTime: 5.0)
 ````
 改变其中的项会发生编译错误。去修改那些ride吧！没门儿，小鬼！
-##模块化
+###模块化
 你将会写出你的第一个函数，在swift的String使用NSString的方法，因此需要在playground的头部添加Foundation框架:
 ````swift
 import Foundation
@@ -320,6 +343,7 @@ print(parkRides)
 ````
 第二行证明了quicksort(:)并没有修改输入的不变数组。
 
+<a name="im-vs-de"></a>
 ##命令式 vs 声明式
 考虑一下下面的问题，结合你学习到的函数式编程知识，对命令式与函数式编程的不同之处会有一个清晰的理解。
 >**问题陈述** 一个带小孩的家庭想在频繁如厕的情况下玩尽可能多的设施，所以他们需要找到排队最短的，适合小孩的设施。帮助他们找到所有等待时间小于20分钟的家庭类设施并以等待时间为基准排序(升序)。
@@ -356,6 +380,7 @@ print(sortedRidesOfInterest)
 
 用命令式代码书写可以是可以，但是扫一眼后对它所做的事情并没有一个清晰的思路。需要暂停窥视算法细节去想想这个。你说没什么大不了的?如果你回过头来维护，debug或者将它交给其他开发者呢？就像网上那些人说的：你这样做不对！
 
+<a name="fp-1"></a>
 ###函数式方法1
 函数式编程可以做得更好，在你的playground中添加如下代码:
 ````swift
@@ -371,6 +396,7 @@ print(sortedRidesOfInterest)
  
 函数式编程不仅让你的代码变得更简洁，也让其含义变得更显而易见。我敢打赌你找不到副作用！
 
+<a name="fp-2"></a>
 ###函数式方法2
 上面的单行代码解决方法也许有些隐晦，不过可以使用一个可修改的变量，利用之前用过的柯里化过滤方法来创建家庭设施过滤器:
 ````swift
