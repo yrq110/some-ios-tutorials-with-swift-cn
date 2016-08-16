@@ -1,8 +1,13 @@
 #Swift Tutorial: Working with JSON
 ##Swift指南：使用JSON
-[原文地址](https://www.raywenderlich.com/120442/swift-json-tutorial)
 
-译者:[yrq110](https://github.com/yrq110)
+***
+
+>* 原文链接 : [Swift Tutorial: Working with JSON](https://www.raywenderlich.com/120442/swift-json-tutorial)
+* 原文作者 : [Attila Hegedüs](https://www.raywenderlich.com/u/cynicalme)
+* 译者 : [yrq110](https://github.com/yrq110)
+
+***
 
 ![swift](https://cdn3.raywenderlich.com/wp-content/uploads/2014/06/swift_tut-250x250.jpg)
 > 更新至Xcode 7.1与Swift 2   12-21-2015
@@ -68,6 +73,20 @@ print("Dani's age is \(age)")
 
 你将会使用Gloss去解析一个包含US App商店Top25应用信息的JSON文档。你将会发现在Objective-C中也能轻易的使用！
 
+
+**目录**
+* [入门](#入门)
+* [用Swift原生方法解析JSON](#swift-json)
+* [JSON对象映射介绍](#ob-map)
+* [使用Gloss解析JSON](#gloss)
+  * [在你的工程中集成Gloss](#integ-gloss)
+  * [映射JSON到对象](#map-obj)
+    * [TopApps](#TopApps)
+    * [Feed](#Feed)
+    * [App](#App)
+  * [检索远程JSON](#ret-json)
+  * [Gloss的工作原理](#hook-gloss)
+
 ##入门
 下载这篇教程的[开始playground](http://www.raywenderlich.com/wp-content/uploads/2015/11/TopApps-Starter.zip)
 
@@ -85,6 +104,8 @@ print("Dani's age is \(age)")
   * `DataManager.swift`：管理来自本地或网络的数据检索，之后你将会使用这个文件中的方法加载一些JSON。
 
 当你感到对当前的playground充分理解后请继续向下阅读！
+
+<a name="swift-json"></a>
 ##用Swift原生方法解析JSON
 首先，你需要从使用Swift原生方法解析JSON开始，不使用任何的外部库。这将会帮助你理解使用像Gloss这样的库的益处。
 >若你已经深知使用原生方法解析JSON的痛处，请直接跳到下一节
@@ -144,6 +165,7 @@ DataManager.getTopAppsDataFromFileWithSuccess { (data) -> Void in
 
 仅仅为了检索出第一个app的名字就用了这么冗长的代码，是时候看看Gloss的本事了。
 
+<a name="ob-map"></a>
 ##JSON对象映射介绍
 对象映射是一个将JSON对象转换为本地Swift对象的一种技术。在定义后模型对象与响应的映射规则后，Gloss就会代替你承担解析的重担。
 
@@ -154,9 +176,11 @@ DataManager.getTopAppsDataFromFileWithSuccess { (data) -> Void in
 
 听起来不错？让我们来看看它是怎样工作的！
 
+<a name="gloss"></a>
 ##使用Gloss解析JSON
 为了干净工整的代码环境，新建一个名为Gloss.playground的playground，然后将topapps.json复制进Resources中，将DataManager.swift复制进Soureces中。
 
+<a name="integ-gloss"></a>
 ###在你的工程中集成Gloss
 在工程/playground中集成Gloss：
 1. 点击下面的地址[Gloss Repo Zip File](https://github.com/hkellaway/Gloss/archive/master.zip)然后保存到一个熟悉的地方。
@@ -169,6 +193,7 @@ DataManager.getTopAppsDataFromFileWithSuccess { (data) -> Void in
 成功了！现在你将Gloss添加进palyground了，可以不用使用令人头疼的可选绑定来解析JSON了！
 >也可以使用Cocoapods来安装Gloss。由于playground已经不再支持，只能在标准的Xcode工程中使用这种方法
 
+<a name="map-obj"></a>
 ###映射JSON到对象
 首先，需要根据你的JSON文档定义自己的模型对象
 
@@ -176,6 +201,7 @@ DataManager.getTopAppsDataFromFileWithSuccess { (data) -> Void in
 
 观察一下topapps.json的结构来创建数据模型吧！
 
+<a name="TopApps"></a>
 ####TopApps
 TopApps模型代表最顶层的对象，它包含一个键值对：
 ````swift
@@ -204,6 +230,7 @@ public struct TopApps: Decodable {
 
 你也许想知道<~~是个啥。它叫做编码操作符(Encode Operator)，在Gloss中的Operators.swift文件中所定义。它会告诉Gloss抓取属于key键的值或对于进行编码。`Feed`是一个`Decodable`对象，因此Gloss可以将编码的任务委托给这个类。
 
+<a name="Feed"></a>
 ####Feed
 `Feed`对象与顶层的对象非常相似。`Feed`有两对键值。你只对top25的app感兴趣，因此不需要去处理author对象。
 ````swift
@@ -228,6 +255,8 @@ public struct Feed: Decodable {
  
 }
 ````
+
+<a name="App"></a>
 ####App
 `App`是定义的最后一个模型对象。它代表表中的一个app：
 ````swift
@@ -321,6 +350,7 @@ App(name: "Game of War - Fire Age", link: "https://itunes.apple.com/us/app/game-
 ````
 这里关注的是解析本地数据，你如何解析一个远程的数据？
 
+<a name="ret-json"></a>
 ###检索远程JSON
 是时候将这个工程变得更加实用了。通常会检索远程数据而不是本地的。可以通过网络请求轻易的得到AppStore的排行榜。
 
@@ -367,6 +397,8 @@ App(name: "Game of War - Fire Age", link: "https://itunes.apple.com/us/app/game-
 ~~~~
 topApps.feed?.entries
 ~~~~
+
+<a name="hook-gloss"></a>
 ###Gloss的工作原理
 可以看到Gloss在解析处理方面的卓越成效，不过它是怎么工作的呢？
 
