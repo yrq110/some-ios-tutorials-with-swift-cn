@@ -1,8 +1,13 @@
 #Unit Testing in Xcode 7 with Swift
 ##使用Swift在Xcode7中的单元测试
-[原文地址](http://www.appcoda.com/unit-testing-swift/)
 
-译者:[yrq110](https://github.com/yrq110)
+***
+
+>* 原文链接 : [Unit Testing in Xcode 7 with Swift](http://www.appcoda.com/unit-testing-swift/)
+* 原文作者 : [MAXIME DEFAUW](http://www.appcoda.com/author/maximedefauw/)
+* 译者 : [yrq110](https://github.com/yrq110)
+
+***
 
 每个iOS开发者都需要时不时测试他们的app。如果你不是某种狂热的码农，你应该体会过那种找了好几个小时的bug结果原因出在一个很简单的语法错误时的绝望的感觉，如果没有找到bug那将会更糟。不论你是初学者还是开发过很多app的老手，有规划的进行单元测试都会使你的代码有更高的可信度、更安全，也更容易的debug！
 
@@ -10,6 +15,16 @@
 
 顾名思义，在单元测试中会根据一个代码单元创建小巧且特定的功能性测试。如果通过了测试则会显示一个绿色log，如果由于某种原因没有成功，Xcode会给测试标记“failed”，可以通过这个标记来检视你的代码，去查找失败的原因。
 
+
+**目录**
+* [来看一个Demo](#demo)
+* [开始编写单元测试](#开始编写单元测试)
+* [验证百分比计算](#验证百分比计算)
+* [验证标签](#验证标签)
+* [来修复Bug](#bug)
+
+
+<a name="demo"></a>
 ##来看一个Demo
 
 首先，下载这个为你准备的[开始工程](https://github.com/appcoda/SwiftUnitTestDemo/blob/master/PercentageCalculatorStarter.zip?raw=true)，一个计算数字百分比结果的计算器app (比如:80的10%是8)
@@ -133,6 +148,7 @@ func testLabelValuesShowedProperly() {
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/02/unit-test-demo-fail.png)
 
+<a name="bug"></a>
 ##来修复Bug
 
 如你所见，测试失败了! 我们在方法中输入的详细错误信息会帮助我们迅速识别出引起bug的潜在原因。测试结果告诉我们resultsLabel没有显示正确的文本。来进入ViewController看看标签的text属性是如何设置的，在ViewController.swift中的updateLabels()中我们可以发现引起bug的原因:
