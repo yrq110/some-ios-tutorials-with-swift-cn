@@ -1,9 +1,13 @@
 #Documenting Your Swift Code in Xcode Using Markdown
 ##使用Markdown文档化Xcode中的Swift代码
 
-[原文地址](http://www.appcoda.com/swift-markdown/)
+***
 
-译者:[yrq110](https://github.com/yrq110)
+>* 原文链接 : [Documenting Your Swift Code in Xcode Using Markdown](http://www.appcoda.com/swift-markdown/)
+* 原文作者 : [GABRIEL THEODOROPOULOS](http://www.appcoda.com/author/gabrielth/)
+* 译者 : [yrq110](https://github.com/yrq110)
+
+***
 
 在Xcode 7所包含的所有特性中，有一个新的革命毋庸置疑：以一个更好的方式去书写代码文档。开发者可以使用强大的Markdown语句写出含有多种文本样式的文档，结合特定的关键字标识出特殊部分(比如参数、函数结果等等)，会有意想不到的结果。新的启用Markdown的文档风格有如下优点：提供了更高等级的自定义文本能力，更加灵活，当然也更加有趣。不过如果你对老式的文档风格感兴趣，可以看看我们之前的[教程](http://www.appcoda.com/documenting-source-code-in-xcode/)。
 
@@ -22,6 +26,14 @@
 
 代码文档不是一成不变，它需要是灵活的，根据实体中(属性、方法、类、结构体、枚举)产生的修改来改变。若当你实现了一个新实体时没有添加文档则之后你也不会添加的。因此，养成一个在适当的时机添加代码文档的习惯吧，分配一些时间去做，这是值得的。
 
+**目录**
+* [Markdown语句基础](#md-basic)
+* [使用Markdown](#md-use)
+* [使用关键字](#使用关键字)
+* [使用Jazzy生成文档页面](#jazzy)
+
+
+<a name="md-basic"></a>
 ##Markdown语句基础
 
 为了充分利用新的文档风格，了解一下Markdown语句的相关知识是很重要的，如果你已经知道了就跳过这一节吧。可以在网上找到很多关于Markdown的资料，比如说[这儿](https://daringfireball.net/projects/markdown/syntax)和[这儿](https://confluence.atlassian.com/bitbucketserver/markdown-syntax-guide-776639995.html)有一些不错的阅读资料。
@@ -50,6 +62,7 @@
 
 >编者的话: 可以尝试如下编辑器StackEdit (在线), Typora, Macdown, Focused 与 Ulysses。
 
+<a name="md-use"></a>
 ##使用Markdown
 
 在Swift中对各类实体编写文档需要遵守一些特性的规则，可以对属性(变量与常量)、方法、函数、类、结构体、结构体、枚举、协议、扩展与其他代码结构或实体编写文档。文档块需要在实体的声明或头文件后来编写，使用3个斜杠或将代码块包含在如下的结构中:
@@ -291,7 +304,7 @@ func breakFullName(fullname: String) -> (firstname: String, lastname: String) {
 上述的细节理解程度取决于你的接受能力，对于重要的代码应该像前面代码片段中展示的那样来撰写文档，其他不太重要的部分使用基本的元素即可。
 
 苹果提供了一个包含所有可用关键字的文档，可以在[这里](https://developer.apple.com/library/ios/documentation/Xcode/Reference/xcode_markup_formatting_ref/MarkupFunctionality.html#//apple_ref/doc/uid/TP40016497-CH54-SW1)看到比较详细的介绍，不要错过哟。
-
+<a name="jazzy"></a>
 ##使用Jazzy生成文档页面
 
 Jazzy是个用来为你的代码(不管是swift还是oc)生成苹果风格文档的一个好工具，实际上Jazzy创建了一个包含所有代码文档的独立页面。虽然它是个命令行工具，不过挺易用的。
