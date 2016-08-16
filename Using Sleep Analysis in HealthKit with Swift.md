@@ -3,20 +3,25 @@
 
 ***
 
->* 原文链接 : [Building a Chat App in Swift Using Multipeer Connectivity Framework](http://www.appcoda.com/chat-app-swift-tutorial/)
-* 原文作者 : [GABRIEL THEODOROPOULOS](http://www.appcoda.com/author/gabrielth/)
+>* 原文链接 : [Using Sleep Analysis in HealthKit with Swift](http://www.appcoda.com/sleep-analysis-healthkit)
+* 原文作者 : [ANUSHK MITTAL](http://www.appcoda.com/author/anushkmittal/)
 * 译者 : [yrq110](https://github.com/yrq110)
 
 ***
-[原文地址](http://www.appcoda.com/sleep-analysis-healthkit)
-
-译者:[yrq110](https://github.com/yrq110)
 
 睡眠革命是一个当今很流行的话题，用户们对这个有着很大的兴趣，不论是对他们自己的睡眠时间，还是对通过分析采集到的数据揭示的周期性睡眠趋势。伴随着硬件中技术的提升，尤其是手机，给予了这个关注度日益增长的问题一个全新的视角。 
 
 苹果提供了个很cool的手段，以一种安全的方式去操作用户的个人健康数据，将数据安全的存放在了内置的Health app中。你不仅可以使用HealthKit来做健身app，也可以获取睡眠分析的数据。
 
 在这篇教程中，会简要介绍HealthKit框架，并告诉你如何构建一个睡眠分析的简单app。
+
+**目录**
+* [简介](#简介)
+* [使用HealthKit框架](#use)
+* [写入睡眠分析数据](#写入睡眠分析数据)
+* [读取睡眠分析数据](#读取睡眠分析数据)
+* [App测试](#test)
+* [一些HealthKit App的建议](#sug)
 
 ##简介
 
@@ -28,6 +33,7 @@ HealthKit提供了一种在加密数据库中存储数据的结构，叫做Healt
 
 在进行下一步之前，先下载开始工程然后解压它。我已经创建好了UI，当你运行工程时，会出现一个计时器的UI，点击start按钮时计时器会开始计时。 
 
+<a name="use"></a>
 ##使用HealthKit框架
 
 应用的目标就是储存睡眠分析信息，使用Start与Stop按钮来检索。为了使用HealthKit，你必须先在app bundle中开启HealthKit功能。在工程中，点击当前工程target -> capabilities 打开HealthKit。
@@ -180,6 +186,7 @@ func retrieveSleepAnalysis() {
 ````
 这段代码查询HealthKit中的数据得到所有睡眠分析数据，并使用降序排列。每一次查询都会打印出开始时间、结束时间与对应的状态值。这里将限制参数设成了30，因此会检索最后30个样本，也可以使用谓词过滤的方法去选择你想要的开始与结束时间。
 
+<a name="test"></a>
 ##App测试
 
 在demo中我使用了一个计时器来表现时间的流逝，点击start按钮启动计时器。点击开始与结束按钮就会创建对应的NSDate对象，保存这个时间段内的睡眠分析数据。在停止的方法内可以调用saveSleepAnalysis()与retrieveSleepAnalysis()方法来保存与取得睡眠数据。
@@ -198,6 +205,7 @@ func retrieveSleepAnalysis() {
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/06/sleep-analysis-test-1024x725.png)
 
+<a name="sug"></a>
 ##一些HealthKit App的建议
 
 HealthKit为app开发者提供了一个可以分享并能轻松访问到用户数据的公共平台，避免了数据的复制与不一致的问题。在苹果的审核指南中，对于使用HealthKit时对读取/写入权限的请求没有明确说明的app可能会被拒绝。 
