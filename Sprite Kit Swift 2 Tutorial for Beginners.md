@@ -3,14 +3,11 @@
 
 ***
 
->* 原文链接 : [Building a Chat App in Swift Using Multipeer Connectivity Framework](http://www.appcoda.com/chat-app-swift-tutorial/)
-* 原文作者 : [GABRIEL THEODOROPOULOS](http://www.appcoda.com/author/gabrielth/)
+>* 原文链接 : [Sprite Kit Swift 2 Tutorial for Beginners](https://www.raywenderlich.com/119815/sprite-kit-swift-2-tutorial-for-beginners)
+* 原文作者 : [Ray Wenderlich](https://www.raywenderlich.com/u/rwenderlich)
 * 译者 : [yrq110](https://github.com/yrq110)
 
 ***
-[原文地址](https://www.raywenderlich.com/119815/sprite-kit-swift-2-tutorial-for-beginners)
-
-译者:[yrq110](https://github.com/yrq110/)
 
 ![](http://www.raywenderlich.com/wp-content/uploads/2015/10/iOS9_feast_SpriteKit.jpg)
 
@@ -23,23 +20,42 @@
 你可以按顺序看也可以直接跳到最后的样例工程，那里会出现一些忍者。
 >注意:这篇教程在我心中有特殊的地位，它的初版是我在这个站上发布的第一篇教程，使用Cocos2D与Objective-C所编写的游戏。哎呀嘛呀，时过境迁啊！
 
+**目录**
+* [Sprite Kit VS Unity](#s-vs-u)
+  * [Sprite Kit的优点](#s-ad)
+  * [Unity的优点](#u-ad)
+* [我该选哪个?](#how-choose)
+* [Hello, Sprite Kit!](#hello)
+* [初始设置](#初始设置)
+* [添加一个精灵](#添加一个精灵)
+* [移动怪物](#移动怪物)
+* [射出子弹](#射出子弹)
+* [碰撞检测与物理效果:概述](#co-de)
+* [碰撞检测与物理效果:实现](#co-ac)
+* [完成触摸](#完成触摸)
+* [哥们！游戏结束！](#game-over)
+
+<a name="s-vs-u"></a>
 ##Sprite Kit VS Unity
 除了Sprite Kit外最火的游戏框架当属Unity。Unity最初是3D引擎，不过现在也全面支持2D了。
 
 所以在你开始之前，我推荐你考虑一下Sprite Kit与Unity，看看哪个更适合你的游戏。
+
+<a name="s-ad"></a>
 ###Sprite Kit的优点:
 * **iOS内置**  不需要下载任何的库或者外部依赖。 你可以在其中直接使用其他iOS API，像iAd、In-App Purchases等等。without having to rely on extra plugins.
 * **可利用你所掌握的技能**  如果你懂iOS与Swift开发的话，就可以非常快的上手。
 * **苹果出品**  这会让你放下心来，因为它将被所有的苹果新产品所支持。比如说你可以不需要挂载地使用相同的Sprite Kit代码在iOS，OS X与tvOS上运行。
 * **免费**  可能这是对独立开发者来说最好的原因！ 无需任何费用就可以使用Sprite Kit得所有功能。Unity虽然有免费版本不过并没有专业版本的所有特性(比如说如果你想修改有Unity标志的启动界面的话就需要升级版本)。
 
+<a name="u-ad"></a>
 ###Unity的优点:
 * **跨平台**  这是一个重点。如果你使用Sprite Kit你将会被局限在苹果生态中，使用Unity可以轻松的在安卓、Windows和更多的平台上部署。
 * **虚拟场景设计**  在Unity中场景的布局与编辑视图层是非常简单的事情，而且可以通过点击一个按钮就能进行游戏的实时测试。Sprite Kit有一个基础的场景编辑器，跟Unity提供的比起来真的是很“基础”。
 * **资源包商店**  Unity有一个内置的资源包商店，你可以在那里为你的游戏购买各种各样的组件。这些组件有时可以省掉大半的开发时间！
 * **更强大**  一般来说，Unity拥有比Sprite Kit / Scene Kit更多的特性与功能。
 
-
+<a name="how-choose"></a>
 ##我该选哪个?
 看了这么多你可能就想，“好吧，俺该选哪个2D框架？”
 
@@ -51,6 +67,7 @@ If you think Unity is for you, check out some of our Unity written tutorials or 
 
 若不是，就开始学习Sprite Kit吧!
 
+<a name="hello"></a>
 ##Hello, Sprite Kit!
 从一个简单的Hello World项目开始，使用Xcode7中的Sprite Kit游戏模板来运行。
 
@@ -308,6 +325,7 @@ override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/10/007_Shoot-480x270.png)
 
+<a name="co-de"></a>
 ##碰撞检测与物理效果:概述
 
 现在你可以将飞镖扔到任何地方，不过你的忍者应该想要击落一些东西，所以让我们来加一些代码来检测子弹与目标的碰撞吧。
@@ -323,6 +341,7 @@ Sprite Kit有一个优点就是自带物理引擎，不仅擅长模拟真实运�
 
 现在你了解了战斗计划，是时候添加进动作了！
 
+<a name="co-ac"></a>
 ##碰撞检测与物理效果:实现
 在GameScene.swift的头部添加如下结构体:
 ~~~~
@@ -441,6 +460,7 @@ runAction(SKAction.playSoundFileNamed("pew-pew-lei.caf", waitForCompletion: fals
 
 >注意：如果你没听到背景乐，试试在真机上测试。
 
+<a name="game-over"></a>
 ##哥们！游戏结束！
 
 现在让我们来创建一个新场景，用来显示“你赢了”或“你输了”。创建一个名为GameOverScene的新swift文件。
