@@ -1,6 +1,13 @@
 #Using Sleep Analysis in HealthKit with Swift
 ##使用Swift与HealthKit的睡眠分析
 
+***
+
+>* 原文链接 : [Building a Chat App in Swift Using Multipeer Connectivity Framework](http://www.appcoda.com/chat-app-swift-tutorial/)
+* 原文作者 : [GABRIEL THEODOROPOULOS](http://www.appcoda.com/author/gabrielth/)
+* 译者 : [yrq110](https://github.com/yrq110)
+
+***
 [原文地址](http://www.appcoda.com/sleep-analysis-healthkit)
 
 译者:[yrq110](https://github.com/yrq110)
