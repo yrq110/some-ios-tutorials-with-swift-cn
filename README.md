@@ -2,6 +2,8 @@
 
 >Translate some IOS tutorials with swift in Chinese
 
+[**Github**](https://github.com/yrq110/Some_IOS_Tutorials_With_Swift)
+
 ###Contents
 1. Swift指南:使用JSON(Swift Tutorial: Working with JSON)
 2. Apple Pencil指南:入门(Apple Pencil Tutorial: Getting Started)
@@ -24,3 +26,6 @@
 ###Sources
 * [Ray Wenderlich](https://www.raywenderlich.com/)
 * [AppCoda](http://www.appcoda.com/)
+
+###Translators
+* [yrq110](https://github.com/yrq110)
