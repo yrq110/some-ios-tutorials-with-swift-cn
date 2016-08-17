@@ -24,7 +24,7 @@
 17. (未开始)使用SwiftyDB管理SQLite数据库(Managing SQLite Database with SwiftyDB)
 18. (未开始)使用Swift检测省电模式(Detecting low Power Mode in Swift)
 19. (未开始)在iOS 10与Swift 3中使用UIViewPropertyAnimator设计动画(Designing Animations with UIViewPropertyAnimator in iOS 10 and Swift 3)
-20. (未开始)Swift中的模式匹配(https://www.raywenderlich.com/134844/pattern-matching-in-swift)
+20. (未开始)Swift中的模式匹配(Pattern Matching in Swift)
 
 
 ###Sources
