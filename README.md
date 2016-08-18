@@ -20,7 +20,7 @@
 13. 如何使用HTML模板与UIPrintPageRenderer生成PDF(How to Generate PDF using HTML Templates and UIPrintPageRenderer in iOS)
 14. (进行中)使用iOS 10的Speech框架构建一个语音转文本app(Building a Speech-to-Text App Using Speech Framework in iOS 10)
 15. (未开始)如何创建一个Uber启动动画(How To Create an Uber Splash Screen)
-16. (未开始)在Xamarin与Visual Studio中构建iOS应用(Building iOS Apps with Xamarin and Visual Studio)
+16. (进行中)在Xamarin与Visual Studio中构建iOS应用(Building iOS Apps with Xamarin and Visual Studio)
 17. (未开始)使用SwiftyDB管理SQLite数据库(Managing SQLite Database with SwiftyDB)
 18. (未开始)使用Swift检测省电模式(Detecting low Power Mode in Swift)
 19. (未开始)在iOS 10与Swift 3中使用UIViewPropertyAnimator设计动画(Designing Animations with UIViewPropertyAnimator in iOS 10 and Swift 3)
