@@ -281,7 +281,7 @@ func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidCha
 ```
 在这个函数中必须检查`audioEngine`是否正在运行，若运行中则应该停止`audioEngine`，终止`recognitionRequest`的音频输入，禁用`microphoneButton`，设置按钮标题为"开始录音"。
 
-若`audioEngine`可用则app会调用startRecording()并设置按钮标题为"停止录音"。
+若`audioEngine`可用则app会调用`startRecording()`并设置按钮标题为"停止录音"。
 
 棒！完成了准备工作，下面来测试app，将app部署到iOS 10设备上，点击开始录音按钮，说点什么吧！
 
@@ -300,6 +300,6 @@ func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidCha
 
 期待开发者们利用新的API作出更多惊艳的app~
 
-可以看看WWDC 2016 session 509获取更多的信息。
+可以看看[WWDC 2016 session 509](https://developer.apple.com/videos/play/wwdc2016/509/)获取更多的信息。
 
 在[Github](https://github.com/appcoda/SpeechToTextDemo)上查看完整的工程。
