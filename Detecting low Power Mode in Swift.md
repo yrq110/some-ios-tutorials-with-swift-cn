@@ -5,7 +5,7 @@
 
 >* 原文链接 : [Detecting low Power Mode in Swift](http://www.ios-blog.co.uk/tutorials/swift/detecting-low-power-mode/)
 * 原文作者 : [iOS-Blog Admin](http://www.ios-blog.co.uk/)
-* 译者 : []()
+* 译者 : [bugcode]()
 
 ***
 
@@ -44,7 +44,7 @@ var StartVideoDownload = true
 let processInfo = NSProcessInfo.processInfo()
 ```
 
-> `NSProcessInfo`对象会在这个方法第一次调用的时候被创建，之后每次的调用都只会返回这个已经被创建好的对象。
+> **`NSProcessInfo`**对象会在这个方法第一次调用的时候被创建，之后每次的调用都只会返回这个已经被创建好的对象。
 
 现在写一个方法用来下载:
 
@@ -61,7 +61,7 @@ StartVideoDownload = false
 
 这个要下载的视频是Adelle的Hello。不要吐槽我。
 
-现在我们要实现`powerModeChanged(_:)`方法。
+现在我们要实现**`powerModeChanged(_:)`**方法。
 
 ```swift
 
