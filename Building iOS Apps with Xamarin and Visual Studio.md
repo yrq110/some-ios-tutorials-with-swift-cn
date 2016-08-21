@@ -58,3 +58,50 @@ Xamarin同时提供了多种工具来选择，取决于你的需求。使用[Xam
 * **对于仅使用Windows的用户**  现在去买个Mac，我会等你！:]也可以使用像[MacinCloud](http://www.macincloud.com/)或[Macminicolo](https://macminicolo.net/)这种提供远程访问服务的Mac主机来构建。
 
 这篇教程中假定你分别使用Mac与Windows电脑，别担心，在Mac上使用Windows虚拟机也是可以的。
+
+## 安装Xcode与Xamarin
+
+若还没准备好Xcode的话先在你的Mac上[下载并安装Xcode](https://itunes.apple.com/us/app/xcode/id497799835?uo=8&at=11ld4k)，跟安装其它App Store上的app一样，不过大小上G了，需要花一些时间。
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/06/danish-butter-cookies-1032894_1280.jpg)
+
+Perfect time for a cookie break!
+***
+
+Xcode安好后，在Mac上下载Xamarin Studio，需要提供你的邮箱地址来下载。
+
+下载完成后打开安装包双击**Xamarin.app**安装，接受条款一路continue。
+
+安装器会搜索已存在的工具与当前平台版本，并列出一个当前开发环境的详细列表。确保选择的是**Xamarin.iOS**，点击**Continue**。
+
+![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/05/xamarin-installer.png)
+
+接着是安装项目的确认列表，点击**Continue**执行，会出现一个Summary与一个启动Xamarin Studio的选项，点击**Quit**完成安装。
+
+## 安装Visual Studio与Xamarin
+
+这篇教程中可以使用任何版本的Visual Studio，包括免费的[Community Edition](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx)。有些特性在Community Edition中没有，不过这并不影响你开发出复杂的app来。
+
+查看Windows系统的Visual Studio[最低硬件需求](https://www.visualstudio.com/en-us/downloads/visual-studio-2015-system-requirements-vs.aspx#1)，为了有一个好的开发体验，至少要3G的内存。
+
+若还未安装Visual Studio的话，在[Community Edition](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx)网站点击绿色的**Download Community 2015**按钮下载**Community Edition**安装器。
+
+运行安装器开始安装，选择自定义安装选项，在列表中展开**Cross Platform Mobile Development**，选择C#/.NET (Xamarin v4.0.3)(v4.0.3是教程在撰写时的版本，未来也许会变化)。
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/05/vs-installer-354x500.png)
+
+点击Next等待安装完成，会花点儿时间 :]
+
+若你已准备好Visual Studio了不过还没有Xamarin工具，打开Windows系统的**Programs and Features**找到Visual Studio 2015，访问其安装程序，选择**修改**，会在Cross Platform Mobile Development下面看到**C#/.NET (Xamarin v4.0.3)**，选择它点击**更新**进行安装。
+
+安了一大堆东西啊，现在搞定所有需要的东西了!
+
+![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/06/Install_Powers.png)
+
+## 创建App
+
+打开Visual Studio选择**File\New\Project**，在Visual C#下展开**iOS**，选择**iPhone**，右侧选择**Single View App**模板。这个模板会创建一个具有单视图控制器的app。
+
+![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/06/NewProject-461x320.png)
+
+**Name**和**Solution Name**都输入**ImageLocation**，选择一个app的保存路径点击**OK**创建工程。
