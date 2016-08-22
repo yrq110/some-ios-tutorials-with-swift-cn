@@ -105,3 +105,37 @@ Xcode安好后，在Mac上下载Xamarin Studio，需要提供你的邮箱地址�
 ![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/06/NewProject-461x320.png)
 
 **Name**和**Solution Name**都输入**ImageLocation**，选择一个app的保存路径点击**OK**创建工程。
+
+Visual Studio需要你准备好作为Xamarin构建主机的Mac:
+
+1. 在Mac上打开**System Preferences**选择**Sharing**。
+2. 开启**Remote Login**。
+3. 选择**Allow access**下的**Only these users**，添加一个用户用来访问Mac上的Xcode和Xamarin。
+
+  ![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/05/build-host-setup-629x500.png)
+
+4. 关闭设置回到Windows电脑。
+
+回到Visual Studio中，会被询问是否将Mac作为构建主机。选择Mac点击**Connect**，输入用户名与密码点击**Login**。
+
+可以通过工具栏确认连接状态。
+
+![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/06/Connected_Indicator.png)
+
+从解决平台的下拉菜单中选择iPhone Simulator，这时在构建主机中会自动选择一个模拟器，可以通过点击当前模拟器旁边的小箭头来改变模拟器设备。
+
+![](https://cdn2.raywenderlich.com/wp-content/uploads/2016/06/Change_Simulator-1.png)
+
+点击绿色的**Debug**箭头或者快捷键**F5**来构建并运行程序。
+
+![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/06/Build_and_Run.png)
+
+app会编译并执行，不过你在Windows上看不到它的运行情况，需要在Mac上看，这就是为何两台机子距离较近比较好 :]
+
+在最近的[Evolve会议](https://evolve.xamarin.com/)上，Xamarin宣布[iOS Simulator Remoting](https://blog.xamarin.com/live-from-evolve-new-xamarin-previews/)很快就能实现app运行在苹果的iOS 模拟器就好像是运行在Windows上的模拟器一样，不过现在你需要操作Mac上的模拟器。
+
+能看到一个显示启动界面的模拟器，然后出现一个空的视图。恭喜！Xamarin设置成功。
+
+![](https://cdn2.raywenderlich.com/wp-content/uploads/2016/05/template-app-running-1-272x500.png)
+
+点击红色停止按钮(快捷键Shift+F5)来停止app。
