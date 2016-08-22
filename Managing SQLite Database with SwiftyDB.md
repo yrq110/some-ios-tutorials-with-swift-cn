@@ -29,3 +29,16 @@
 - 删除笔记
 
 显然，SwiftDB会负责管理SQLite数据库里面的数据。所有上面这些列出来的操作都足以让你入门SwiftDB。
+
+为了尽可能的保持咱们二边的一致(学习和讲解)，你可以下载这个我已经创建好的[初始工程](https://github.com/appcoda/SwiftyDB-Demo/blob/master/NotesDBStarter.zip?raw=true)，从这个工程开始学习。下载完之后用Xcode打开浏览一下工程，熟悉一下工程里的内容。如你所见，所有的都是基础的功能，没有数据相关的特性。能跑一下这个工程最好不过了，也好知道app里面大致是什么。
+App是基于导航的，在第一个视图控制器里包含了一个展示所有已经保存笔记的tableview:
+![](http://www.appcoda.com/wp-content/uploads/2016/03/t50_1_note_list.png)
+点击每条笔记，可以编辑、修改笔记，我们还可以在每条笔记上左滑来删除笔记。
+![](http://www.appcoda.com/wp-content/uploads/2016/03/t50_2_delete_note.png)
+可以通过点击导航栏上的(+)加号来创建新笔记。为了有足够的操作练习的例子可用，下面列出了在编辑笔记时可用的操作(有已经在demo里实现的，也有新增的)：
+1. 设置标题和正文
+2. 更改字体
+3. 更改字号
+4. 更改文本颜色
+5. 笔记本引入图片
+6. 范围内移动图片，指定图片位置
