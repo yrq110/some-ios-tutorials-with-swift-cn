@@ -103,3 +103,26 @@ end
 稍等片刻，然后准备开始吧。这次不要打开之前的初始工程，直接用Xcode打开`NotesDB.xcworkspace`。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/03/t50_6_folder_after_installation.png)
+
+## 从SwiftyDB开始 – 我们的Model层
+
+在`NotesDB`工程里有一个名为`Note.swift`的空文件。这个文件就是我们今天的入手点，现在我们要创建几个类用来表示笔记的实体。在理论层面上，接下来要做的就是iOS`MVC`模式的`Model`层的工作。
+
+首先要做的就是引入SwiftDB库，如你所想，在文件的最开头加入如下代码:
+
+```swift
+import SwiftDB
+```
+
+现在，定义这个项目中最核心的类:
+
+```swift
+class Note: NSObject, Storable{
+  
+}
+```
+
+使用SwiftDB的时候有下面二个特殊规则，在上面的类定义中你也能看到:
+
+1. 带有属性的类要用SwiftDB将其存储在数据库中，这个类必须继续`NSObject`。
+2. 带有属性的类要用SwiftDB将其存储在数据库中，这个类必须适配`Storable`协议(是SwiftDB的协议)。
