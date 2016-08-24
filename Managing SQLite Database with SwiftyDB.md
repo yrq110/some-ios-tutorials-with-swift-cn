@@ -66,3 +66,63 @@ App是基于导航的，在第一个视图控制器里包含了一个展示所�
 > sudo gem install cocoapods
 
 回车，输入密码，下载的时候可以稍等一会儿休息下。下载完之后别关终端，一会儿还要用。
+
+### 安装 SwiftyDB及相关依赖
+
+使用**cd**命令进入到初始工程的根目录下(在终端里):
+
+>  cd PATH_TO_THE_STARTER_PROJECT_DIRECTORY
+
+现在是时候创建**Podfile**了，Podfile文件描述了我们将要下载到CocoaPods里面的库文件。最简单的方式就是就是使用下面的命令让CocoaPods为我们生成一个空Podfile::
+
+> pod init
+
+运行完命令，工程根目录会产生一个名为`Podfile`的文件。用编辑器打开(最好别用自带的TextEdit)，然后把下面的内容填入文件中:
+
+```shell
+use_frameworks!
+
+target 'NotesDB' do
+    pod "SwiftyDB"
+end
+```
+
+![t50_4_podfile](http://www.appcoda.com/wp-content/uploads/2016/03/t50_4_podfile.png)
+
+
+`pod "SwiftDB"`这一行代码是真正有用的。通过那行代码CocoaPods就会下载SwiftDB库和其所有的依赖库，同时还会在Xcode的工作目录中创建多个子目录。
+
+编辑完Podfile，保存关闭。这时确保你已经在Xcode里关了之前打开的初始工程，回到终端输入下面的命令:
+
+> pod install
+
+
+![t50_5_pod_install_2](http://www.appcoda.com/wp-content/uploads/2016/03/t50_5_pod_install_2.png)
+
+
+稍等片刻，然后准备开始吧。这次不要打开之前的初始工程，直接用Xcode打开`NotesDB.xcworkspace`。
+
+![](http://www.appcoda.com/wp-content/uploads/2016/03/t50_6_folder_after_installation.png)
+
+## 从SwiftyDB开始 – 我们的Model层
+
+在`NotesDB`工程里有一个名为`Note.swift`的空文件。这个文件就是我们今天的入手点，现在我们要创建几个类用来表示笔记的实体。在理论层面上，接下来要做的就是iOS`MVC`模式的`Model`层的工作。
+
+首先要做的就是引入SwiftDB库，如你所想，在文件的最开头加入如下代码:
+
+```swift
+import SwiftDB
+```
+
+现在，定义这个项目中最核心的类:
+
+```swift
+class Note: NSObject, Storable{
+  
+}
+```
+
+使用SwiftDB的时候有下面二个特殊规则，在上面的类定义中你也能看到:
+
+1. 带有属性的类要用SwiftDB将其存储在数据库中，这个类必须继承`NSObject`。
+2. 带有属性的类要用SwiftDB将其存储在数据库中，这个类必须适配`Storable`协议(是SwiftDB的协议)。
