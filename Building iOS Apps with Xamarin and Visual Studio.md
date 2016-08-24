@@ -139,3 +139,41 @@ app会编译并执行，不过你在Windows上看不到它的运行情况，需�
 ![](https://cdn2.raywenderlich.com/wp-content/uploads/2016/05/template-app-running-1-272x500.png)
 
 点击红色停止按钮(快捷键Shift+F5)来停止app。
+
+## 创建Collection View
+
+app会在一个Collection View中显示用户照片的缩略图，Collection View是一个使用网格显示一些物件的iOS控件。
+
+在**Solution Explorer**中打开**Main.storyboard**，编辑app的故事板，其中包含app的“场景”。
+
+![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/06/Main_Storyboard.png)
+
+打开**Toolbox**在文本框中输入**collection**过滤出部件。将**Data Views**下面的**Collection View**对象拖拽到空视图上面。
+
+![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/06/Drag_Collection_View-650x456.png)
+
+选择collection view，应该会看到视图的每条边上都有**空心圆**，若看到的是**T型**图案，再次点击切换到空心圆。
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/05/resize-collection-view-521x500.gif)
+
+点击并拖动每个圆到视图的边界直接出现蓝色线条，这时松开鼠标边界就会与这个位置对齐。
+
+现在需要设置collection view的Auto Layout Constraints，这会告知app当设备旋转时如何调整视图的尺寸。在故事板上方的工具栏中，点击CONSTRAINTS标签旁的绿色按钮添加信号，这会给collection view自动添加constrains。
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/06/Add_Constraints-650x112.png)
+
+生成的constrains基本上没问题，因此你无需修改它们。在**Properties**窗口，切换到**Layout**子视图然后滚动到下面的**Constraints**区域。
+
+由边界生成的两个constraints是正确的，不过**高度**和**宽度**constraints却有问题，点击每栏后面的**X**删除Width与Height constraints。
+
+![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/06/Delete_Constraints-304x500.png)
+
+注意若collection view变成了橘黄色，则出现的指示器表示constraints需要被修复。
+
+点击collection view选择它，若看到的依旧是圆圈则再次点击将图标换成绿色**T型**图案，点击并拖动collection view**顶部**边界的T到名为**Top Layout Guide**的绿色矩形，释放鼠标创建一个与视图上边界关联的constraint。
+
+最后，点击并拖动collection view**左侧**的T到左边界直接出现**蓝色虚线**，释放鼠标创建一个与视图左边界关联的constraint。
+
+现在，你的constraints设置应像下面这样:
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/06/Constraints.png)
