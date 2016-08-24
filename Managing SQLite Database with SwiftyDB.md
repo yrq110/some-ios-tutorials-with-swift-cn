@@ -124,5 +124,5 @@ class Note: NSObject, Storable{
 
 使用SwiftDB的时候有下面二个特殊规则，在上面的类定义中你也能看到:
 
-1. 带有属性的类要用SwiftDB将其存储在数据库中，这个类必须继续`NSObject`。
+1. 带有属性的类要用SwiftDB将其存储在数据库中，这个类必须继承`NSObject`。
 2. 带有属性的类要用SwiftDB将其存储在数据库中，这个类必须适配`Storable`协议(是SwiftDB的协议)。
