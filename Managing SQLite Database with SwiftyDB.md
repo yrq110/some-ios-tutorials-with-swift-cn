@@ -174,3 +174,17 @@ class ImageDescriptor: NSObject, NSCoding {
     var imageName: String!
 }
 ```
+
+注意表示尺寸的数据类型是用`NSData`而不是`CGRect`来表示的。这样做很有必要，后期向数据库存储数据的时候就相对简单些。针对类要适配`NSCoding`协议这个事，在你明白如何做的同时，也要明白为什么要这样做。
+
+回到`Note`类，如下所示，在类中定义一个`ImageDescriptor`数组:
+
+```swift
+class Note: NSObject, Storable {
+    ...    
+    
+    var images: [ImageDescriptor]!
+    
+    ...
+}
+```
