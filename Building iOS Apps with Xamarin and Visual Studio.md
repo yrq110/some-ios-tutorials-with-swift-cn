@@ -177,3 +177,32 @@ app会在一个Collection View中显示用户照片的缩略图，Collection Vie
 现在，你的constraints设置应像下面这样:
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/06/Constraints.png)
+
+
+## 设置Collection View Cell
+
+也许你注意到了collection view中的包含一个红色感叹号的正方形轮廓，这就是一个colletion view cell，表示collection view中的单个条目。
+
+来设置这个**cell的尺寸**，选择collection view，滚动到**Layout**选项卡的顶部，将**Cell Size**下的**Width**和**Height**设为**100**。
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/06/cell-size.png)
+
+接着点击cell上的**红色圆圈**，此时会弹出一个提示说你还未设置cell的重用修饰符，选择cell到Widget选项卡中，滚动到底部的**Collection Reusable View**，在**Identifier中**输入**ImageCellIdentifier**，这样错误提示就会消失了。
+
+![](https://cdn2.raywenderlich.com/wp-content/uploads/2016/06/Set_Reuse_Identifier-480x202.png)
+
+继续向下滚动到**Interaction Section**，选择**Predefined**(预设)中的blue作为背景色。
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/06/Set_Cell_Background_Color-427x320.png)
+
+这样scene应如下所示:
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/05/collection-cell-with-color-470x500.png)
+
+滚动到**Widget**顶部将**Class**设为**PhotoCollectionImageCell**。
+
+![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/06/Set_Cell_Class.png)
+
+Visual Studio会使用这个名称自动创建一个继承自**UICollectionViewCell**的类，并生成**PhotoCollectionImageCell.cs**文件。
+
+
