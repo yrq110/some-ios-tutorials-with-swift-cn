@@ -127,4 +127,38 @@ class Note: NSObject, Storable{
 1. 带有属性的类要用SwiftDB将其存储在数据库中，这个类必须继承`NSObject`。
 2. 带有属性的类要用SwiftDB将其存储在数据库中，这个类必须适配`Storable`协议(是SwiftDB的协议)。
 
-现在可以考虑在类中添加属性了，针对添加属性SwiftDB有一个新的规则:为了能在数据库中取出数据时加载整个Note对象，定义的属性datatypes(数据类型)必须是这个列表中已有的类型，不能用简单的数据类型(数组字典)。如果有“不兼容”的数据类型，我们需要使用额外的方法来转换成对应的对应的数据(稍后详述)。SwiftDB默认这样的数据类型是不会被存入数据库的，也不会有对应的数据表字段。同时，其他任何类中我们想存入数据库的属性我们都需要区别对待。
+现在可以考虑在类中添加属性了，针对添加属性SwiftDB有一个新的规则:为了能在数据库中取出数据时加载整个`Note`对象，定义的属性`datatypes`(数据类型)必须是这个[列表](http://oyvindkg.github.io/swiftydb/#howToRetrieveObjects)中已有的类型，不能用简单的数据类型(数组字典)。如果有“不兼容”的数据类型，我们需要使用额外的方法来转换成对应的对应的数据(稍后详述)。SwiftDB默认这样的数据类型是不会被存入数据库的，也不会有对应的数据表字段。同时，其他任何类中我们想存入数据库的属性我们都需要区别对待。
+
+
+
+最后还有一个规则，适配了`Storable`协议的的类必须实现`init`方法:
+
+```swift
+class Note: NSObject, Storable {
+    
+    override required init() {
+        super.init()
+        
+    }
+}
+```
+
+现在我们已经有了所有该有的信息，开始定义类属性吧。现在并不定义好所有的属性，因为还有一些属性后期需要讨论一下。所以，这里都是基本的属性:
+
+```swift
+class Note: NSObject, Storable {
+    let database: SwiftyDB! = SwiftyDB(databaseName: "notes")
+    var noteID: NSNumber!
+    var title: String!    
+    var text: String!    
+    var textColor: NSData!    
+    var fontName: String!    
+    var fontSize: NSNumber!    
+    var creationDate: NSDate!    
+    var modificationDate: NSDate!
+    
+    ...
+}
+```
+
+除了第一个，其他不需要额外的注释。当对象初始化的时候，如果数据库(名为`notes.sqlite`)不存在就会创建一个，同时会自动创建一个数据表。数据表的属性与类中定义的属性数据类型相匹配。此外，如果数据库存在，就会直接打开它。。
