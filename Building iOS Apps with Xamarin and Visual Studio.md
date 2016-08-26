@@ -206,3 +206,57 @@ app会在一个Collection View中显示用户照片的缩略图，Collection Vie
 Visual Studio会使用这个名称自动创建一个继承自**UICollectionViewCell**的类，并生成**PhotoCollectionImageCell.cs**文件。
 
 
+## 创建Collection View数据源
+
+You’ll need to manually create a class to act as the UICollectionViewDataSource, which will provide data for the collection view.
+
+Right-click on ImageLocation in the Solution Explorer. Select Add \ Class, name the class PhotoCollectionDataSource.cs and click Add.
+
+Open the newly added PhotoCollectionDataSource.cs and add the following at the top of the file:
+
+```c#
+using UIKit;
+```
+
+This gives you access to the iOS UIKit framework.
+
+Change the definition of the class to the following:
+```c#
+public class PhotoCollectionDataSource : UICollectionViewDataSource
+{
+}
+```
+
+Remember the reuse identifier you defined on the collection view cell earlier? You’ll use that in this class. Add the following right inside the class definition:
+
+private static readonly string photoCellIdentifier = "ImageCellIdentifier";
+
+The UICollectionViewDataSource class contains two abstract members you must implement. Add the following right inside the class:
+
+```c#
+public override UICollectionViewCell GetCell(UICollectionView collectionView, 
+    NSIndexPath indexPath)
+{
+    var imageCell = collectionView.DequeueReusableCell(photoCellIdentifier, indexPath)
+       as PhotoCollectionImageCell;
+ 
+    return imageCell;
+}
+ 
+public override nint GetItemsCount(UICollectionView collectionView, nint section)
+{
+    return 7;
+}
+```
+
+GetCell() is responsible for providing a cell to be displayed within the collection view.
+
+DequeueReusableCell reuses any cells that are no longer needed, for example if they’re offscreen, which you then simply return. If no reusable cell is available, a new one is created automatically.
+
+GetItemsCount tells the collection view to display seven items.
+
+Next you’ll add a reference to the collection view to the ViewController class, which is the view controller that manages the scene containing the collection view. Switch back to Main.storyboard, select the collection view, then select the Widget tab. Enter collectionView for the Name.
+
+![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/06/Set_CollectionView_Name-480x160.png)
+
+Visual Studio will automatically create an instance variable with this name on the ViewController class.
