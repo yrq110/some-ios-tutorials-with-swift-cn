@@ -188,3 +188,95 @@ class Note: NSObject, Storable {
     ...
 }
 ```
+
+但是现在有一个问题就是，我们应该怎么把用`ImageDescriptor`对象来表示的`image`图片数组转换成`imagesData`的`NSData`对象？方法就是是使用`NSKeyedArchiver`类把`images`数组打包成一个`NSDate`对象。之后会给出详细的实现代码，现在我们需要继续回去写`ImageDescripter`类中其他的代码。
+
+如你所知，可以被打包归档(其他语言也叫`序列化`)的类，其类中的所有属性也必须是可序列化的，在我们定义的类满足条件，`ImageDescripter`类中定义的二种数据类型(`NSData`和`String`)都可以被序列化。但这还不够，还要对其进行`encode(编码)`和`decode(解码)`，以便能在合适的时候能打包和解包，这就是为什么类需要适配`NSCoding`协议。通过这个协议我们实现下面的几个方法(其中一个是`init`方法)，就可以正确的编码和解码类中的二个属性了:
+
+```swift
+class ImageDescriptor: NSObject, NSCoding {
+    ...
+    
+    required init?(coder aDecoder: NSCoder) {
+        frameData = aDecoder.decodeObjectForKey("frameData") as! NSData
+        imageName = aDecoder.decodeObjectForKey("imageName") as! String
+    }
+    
+    func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(frameData, forKey: "frameData")
+        aCoder.encodeObject(imageName, forKey: "imageName")
+    }
+}
+```
+
+想更多了解`NSCoding`协议和`NSKeydArchiver`类，可以看下**[这里](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Protocols/NSCoding_Protocol/)**和**[这里](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSKeyedArchiver_Class/)**，在这里对此不做过多讨论。
+
+除了上边那些，再定义一个便捷的`init`方法。方法很简单，不需要注释:
+
+```swift
+class ImageDescriptor: NSObject, NSCoding {
+    ...    
+    
+    init(frameData: NSData!, imageName: String!) {
+        super.init()
+        self.frameData = frameData
+        self.imageName = imageName
+    }
+}
+```
+
+到此，我们和SwiftDB的第一个照面就打完了。即使没做太多的SwiftDB相关工作，但这部分也非常重要，三点原因:
+
+1. 创建一个需要使用SwiftDB功能的类。
+2. 了解使用SwiftDB时的一些规则。
+3. 知道更多关于使用SwiftDB时对存入数据库的数据类型的限制。
+
+`提示`: 如果现在在Xcode中有些错误，再构建(Command - B)一次工程去掉这些错误。
+
+## 主键和忽略属性
+
+处理数据库的时候推荐使用`primary keys(主键)`，这些键能帮你唯一确定一条数据表中的记录，同时各种操作也依赖主键(如更新一条特定的数据记录)。可以在[这里](http://databases.about.com/cs/administration/g/primarykey.htm)查阅主键的含义。
+
+在SwiftDB中用类中的一个或者多个属性为数据表指定主键非常简单。SwiftDB提供了`PrimaryKeys`协议，所有想要在数据库里各数据表中用主键标识唯一类对象的类都可以实现这个协议。
+
+方法非常简单而且很标准，下面直接开始:
+
+在`NotesDB`工程里找到`Extensions.swift`文件，工程导航栏中点击打开这个文件，加入下面的代码:
+
+```swift
+extension Note: PrimaryKeys {
+    class func primaryKeys() -> Set<String> {
+        return ["noteID"]
+    }
+}
+```
+
+在这个demo里，我们要`noteID`在sqlite数据库中各数据里做为唯一的主键。如果需要更多的主键，只需要写在一行用逗号隔开即可。
+
+还有，并不是所有的属性都需要存储在数据库里，需要显式的告知SwiftDB不要包含那些属性。例如，在`Note`类中有二个属性不需要存储在数据库中(可能是属性可能存储在数据中，也可能是我们不想存入数据库):`images`数组和`database`数据库实例对象。如何显式排除这二个属性？通过实现另一个SwiftDB提供的叫`IgnoredProperties`的协议来做:
+
+```swift
+extension Note: IgnoredProperties {
+    class func ignoredProperties() -> Set<String> {
+        return ["images", "database"]
+    }
+}
+```
+
+如果还有更多的属性不想存入数据库，只需要把属性加入上面的列表即可。例如，还有下面这个属性:
+
+```swift
+var noteAuthor:String!
+```
+
+我们不想把这个属性存入数据库，只需要把这个属性加进`IgnoredProperties`协议实现里即可:
+
+```swift
+extension Note: IgnoredProperties {
+    class func ignoredProperties() -> Set<String> {
+        return ["images", "database", "noteAuthor"]
+    }
+}
+```
+
+`提示`:如果发现有错误，`MARKDOWN_HASH6211c316cc840902a4df44c828a26fbeMARKDOWN_HASH`库引入到`MARKDOWN_HASH1dbda56f2122b1744ebf59bb64bbffdfMARKDOWN_HASH`文件中。
