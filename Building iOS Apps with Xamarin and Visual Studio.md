@@ -9,6 +9,8 @@
 
 ***
 
+> PS：本篇教程使用的是C#，并非Swift。
+
 在创建iOS app时，开发者通常会选择苹果提供的语言与集成开发环境: Objective-C / Swift与Xcode，然而这并不是唯一的选择，可以使用多种语言与框架进行iOS app的创建。
 
 [Xamarin](https://xamarin.com/)是一个比较流行的选择，一个跨平台的框架，允许你使用C#和Visual Studio进行iOS, Android, OS X与Windows app的开发。Xamarin的一个主要优势在于可以在iOS与Android间共用一个app代码。
@@ -208,30 +210,32 @@ Visual Studio会使用这个名称自动创建一个继承自**UICollectionViewC
 
 ## 创建Collection View数据源
 
-You’ll need to manually create a class to act as the UICollectionViewDataSource, which will provide data for the collection view.
+你需要手动创建一个类，作为`UICollectionViewDataSource`为collection view提供数据。
 
-Right-click on ImageLocation in the Solution Explorer. Select Add \ Class, name the class PhotoCollectionDataSource.cs and click Add.
+右击`Solution Explorer`中的`ImageLocation`，选择Add/Class，命名为`PhotoCollectionDataSource.cs`点击`Add`。
 
-Open the newly added PhotoCollectionDataSource.cs and add the following at the top of the file:
+打开新建的`PhotoCollectionDataSource.cs`，在文件顶部添加如下代码:
 
 ```c#
 using UIKit;
 ```
+这允许你访问iOS的`UIKit`框架。
 
-This gives you access to the iOS UIKit framework.
 
-Change the definition of the class to the following:
+如下改变类的定义:
 ```c#
 public class PhotoCollectionDataSource : UICollectionViewDataSource
 {
 }
 ```
 
-Remember the reuse identifier you defined on the collection view cell earlier? You’ll use that in this class. Add the following right inside the class definition:
+还记得之前定义过collection view cell的重用标识符吗？在这个类中会使用它,在类中进行如下定义:
 
+```c#
 private static readonly string photoCellIdentifier = "ImageCellIdentifier";
+```
 
-The UICollectionViewDataSource class contains two abstract members you must implement. Add the following right inside the class:
+`UICollectionViewDataSource`类中包含两个需要你实现的抽象成员。在类中添加如下代码:
 
 ```c#
 public override UICollectionViewCell GetCell(UICollectionView collectionView, 
@@ -249,14 +253,37 @@ public override nint GetItemsCount(UICollectionView collectionView, nint section
 }
 ```
 
-GetCell() is responsible for providing a cell to be displayed within the collection view.
+`GetCell()`负责提供collection view中显示的cell。
 
-DequeueReusableCell reuses any cells that are no longer needed, for example if they’re offscreen, which you then simply return. If no reusable cell is available, a new one is created automatically.
+`DequeueReusableCell`重用那些不再需要的cell，比如说超出了屏幕。若没有可用的重用cell，会自动创建一个新的cell。
 
-GetItemsCount tells the collection view to display seven items.
+`GetItemsCount`告诉collection view需要显示7个条目。
 
-Next you’ll add a reference to the collection view to the ViewController class, which is the view controller that manages the scene containing the collection view. Switch back to Main.storyboard, select the collection view, then select the Widget tab. Enter collectionView for the Name.
+接着需要添加一个collection view与ViewContrller类的关联，这样view contrller。回到`Main.storyboard`，选择collection view，然后选择`Widget`选项卡，在`Name`栏输入collectionView。
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/06/Set_CollectionView_Name-480x160.png)
 
-Visual Studio will automatically create an instance variable with this name on the ViewController class.
+Visual Studio会使用这个名字自动在ViewContrller类中创建一个静态变量。
+
+打开`ViewController.cs`，在类中添加如下代码:
+
+```c#
+private PhotoCollectionDataSource photoDataSource;
+```
+
+在`ViewDidLoad()`底部，添加如下代码用来初始化数据源并与collection view连接。
+
+```c#
+photoDataSource = new PhotoCollectionDataSource();
+collectionView.DataSource = photoDataSource;
+```
+
+这样的话`photoDataSource`就会给collection view提供数据了。
+
+构建并运行，应该能在collection view中看到七个蓝色方块。
+
+![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/05/cells-no-photo-app-272x500.png)
+
+棒 – app来啦!
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/06/Blue_Squares-230x320.png)
