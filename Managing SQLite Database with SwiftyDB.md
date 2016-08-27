@@ -233,3 +233,22 @@ class ImageDescriptor: NSObject, NSCoding {
 
 `提示`: 如果现在在Xcode中有些错误，再构建(Command - B)一次工程去掉这些错误。
 
+## 主键和省略属性
+
+处理数据库的时候推荐使用`primary keys(主键)`，这些键能帮你唯一确定一条数据表中的记录，同时各种操作也依赖主键(如更新一条特定的数据记录)。可以在[这里](http://databases.about.com/cs/administration/g/primarykey.htm)查阅主键的含义。
+
+在SwiftDB中用类中的一个或者多个属性为数据表指定主键非常简单。SwiftDB提供了`PrimaryKeys`协议，所有想要在数据库里各数据表中用主键标识唯一类对象的类都可以实现这个协议。
+
+方法非常简单而且很标准，下面直接开始:
+
+在`NotesDB`工程里找到`Extensions.swift`文件，工程导航栏中点击打开这个文件，加入下面的代码:
+
+```swift
+extension Note: PrimaryKeys {
+    class func primaryKeys() -> Set<String> {
+        return ["noteID"]
+    }
+}
+```
+
+在这个demo里，我们要`noteID`在sqlite数据库中各数据里做为唯一的主键。如果需要更多的主键，只需要写在一行用逗号隔开即可。
