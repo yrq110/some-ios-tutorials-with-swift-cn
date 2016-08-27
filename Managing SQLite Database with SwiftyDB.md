@@ -188,3 +188,48 @@ class Note: NSObject, Storable {
     ...
 }
 ```
+
+但是现在有一个问题就是，我们应该怎么把用`ImageDescriptor`对象来表示的`image`图片数组转换成`imagesData`的`NSData`对象？方法就是是使用`NSKeyedArchiver`类把`images`数组打包成一个`NSDate`对象。之后会给出详细的实现代码，现在我们需要继续回去写`ImageDescripter`类中其他的代码。
+
+如你所知，可以被打包归档(其他语言也叫`序列化`)的类，其类中的所有属性也必须是可序列化的，在我们定义的类满足条件，`ImageDescripter`类中定义的二种数据类型(`NSData`和`String`)都可以被序列化。但这还不够，还要对其进行`encode(编码)`和`decode(解码)`，以便能在合适的时候能打包和解包，这就是为什么类需要适配`NSCoding`协议。通过这个协议我们实现下面的几个方法(其中一个是`init`方法)，就可以正确的编码和解码类中的二个属性了:
+
+```swift
+class ImageDescriptor: NSObject, NSCoding {
+    ...
+    
+    required init?(coder aDecoder: NSCoder) {
+        frameData = aDecoder.decodeObjectForKey("frameData") as! NSData
+        imageName = aDecoder.decodeObjectForKey("imageName") as! String
+    }
+    
+    func encodeWithCoder(aCoder: NSCoder) {
+        aCoder.encodeObject(frameData, forKey: "frameData")
+        aCoder.encodeObject(imageName, forKey: "imageName")
+    }
+}
+```
+
+想更多了解`NSCoding`协议和`NSKeydArchiver`类，可以看下**[这里](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Protocols/NSCoding_Protocol/)**和**[这里](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSKeyedArchiver_Class/)**，在这里对此不做过多讨论。
+
+除了上边那些，再定义一个便捷的`init`方法。方法很简单，不需要注释:
+
+```swift
+class ImageDescriptor: NSObject, NSCoding {
+    ...    
+    
+    init(frameData: NSData!, imageName: String!) {
+        super.init()
+        self.frameData = frameData
+        self.imageName = imageName
+    }
+}
+```
+
+到此，我们和SwiftDB的第一个照面就打完了。即使没做太多的SwiftDB相关工作，但这部分也非常重要，三点原因:
+
+1. 创建一个需要使用SwiftDB功能的类。
+2. 了解使用SwiftDB时的一些规则。
+3. 知道更多关于使用SwiftDB时对存入数据库的数据类型的限制。
+
+`提示`: 如果现在在Xcode中有些错误，再构建(Command - B)一次工程去掉这些错误。
+
