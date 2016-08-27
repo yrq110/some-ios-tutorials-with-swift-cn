@@ -233,7 +233,7 @@ class ImageDescriptor: NSObject, NSCoding {
 
 `提示`: 如果现在在Xcode中有些错误，再构建(Command - B)一次工程去掉这些错误。
 
-## 主键和省略属性
+## 主键和忽略属性
 
 处理数据库的时候推荐使用`primary keys(主键)`，这些键能帮你唯一确定一条数据表中的记录，同时各种操作也依赖主键(如更新一条特定的数据记录)。可以在[这里](http://databases.about.com/cs/administration/g/primarykey.htm)查阅主键的含义。
 
@@ -252,3 +252,31 @@ extension Note: PrimaryKeys {
 ```
 
 在这个demo里，我们要`noteID`在sqlite数据库中各数据里做为唯一的主键。如果需要更多的主键，只需要写在一行用逗号隔开即可。
+
+还有，并不是所有的属性都需要存储在数据库里，需要显式的告知SwiftDB不要包含那些属性。例如，在`Note`类中有二个属性不需要存储在数据库中(可能是属性可能存储在数据中，也可能是我们不想存入数据库):`images`数组和`database`数据库实例对象。如何显式排除这二个属性？通过实现另一个SwiftDB提供的叫`IgnoredProperties`的协议来做:
+
+```swift
+extension Note: IgnoredProperties {
+    class func ignoredProperties() -> Set<String> {
+        return ["images", "database"]
+    }
+}
+```
+
+如果还有更多的属性不想存入数据库，只需要把属性加入上面的列表即可。例如，还有下面这个属性:
+
+```swift
+var noteAuthor:String!
+```
+
+我们不想把这个属性存入数据库，只需要把这个属性加进`IgnoredProperties`协议实现里即可:
+
+```swift
+extension Note: IgnoredProperties {
+    class func ignoredProperties() -> Set<String> {
+        return ["images", "database", "noteAuthor"]
+    }
+}
+```
+
+`提示`:如果发现有错误，`MARKDOWN_HASH6211c316cc840902a4df44c828a26fbeMARKDOWN_HASH`库引入到`MARKDOWN_HASH1dbda56f2122b1744ebf59bb64bbffdfMARKDOWN_HASH`文件中。
