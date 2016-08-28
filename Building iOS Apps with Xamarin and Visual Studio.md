@@ -284,6 +284,114 @@ collectionView.DataSource = photoDataSource;
 
 ![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/05/cells-no-photo-app-272x500.png)
 
-棒 – app来啦!
+棒 – 有点app的感觉啦!
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/06/Blue_Squares-230x320.png)
+
+## 显示照片
+
+即便蓝色方块比较酷，接着来更新数据源，检索设备中的照片将其显示在collection view中。需要使用Photos框架来访问Photos app所管理的照片与视频资源。
+
+开始，添加在cell上添加一个用来显示图像的视图。打开Main.storyboard选择collection view cell。在Widget选项卡中向下滚动，把背景色改为默认。
+
+![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/06/Set_Default_Cell_Background_Color.png)
+
+打开Toolbox，搜索Image View,，然后把一个Image View拖拽到collection view Cell上。
+
+![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/06/Drag_Image_View.png)
+
+初始的image view大小会比cell大很多，来重新设定尺寸，选择image view来到Properties\Layout选项卡中。在View区域将X与Y设为0，Width与Height设为100。
+
+![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/06/Set_Image_View_Size.png)
+
+切换到image view的Widget选项卡，将Name设为cellImageView。Visual Studio会自动创建一个名为cellImageView的字段。
+
+![](https://cdn2.raywenderlich.com/wp-content/uploads/2016/06/Set_Image_View_Name.png)
+
+滚动到**View**区域，将**Mode**改为**Aspect Fill**，这会使图像拉伸以适应边界尺寸。
+
+![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/06/Set_Image_View_Mode.png)
+
+这个字段并不是public的，其它类无法访问它。需要提供一个方法来设置图像。
+
+打开PhotoCollectionImageCell.cs在类中添加如下方法:
+
+```c#
+public void SetImage(UIImage image)
+{
+    cellImageView.Image = image;
+}
+```
+
+现在来检索照片以更新**PhotoCollectionDataSource**。
+
+在**PhotoCollectionDataSource.cs**顶部添加如下行:
+
+```c#
+using Photos;
+```
+
+给**PhotoCollectionDataSource**添加如下字段:
+
+```c#
+private PHFetchResult imageFetchResult;
+private PHImageManager imageManager;
+```
+**imageFetchResult**字段会保存一个照片实体对象们的有序列表，从**imageManager**来得到照片列表。
+
+在**GetCell()**方法上面添加这个构造函数:
+
+```c#
+public PhotoCollectionDataSource()
+{
+    imageFetchResult = PHAsset.FetchAssets(PHAssetMediaType.Image, null);
+    imageManager = new PHImageManager();
+}
+```
+
+这个构造函数得到了Photos app中的一个所有图像资源的列表，将结果储存进了imageFetchResult字段中。接着设置imageManager，给app用来查询每幅图像的详细信息之用。
+
+在构造函数下面添加析构函数释放imageManager对象。
+
+```c#
+~PhotoCollectionDataSource()
+{
+    imageManager.Dispose();
+}
+```
+
+为了让GetItemsCount与GetCell方法使用这些资源并返回images而不是空的cells，如下修改GetItemsCount():
+
+```c#
+public override nint GetItemsCount(UICollectionView collectionView, nint section)
+{
+    return imageFetchResult.Count;
+}
+```
+
+如下修改GetCell():
+
+```c#
+public override UICollectionViewCell GetCell(UICollectionView collectionView, 
+    NSIndexPath indexPath)
+{
+    var imageCell = collectionView.DequeueReusableCell(photoCellIdentifier, indexPath) 
+        as PhotoCollectionImageCell;
+ 
+    // 1
+    var imageAsset = imageFetchResult[indexPath.Item] as PHAsset;
+ 
+    // 2
+    imageManager.RequestImageForAsset(imageAsset, 
+        new CoreGraphics.CGSize(100.0, 100.0), PHImageContentMode.AspectFill,
+        new PHImageRequestOptions(),
+         // 3
+         (UIImage image, NSDictionary info) =>
+        {
+           // 4
+           imageCell.SetImage(image);
+        });
+ 
+    return imageCell;
+}
+```
