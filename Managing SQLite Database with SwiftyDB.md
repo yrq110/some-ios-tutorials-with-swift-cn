@@ -280,3 +280,115 @@ extension Note: IgnoredProperties {
 ```
 
 `提示`:如果发现有错误，`MARKDOWN_HASH6211c316cc840902a4df44c828a26fbeMARKDOWN_HASH`库引入到`MARKDOWN_HASH1dbda56f2122b1744ebf59bb64bbffdfMARKDOWN_HASH`文件中。
+
+
+
+## 保存新笔记
+
+现在已经完成了`Note`类的最基本实现，是时候开始demo应用的功能实现了。目前在新定义的类中没添加任何方法;我们按缺失的功能一步一步的来实现。
+
+首先要有笔记，因此，app需要知道如何用SwiftDB和我们新建的二个类来保存笔记。这些主要都是在`EditNoteViewController`类中实现的，是时候打开相应的文件了。写代码之前，我把我认为很重要的属性都列在这儿了:
+
+- `imageView`:这是个数组，保存了被入笔记中的图片。不要忘了这个数组;之后有了这个数组写代码就便捷多了。
+- `currentFontName`:保存当前文本区使用的字体名称。
+- `currentFontSize`:当前文本区字体大小。
+- `editNoteID`:`noteID`(主键)，用于更新笔记，之后会用到。
+
+由于公用的功能已经在初始工程里写好了，所以下面就是来实现里面缺失的`saveNote`方法了。先做两件事: 第一，笔记如果没有标题或者正文不允许保存。第二，忽略保存笔记的时候出现的键盘。
+
+```swift
+func saveNote() {
+    if txtTitle.text?.characters.count == 0 || tvNote.text.characters.count == 0 {
+        return
+    }
+    
+    if tvNote.isFirstResponder() {
+        tvNote.resignFirstResponder()
+    }   
+}
+```
+
+继续初始化一个新`Note`对象，并为对象内属性赋值。图片需要区别对待，之后会马上处理。
+
+```swift
+func saveNote() {
+    ...
+    
+    let note = Note()
+    note.noteID = Int(NSDate().timeIntervalSince1970)
+    note.creationDate = NSDate()
+    note.title = txtTitle.text
+    note.text = tvNote.text!
+    note.textColor = NSKeyedArchiver.archivedDataWithRootObject(tvNote.textColor!)
+    note.fontName = tvNote.font?.fontName
+    note.fontSize = tvNote.font?.pointSize
+    note.modificationDate = NSDate()    
+}
+```
+
+一些注释:
+
+- `noteID`属性期望任意的整型数字来做为主键。你可以创建或者生成任意的整型值，要足够长确保唯一。这里我们直接使用当前时间戳的一部分做为主键，但是在真正的应用程序里这样做并不是很好的方法，因为时间戳里包含了太多的数字。在我们的demo程序里还好，只是简单的用int值。
+- 当我们第一次保存笔记的时候，同时设置笔记创建时间和修改时间为当前时间戳(用`NSDate`对象表示)。
+- 唯一需要我们做一下特殊的转换的就是，从`NSData`对象中取出当前文本区的文本颜色。文本颜色的对象值是通过`NSKeyedArchiver`类打包过的。
+
+现在重点看一下怎样保存图片。我们需要写一个新方法来填充图片数组。方法里做二个事情:保存真正的图片到应用程序的就文稿(documents)目录中，同时为每个图片创建相应的`ImageDecripter`对象。这些对象都会被放在`images`数组里。
+
+
+
+为创建这个新的方法，我们需要迂回一下，再次回到`Note.swift`文件。先看具体实现，后面再具体讨论细节。(原文排版有误)
+
+```swift
+func storeNoteImagesFromImageViews(imageViews: [PanningImageView]) {
+	if imageViews.count > 0 {
+		if images == nil {
+			images = ImageDescriptor
+		} else {
+			images.removeAll()
+		}
+
+
+    	for i in 0..<imageViews.count {
+        	let imageView = imageViews[i]
+         	let imageName = "img_\(Int(NSDate().timeIntervalSince1970))_\(i)"
+
+
+        	images.append(ImageDescriptor(frameData: imageView.frame.toNSData(), imageName: imageName))
+
+        	Helper.saveImage(imageView.image!, withName: imageName)
+    	}
+
+    	imagesData = NSKeyedArchiver.archivedDataWithRootObject(images)
+	} else {
+    	imagesData = NSKeyedArchiver.archivedDataWithRootObject(NSNull())
+}
+```
+
+
+
+这里解释为什么要写上面这个方法:
+
+1. 最开始检查`images`数组是否已经初始化。如果为空，初始化数组，非空则移除内部所有数据。第二步在我们更新一个已存在的笔记的时候非常有用。
+2. 针对每个图片创建唯一的名称。图片名称类似于:“img_12345679\_1”。
+3. 传入图片尺寸和图片名称参数给我们自定义的构造方法来初始化一个`ImageDescripter`对象。`toNSData()`方法已经做为`CGRect`的扩展实现，可以`Extensions.swift`中找到。作用就是转换尺寸为`NSData`对象。`ImageDecripter`初始化完成后，直接放入`images`数组中。
+4. 保存真正的图片到应用程序的文稿目录中。`saveImage(_:withName:)`类方法在`Helper.swift`中实现，那里还有更多有用的方法。
+5. 最后所有的图片都处理完成，就把`images`数组通过打包转换成`NSData`对象，并赋值给`imagesData`属性。最后一行代码才是`ImageDescripeter`类适配`NSCoding`协议的真正意义所在。
+
+`else`分支看似无用，其实是必需的。默认情况笔记中加图片时`imagesData`就是空值。但是SQLite并不能识别“nil”值是空值。SQLite只认`NSNull`，所以我们需要转为`NSData`。
+
+回到`EditNoteViewController.swift`文件，加入下面的我们刚刚创建的方法:
+
+```swift
+func saveNote() {
+    ...
+    
+    note.storeNoteImagesFromImageViews(imageViews)
+}
+```
+
+
+
+
+
+
+
