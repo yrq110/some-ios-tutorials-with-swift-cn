@@ -374,6 +374,18 @@ func storeNoteImagesFromImageViews(imageViews: [PanningImageView]) {
 4. 保存真正的图片到应用程序的文稿目录中。`saveImage(_:withName:)`类方法在`Helper.swift`中实现，那里还有更多有用的方法。
 5. 最后所有的图片都处理完成，就把`images`数组通过打包转换成`NSData`对象，并赋值给`imagesData`属性。最后一行代码才是`ImageDescripeter`类适配`NSCoding`协议的真正意义所在。
 
+`else`分支看似无用，其实是必需的。默认情况笔记中加图片时`imagesData`就是空值。但是SQLite并不能识别“nil”值是空值。SQLite只认`NSNull`，所以我们需要转为`NSData`。
+
+回到`EditNoteViewController.swift`文件，加入下面的我们刚刚创建的方法:
+
+```swift
+func saveNote() {
+    ...
+    
+    note.storeNoteImagesFromImageViews(imageViews)
+}
+```
+
 
 
 
