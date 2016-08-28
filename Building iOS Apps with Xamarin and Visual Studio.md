@@ -411,6 +411,6 @@ public override UICollectionViewCell GetCell(UICollectionView collectionView,
 
 ![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/06/Why_no_work-248x320.png)
 
-iOS考虑到访问的用户照片是敏感信息，会提示用户是否给予权限。然后，app必须注册以在用户授权时获得通知，这样就可以重载视图了。下面来做这些工作。
+iOS考虑到访问的用户照片是敏感信息，会提示用户是否给予权限。app必须注册以在用户授权时获得通知，这样就可以重载视图了。下面来做这些工作。
 
 ## Registering for Photo Permission Changes
