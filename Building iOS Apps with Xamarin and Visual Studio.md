@@ -381,7 +381,7 @@ public override UICollectionViewCell GetCell(UICollectionView collectionView,
     // 1
     var imageAsset = imageFetchResult[indexPath.Item] as PHAsset;
  
-    // 2
+    // 2w
     imageManager.RequestImageForAsset(imageAsset, 
         new CoreGraphics.CGSize(100.0, 100.0), PHImageContentMode.AspectFill,
         new PHImageRequestOptions(),
@@ -395,3 +395,22 @@ public override UICollectionViewCell GetCell(UICollectionView collectionView,
     return imageCell;
 }
 ```
+
+这里是上面方法中变化部分的分析:
+
+1. **indexPath**包含一个collection view所返回item的引用值。这个Item属性是一个索引值，通过索引得到资源并将其转换为**PHAsset**类型。
+2. 使用**imageManager**通过期望的尺寸与内容模式请求得到资源图像。
+3. 许多iOS框架的方法对于请求使用延迟执行来使它们有足够的时间去完成，比如**RequestImageForAsset**，在完成时会调用一个委托方法。。当请求完成时，会调用使用image与information的委托方法。
+4. 最后将图像设置在cell中。
+
+构建并运行，会看到一个请求访问权限的提示。
+
+![](https://cdn2.raywenderlich.com/wp-content/uploads/2016/06/Permission_Prompt-333x500.png)
+
+选择**OK**，然而app...没反应。太令人失望了!
+
+![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/06/Why_no_work-248x320.png)
+
+iOS考虑到访问的用户照片是敏感信息，会提示用户是否给予权限。然后，app必须注册以在用户授权时获得通知，这样就可以重载视图了。下面来做这些工作。
+
+## Registering for Photo Permission Changes
