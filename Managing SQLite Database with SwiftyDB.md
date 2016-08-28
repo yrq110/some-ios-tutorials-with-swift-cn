@@ -280,3 +280,59 @@ extension Note: IgnoredProperties {
 ```
 
 `提示`:如果发现有错误，`MARKDOWN_HASH6211c316cc840902a4df44c828a26fbeMARKDOWN_HASH`库引入到`MARKDOWN_HASH1dbda56f2122b1744ebf59bb64bbffdfMARKDOWN_HASH`文件中。
+
+
+
+## 保存新笔记
+
+现在已经完成了`Note`类的最基本实现，是时候开始demo应用的功能实现了。目前在新定义的类中没添加任何方法;我们按缺失的功能一步一步的来实现。
+
+首先要有笔记，因此，app需要知道如何用SwiftDB和我们新建的二个类来保存笔记。这些主要都是在`EditNoteViewController`类中实现的，是时候打开相应的文件了。写代码之前，我把我认为很重要的属性都列在这儿了:
+
+- `imageView`:这是个数组，保存了被入笔记中的图片。不要忘了这个数组;之后有了这个数组写代码就便捷多了。
+- `currentFontName`:保存当前文本区使用的字体名称。
+- `currentFontSize`:当前文本区字体大小。
+- `editNoteID`:`noteID`(主键)，用于更新笔记，之后会用到。
+
+由于公用的功能已经在初始工程里写好了，所以下面就是来实现里面缺失的`saveNote`方法了。先做两件事: 第一，笔记如果没有标题或者正文不允许保存。第二，忽略保存笔记的时候出现的键盘。
+
+```swift
+func saveNote() {
+    if txtTitle.text?.characters.count == 0 || tvNote.text.characters.count == 0 {
+        return
+    }
+    
+    if tvNote.isFirstResponder() {
+        tvNote.resignFirstResponder()
+    }   
+}
+```
+
+继续初始化一个新`Note`对象，并为对象内属性赋值。图片需要区别对待，之后会马上处理。
+
+```swift
+func saveNote() {
+    ...
+    
+    let note = Note()
+    note.noteID = Int(NSDate().timeIntervalSince1970)
+    note.creationDate = NSDate()
+    note.title = txtTitle.text
+    note.text = tvNote.text!
+    note.textColor = NSKeyedArchiver.archivedDataWithRootObject(tvNote.textColor!)
+    note.fontName = tvNote.font?.fontName
+    note.fontSize = tvNote.font?.pointSize
+    note.modificationDate = NSDate()    
+}
+```
+
+一些注释:
+
+- `noteID`属性期望任意的整型数字来做为主键。你可以创建或者生成任意的整型值，要足够长确保唯一。
+
+
+
+
+
+
+
