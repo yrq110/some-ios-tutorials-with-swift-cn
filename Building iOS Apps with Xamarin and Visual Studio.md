@@ -42,6 +42,21 @@ Xamarin同时提供了多种工具来选择，取决于你的需求。使用[Xam
 
 无需任何iOS或Xamarin开发经验，不过需要你掌握一些C#的基本知识使知识的收益最大化。
 
+
+**目录**
+* [入门](#1)
+* [安装Xcode与Xamarin](#2)
+* [安装Visual Studio与Xamarin](#3)
+* [创建App](#4)
+* [创建Collection View](#5)
+* [设置Collection View Cell](#6)
+* [创建Collection View数据源](#7)
+* [显示照片](#8)
+* [注册监听照片权限的变化](#9)
+* [最后](#10)
+
+
+<a name="1"></a>
 ## 入门
 
 为了使用Xamarin和Visual Studio开发iOS应用，理论上需要两台机器:
@@ -61,13 +76,14 @@ Xamarin同时提供了多种工具来选择，取决于你的需求。使用[Xam
 
 这篇教程中假定你分别使用Mac与Windows电脑，别担心，在Mac上使用Windows虚拟机也是可以的。
 
+<a name="2"></a>
 ## 安装Xcode与Xamarin
 
 若还没准备好Xcode的话先在你的Mac上[下载并安装Xcode](https://itunes.apple.com/us/app/xcode/id497799835?uo=8&at=11ld4k)，跟安装其它App Store上的app一样，不过大小上G了，需要花一些时间。
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/06/danish-butter-cookies-1032894_1280.jpg)
 
-Perfect time for a cookie break!
+吃点曲奇休息片刻!
 ***
 
 Xcode安好后，在Mac上下载Xamarin Studio，需要提供你的邮箱地址来下载。
@@ -80,6 +96,7 @@ Xcode安好后，在Mac上下载Xamarin Studio，需要提供你的邮箱地址�
 
 接着是安装项目的确认列表，点击**Continue**执行，会出现一个Summary与一个启动Xamarin Studio的选项，点击**Quit**完成安装。
 
+<a name="3"></a>
 ## 安装Visual Studio与Xamarin
 
 这篇教程中可以使用任何版本的Visual Studio，包括免费的[Community Edition](https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx)。有些特性在Community Edition中没有，不过这并不影响你开发出复杂的app来。
@@ -100,6 +117,7 @@ Xcode安好后，在Mac上下载Xamarin Studio，需要提供你的邮箱地址�
 
 ![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/06/Install_Powers.png)
 
+<a name="4"></a>
 ## 创建App
 
 打开Visual Studio选择**File\New\Project**，在Visual C#下展开**iOS**，选择**iPhone**，右侧选择**Single View App**模板。这个模板会创建一个具有单视图控制器的app。
@@ -142,6 +160,7 @@ app会编译并执行，不过你在Windows上看不到它的运行情况，需�
 
 点击红色停止按钮(快捷键Shift+F5)来停止app。
 
+<a name="5"></a>
 ## 创建Collection View
 
 app会在一个Collection View中显示用户照片的缩略图，Collection View是一个使用网格显示一些物件的iOS控件。
@@ -180,7 +199,7 @@ app会在一个Collection View中显示用户照片的缩略图，Collection Vie
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/06/Constraints.png)
 
-
+<a name="6"></a>
 ## 设置Collection View Cell
 
 也许你注意到了collection view中的包含一个红色感叹号的正方形轮廓，这就是一个colletion view cell，表示collection view中的单个条目。
@@ -207,7 +226,7 @@ app会在一个Collection View中显示用户照片的缩略图，Collection Vie
 
 Visual Studio会使用这个名称自动创建一个继承自**UICollectionViewCell**的类，并生成**PhotoCollectionImageCell.cs**文件。
 
-
+<a name="7"></a>
 ## 创建Collection View数据源
 
 你需要手动创建一个类，作为`UICollectionViewDataSource`为collection view提供数据。
@@ -288,6 +307,7 @@ collectionView.DataSource = photoDataSource;
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/06/Blue_Squares-230x320.png)
 
+<a name="8"></a>
 ## 显示照片
 
 即便蓝色方块比较酷，接着来更新数据源，检索设备中的照片将其显示在collection view中。需要使用Photos框架来访问Photos app所管理的照片与视频资源。
@@ -413,4 +433,65 @@ public override UICollectionViewCell GetCell(UICollectionView collectionView,
 
 iOS考虑到访问的用户照片是敏感信息，会提示用户是否给予权限。app必须注册以在用户授权时获得通知，这样就可以重载视图了。下面来做这些工作。
 
-## Registering for Photo Permission Changes
+<a name="9"></a>
+## 注册监听照片权限的变化
+
+首先需要在PhotoCollectionDataSource类中添加一个方法来通知它若发生变化则重载照片，在类的底部添加如下代码:
+
+```c#
+public void ReloadPhotos()
+{
+    imageFetchResult = PHAsset.FetchAssets(PHAssetMediaType.Image, null);
+}
+```
+
+接着，打开**ViewController.cs**在文件顶部引入框架:
+
+```c#
+using Photos;
+```
+
+在**ViewDidLoad()**底部添加如下代码:
+
+```c#
+// 1
+PHPhotoLibrary.SharedPhotoLibrary.RegisterChangeObserver((changeObserver) =>
+{
+    //2
+    InvokeOnMainThread(() =>
+    {
+        // 3
+        photoDataSource.ReloadPhotos();
+        collectionView.ReloadData();
+    });
+});
+```
+分析下:
+1. app在shared photo library上注册了一个监听者，当photo library变化时会被调用。
+2. InvokeOnMainThread()确保UI变化总是在主线程中进行，否则可能会崩溃。
+3. 调用**photoDataSource.ReloadPhotos()**来重载照片，调用**collectionView.ReloadData()**来重绘collection view。
+
+最后需要处理最开始的情况——app尚未被允许访问照片，需要请求权限。
+
+在ViewDidLoad()中设置photoDataSource前添加如下代码:
+
+```c#
+if (PHPhotoLibrary.AuthorizationStatus == PHAuthorizationStatus.NotDetermined)
+{
+    PHPhotoLibrary.RequestAuthorization((PHAuthorizationStatus newStatus) =>
+    { });
+}
+```
+
+检查当前的授权状态，若为NotDetermined则显式地请求访问照片的权限。
+
+为了再次触发照片授权的提示，需要重置iPhone模拟器 ---> **Simulator \ Reset Content and Settings**。
+
+构建并运行app，会出现照片授权的提示，选择**OK**后app会在collection view中显示所有设备中照片的缩略图。
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/05/photo-collection-app-272x500.png)
+
+<a name="10"></a>
+## 最后
+
+完整的Visual Studio项目文件在[这里](https://cdn1.raywenderlich.com/wp-content/uploads/2016/07/ImageLocation.zip)下载
