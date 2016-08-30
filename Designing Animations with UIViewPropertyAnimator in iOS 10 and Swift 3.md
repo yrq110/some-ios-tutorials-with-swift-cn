@@ -9,7 +9,7 @@
 
 ***
 
-This is part of a series of tutorials introducing new features in iOS 10, the Swift programming language, and the new XCode 8 beta, which were just announced at WWDC 16
+这篇教程中介绍了iOS 10中的新特性，Swift语言与Xcode 8 beta，都是WWDC 16上刚刚发布的。
 
 UIKit in iOS 10 now has “new object-based, fully interactive and interruptible animation support that lets you retain control of your animations and link them with gesture-based interactions” through a family of new objects and protocols.
 
@@ -17,7 +17,7 @@ In short, the purpose is to give developers extensive, high-level control over t
 
 I hope to concisely introduce some of the basic usage and mention some sticking points that are not covered by the talk or documentation.
 
-## Building the Base App
+## 构建基础App
 
 We’re going to try some of the features of UIViewPropertyAnimator in a moment, but first, we need something to animate.
 
