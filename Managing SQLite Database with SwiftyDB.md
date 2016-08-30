@@ -386,9 +386,27 @@ func saveNote() {
 }
 ```
 
+现在回到`Note.swift`文件中，实现真正向数据库中存入笔记数据的方法。此时有些重要的东西需要你了解一下: SwiftDB提供了选项来执行任意关系型数据库的同步或者异步操作。使用哪种方式取决于你的app的类型。我建议使用异步的方式，因为这样在处理数据库操作的时候不会对主线程加锁，也不会锁定UI而影响用户体验。但是重申一下，用什么方法，这一切都取决于你自己。
 
+这里我们使用异步的方式把笔记数据保存到数据库。如你所见，SwiftDB里的方法包含了一个返回操作结果的闭包。返回的结果对象的更详细信息可以看[这里，我建议你现在就看。
 
+现在看看我们一直在讨论的这个新方法:
 
+```swift
+func saveNote(shouldUpdate: Bool = false, completionHandler: (success: Bool) -> Void) {
+    database.asyncAddObject(self, update: shouldUpdate) { (result) -> Void in
+        if let error = result.error {
+            print(error)
+            completionHandler(success: false)
+        }
+        else {
+            completionHandler(success: true)
+        }
+    }
+}
+```
 
+上面的代码很简单，这个方法同时也用来更新笔记。通过事先设置`shouldUpdate`这个布尔值，`asyncDataObject(...)`方法根据这个值来确定是创建一个新的数据库记录还是更新已有的笔记记录。
 
+还有，你看方法中第二个参数，是完成时的处理函数。我需要用合适的参数在笔记是否保存完成后调用这个方法。建议你在后台有异步的任务执行的时候一直用完成的回调处理函数。这样的话，在你后台任务执行完成的时候，你就能通知调用者的函数，那时就可以做任意的数据转换，或者数据备份。
 
