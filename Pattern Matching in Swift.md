@@ -66,3 +66,89 @@ playground中包含两个东西:
 
 让这家伙失业吧!(PS:此人为来源站主编)
 ***
+
+## 元组模式
+
+首先要出创建一个元组模式来生成一个教程的数组。在playground的底部添加如下代码:
+
+```swift
+enum Day: Int {
+  case monday, tuesday, wednesday, thursday, friday, saturday, sunday
+}
+```
+
+创建了一个包含一周七天的枚举，由于初始值是Int类型的，因此每一天都被分配了一个Int型值，Monday是0，Sunday是6，以此类推。
+
+在枚举声明的后面添加如下代码:
+
+```swift
+class Tutorial {
+ 
+  let title: String
+  var day: Day?
+ 
+  init(title: String, day: Day? = nil) {
+    self.title = title
+    self.day = day
+  }
+}
+```
+这里定义了一个包含两个属性的tutorial类型:tutorial的标题与发布日期。日期是一个可选变量，因此应未发布的教程来说它可以是nil。
+
+实现CustomStringConvertible，这样就可以轻松的将教程信息打印出来了:
+```swift
+extension Tutorial: CustomStringConvertible {
+  var description: String {
+    var scheduled = ", not scheduled"
+    if let day = day {
+      scheduled = ", scheduled on \(day)"
+    }
+    return title + scheduled
+  }
+}
+```
+添加一个数组来存放教程:
+
+```swift
+var tutorials: [Tutorial] = []
+```
+
+接着，通过在playground底部添加如下代码，将开始工程中的字典数组转换为教程数组:
+
+```swift
+for dictionary in json {
+  var currentTitle = ""
+  var currentDay: Day? = nil
+ 
+  for (key, value) in dictionary {
+    // todo: extract the information from the dictionary
+  }
+ 
+  let currentTutorial = Tutorial(title: currentTitle, day: currentDay)
+  tutorials.append(currentTutorial)
+}
+```
+在这里使用for-in语句遍历了json数组。使用以元组格式为循环值的for-in语句遍历了数组中每个字典的键值对。这就是元组模式的实现。
+
+你把每个教程都添加进了数组中，不过当前教程的属性是空的，需要在下一章节中使用类型转换模式来设置教程的属性。
+
+##类型转换模式
+
+为了从字典中提取教程信息，需要一个类型转换模式。在for-in循环中添加如下代码来替换掉注释:
+```swift
+// 1
+switch (key, value) {
+  // 2
+  case ("title", is String):
+    currentTitle = value as! String
+  // 3
+  case ("day", let dayString as String):
+    if let dayInt = Int(dayString), let day = Day(rawValue: dayInt - 1) {
+      currentDay = day
+  }
+  // 4
+  default:
+    break
+}
+```
+
