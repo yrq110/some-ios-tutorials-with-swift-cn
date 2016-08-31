@@ -1,5 +1,5 @@
 #Designing Animations with UIViewPropertyAnimator in iOS 10 and Swift 3
-##在iOS 10与Swift 3中使用UIViewPropertyAnimator设计动画
+##在iOS 10中Swift 3中与UIViewPropertyAnimator设计动画
 
 ***
 
@@ -11,17 +11,17 @@
 
 这篇教程中介绍了iOS 10中的新特性，Swift语言与Xcode 8 beta，都是WWDC 16上刚刚发布的。
 
-UIKit in iOS 10 now has “new object-based, fully interactive and interruptible animation support that lets you retain control of your animations and link them with gesture-based interactions” through a family of new objects and protocols.
+iOS 10中的UIKit中加入了一些新的对象与协议，具有“基于对象、完全交互，支持可中断动画来保持对动画的控制，使用基于手势的交互来连接”等特点。
 
-In short, the purpose is to give developers extensive, high-level control over timing functions (or easing), making it simple to scrub or reverse, to pause and restart animations, and change the timing and duration on the fly with smoothly interpolated results. These animation capabilities can also be applied to view controller transitions.
+简而言之就是为了给开发者可扩展的、更上层的控制，比如一些时间函数，更方便地去取消、回放、暂停与重启动画, and change the timing and duration on the fly with smoothly interpolated results. 这些动画的功能同样适用于view controller的变换。
 
-I hope to concisely introduce some of the basic usage and mention some sticking points that are not covered by the talk or documentation.
+我会简单的介绍一些基本用法，并且关注一些文档与讨论中未涉及的关键点。
 
 ## 构建基础App
 
-We’re going to try some of the features of UIViewPropertyAnimator in a moment, but first, we need something to animate.
+待会儿我们要尝试一些UIViewPropertyAnimator的特性，不过首先需要一些动画。
 
-Create a single-view application and add the following to ViewController.swift.
+创建一个单视图应用，在ViewContrller.swift中添加如下代码。
 
 ```swift
 import UIKit
@@ -59,6 +59,6 @@ class ViewController: UIViewController {
     }
 }
 ```
-There’s nothing too complicated happening here. In viewDidLoad, we created a green circle and positioned in the center of the screen. Then we attached a UIPanGestureRecognizer instance to it so that we can respond to pan events in dragCircle: by moving that circle across the screen. As you may have guessed, the result is a draggable circle:
+这儿没啥难的。在viewDidLoad中创建一个绿色的圆将其定位在屏幕中央，之后绑定一个UIPanGestureRecognizer手势，使dragCircle可以响应在它身上的拖动事件:在屏幕上移动圆圈。如你所想，结果就是一个可拖拽的圆:
 
 ![](http://i0.wp.com/jamesonquave.com/blog/wp-content/uploads/Rev-1.png?resize=432%2C702)
