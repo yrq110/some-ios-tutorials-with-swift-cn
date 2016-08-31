@@ -132,7 +132,7 @@ for dictionary in json {
 
 你把每个教程都添加进了数组中，不过当前教程的属性是空的，需要在下一章节中使用类型转换模式来设置教程的属性。
 
-##类型转换模式
+## 类型转换模式
 
 为了从字典中提取教程信息，需要一个类型转换模式。在for-in循环中添加如下代码来替换掉注释:
 ```swift
@@ -152,3 +152,98 @@ switch (key, value) {
 }
 ```
 
+逐步分析下:
+1. 切换到键值元组---重载的元组模式。
+2. 使用`is`类型转换模式检测教程的标题是否属于String类型，若是则转换它。
+3. 使用`as`类型转换模式检测教程的日期是否是String类型，若是则先将其转换成Int，然后传入枚举的可失败构造器init(rawValue:)中，得到对应的枚举值。将dayInt减去1是因为枚举的初始值是0，而tutorial.json中是从1开始的。
+4. switch语句应该是完备的，需要添加一个default case，使用break语句来跳出switch。
+
+在playground的底部添加如下代码，在控制台打印数组中的内容:
+
+```swift
+print(tutorials)
+```
+
+如你所见，现在数组中的每个教程都含有名称与发布日期了。万事俱备只欠完成的任务: 每周每天仅发布一篇教程。
+
+## 通配符模式
+
+使用通配符来安排教程的发布，不过需要先将它们的发布日期置空。在playground底部添加如下代码:
+
+```swift
+tutorials.forEach { $0.day = nil }
+```
+
+将数组中的所有教程的日期设为nil，为了安排教程的日期，在playground的底部添加如下代码段:
+
+```swift
+// 1 
+let days = (0...6).map { Day(rawValue: $0)! }
+// 2
+let randomDays = days.sorted { _ in random_uniform(value: 2) == 0 }
+// 3
+(0...6).forEach { tutorials[$0].day = randomDays[$0] }
+```
+
+这儿有点复杂，分解成如下步骤看下:
+1. 首先创建一个有关天数的数组，包含每天发生First you create an array of days, with every day of the week occurring exactly once.
+2. “整理”这个数组， random\_uniform(value:)函数用来生成随机数。在闭包中，使用下划线来忽略闭包参数，因为并不需要它。虽然有在技术上更加高效、在数学上更加准确的方法来随机变换数组元素位置，不过这就是一个通配符模式的实现!
+3. 最后，将一周中七天随机分配给了最开始的七个教程。
+
+在playground底部添加下列代码，控制台中打印安排好的教程:
+
+```swift
+print(tutorials)
+```
+
+成功了! 现在为一周中每一天都安排了一篇教程，日程中既没有发布时间重合的教程也没有时间空隙。干得好!
+
+![](https://cdn2.raywenderlich.com/wp-content/uploads/2016/07/rage_bestEICever.png)
+
+## Optional Pattern
+
+The schedule has been conquered, but as editor-in-chief you also need to sort the tutorials. You’ll tackle this with optional patterns.
+To sort the tutorials array in ascending order—first the unscheduled tutorials by their title and then the scheduled ones by their day—add the following block of code at the end of the playground:
+
+```swift
+// 1
+tutorials.sort {
+  // 2
+  switch ($0.day, $1.day) {
+    // 3
+    case (nil, nil):
+      return $0.title.compare($1.title, options: .caseInsensitive) == .orderedAscending
+    // 4
+    case (let firstDay?, let secondDay?):
+      return firstDay.rawValue < secondDay.rawValue
+    // 5
+    case (nil, let secondDay?):
+      return true
+    case (let firstDay?, nil):
+      return false
+  }
+}
+```
+
+Here’s what’s going on, step-by-step:
+1. You sort the tutorials array with the array’s sort(_:) method. The method’s argument is a trailing closure which defines the sorting order of any two given tutorials in the array. It returns true if you sort the tutorials in ascending order, and false otherwise.
+2. You switch on a tuple made of the days of the two tutorials currently being sorted. This is the tuple pattern in action once more.
+3. If both tutorials are unscheduled, their days are nil, so you sort them in ascending order by their title using the array’s compare(_:options:) method.
+4. To test whether both tutorials are scheduled, you use an optional pattern. This pattern will only match a value that can be unwrapped. If both values can be unwrapped, you sort them in ascending order by their raw value.
+5. Again using an optional pattern, you test whether only one of the tutorials is scheduled. If so, you sort the unscheduled one before the scheduled one.
+
+Add this line of code at the end of the playground to print the sorted tutorials:
+
+```swift
+print(tutorials)
+```
+
+There—now you’ve got those tutorials ordered just how you want them. You’re doing so well at this gig that you deserve a raise! Instead, however … you get more work to do.
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/07/rage_nomoretrophies.png)
+
+```swift
+```
+
+```swift
+```
