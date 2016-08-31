@@ -533,3 +533,22 @@ func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexP
 ```
 
 现在跑一下程序，你创建的所有的笔记都将显示在tableview上了。
+
+## 另一种获取数据的方式
+
+之前我们用SwiftDB库提供的`asyncObjectsForType(...)`方法从数据库中获取笔记数据。方法返回一个对象的数组(我们的例子是`Note`对象)，我感觉这非常简便。但这种从数据库中获取对象数据的方法也不是万能的；有些情况下直接获取原始数据值数组的方式可能更简便一些。
+
+SwiftDB已经替你想到了，它提供了另一种方式从数据库中获取数据。有一个叫`asyncDataForType(...)`(同步操作就用`dataForType(...)`方法)的方法。方法返回这种形式的字典集合:`[[String:SQLiteValue]]`(`SQLiteValue`表示任意可用的数据类型)。
+
+可以在[这里](http://oyvindkg.github.io/swiftydb/#syncRetrieveData)和[这里](http://oyvindkg.github.io/swiftydb/#asyncRetrieveData)了解更多相关信息。留给你作为练习，增强一下`Note`类，不单单只获取对象，也能加载简单数据类型。
+
+
+
+
+
+
+
+
+
+
+
