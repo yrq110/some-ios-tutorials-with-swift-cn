@@ -442,3 +442,94 @@ func saveNote() {
 注意上面实现中的`shouldUpdate`变量。由`editedNoteID`是否为空来决定其值。意思是笔记是否是被更新。
 
 这时候你可以跑一下程序并试着保存一下笔记。如果你是按教程一步一步做到这步，那保存笔记应该不会出任何问题。
+
+## 加载笔记列表
+
+创建和保存新笔记的功能已经可以使用，现在可以开始实现从数据库加载已保存的笔记的功能了。加载完的笔记就意味着要`NoteListViewController`类中展示出来。但是开始实现这个类之前，我们先在`Note.swift文件中新创建一个从数据库中加载数据的方法。
+
+
+
+```swift
+func loadAllNotes(completionHandler: (notes: [Note]!) -> Void) {
+    database.asyncObjectsForType(Note.self) { (result) -> Void in
+        if let notes = result.value {
+            completionHandler(notes: notes)
+        }
+        
+        if let error = result.error {
+            print(error)
+            completionHandler(notes: nil)
+        }
+    }
+}
+```
+
+真正执行加载数据的操作是SwiftDB库的`asyncObjectsForType(...)`方法，这个方法是异步的。方法返回结果可能包含错误，也可能是一个从数据库中加载出来的笔记对象的集合(数组)。第一种情况，从数据库加载数据时候出错，我们调用加载完成的回调并传给其nil参数，告知调用者加载数据出现了问题。第二种情况，我们把`Note`对象集合传给加载完成的回调函数，这样我们就可以在方法的外部使用加载出来的笔记对象数组了。
+
+
+
+现在我们打开`NoteListViewController.swift`文件。首先得定义一个包含了`Note`对象(对象都是从数据库中获取的)的数组。这个数组将做为tableview的datasource(很显然的事情)。那么就在类的开头加入如下代码:
+
+```swift
+var notes = [Note]()
+```
+
+另外还要初始化一个新的`Note对象，这样我们才能使用先前创建的`loadAllNotes(...)`方法。
+
+```swift
+var note = Note()
+```
+
+现在就写一个特别简单的方法，调用我们上面写完的方法，从数据库中获取所有存储的笔记数据并放到`notes`数组中。
+
+```swift
+func loadNotes() {
+    note.loadAllNotes { (notes) -> Void in
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            if notes != nil {
+                self.notes = notes
+                self.tblNotes.reloadData()
+            }
+        })
+    }
+}
+```
+
+注意，当加载完所有的笔记数据之后，我们要在线程里重新加载tableview。闭包中我们把数据都保存在`notes`数组中了。
+
+通过上面二个方法，我们就可以获取所有数据库中存储的笔记数据了。很简单吧！但不要忘了在某个地方调用`loadNotes()`方法，这里我们把它写在`viewDidLoad()`方法里:
+
+```swift
+override func viewDidLoad() {
+    ...
+    
+    loadNotes()
+}
+```
+
+只加载数据还不够，加载完成我们还要用上这些数据。现在我们改一下tableview的相关方法，从tableview的行数开始:
+
+```swift
+func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return notes.count
+}
+```
+
+接下来，在tableview上显示一些笔记的数据。具体来说，就是要显示每个笔记的标题，创建时间和修改时间:
+
+```swift
+func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    let cell = tableView.dequeueReusableCellWithIdentifier("idCellNote", forIndexPath: indexPath) as! NoteCell
+    
+    let currentNote = notes[indexPath.row]
+    
+    cell.lblTitle.text = currentNote.title!
+    cell.lblCreatedDate.text = "Created: \(Helper.convertTimestampToDateString(currentNote.creationDate!))"
+    cell.lblModifiedDate.text = "Modified: \(Helper.convertTimestampToDateString(currentNote.modificationDate!))"
+    
+    return cell
+    
+}
+```
+
+现在跑一下程序，你创建的所有的笔记都将显示在tableview上了。
