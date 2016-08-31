@@ -19,6 +19,6 @@
 * [在Xamarin与Visual Studio中构建iOS应用](Building iOS Apps with Xamarin and Visual Studio.md)
 * [使用SwiftyDB管理SQLite数据库](Managing SQLite Database with SwiftyDB.md)
 * [使用Swift检测省电模式](Detecting low Power Mode in Swift.md)
-* [在iOS 10与Swift 3中使用UIViewPropertyAnimator设计动画](Designing Animations with UIViewPropertyAnimator in iOS 10 and Swift 3.md)
+* [在iOS 10中使用Swift 3与UIViewPropertyAnimator设计动画](Designing Animations with UIViewPropertyAnimator in iOS 10 and Swift 3.md)
 * [Swift中的模式匹配](Pattern Matching in Swift.md)
 * [CloudKit指南:入门](CloudKit Tutorial: Getting Started.md)
