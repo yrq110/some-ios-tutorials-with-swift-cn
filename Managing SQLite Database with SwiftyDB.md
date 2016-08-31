@@ -386,9 +386,59 @@ func saveNote() {
 }
 ```
 
+现在回到`Note.swift`文件中，实现真正向数据库中存入笔记数据的方法。此时有些重要的东西需要你了解一下: SwiftDB提供了选项来执行任意关系型数据库的同步或者异步操作。使用哪种方式取决于你的app的类型。我建议使用异步的方式，因为这样在处理数据库操作的时候不会对主线程加锁，也不会锁定UI而影响用户体验。但是重申一下，用什么方法，这一切都取决于你自己。
+
+这里我们使用异步的方式把笔记数据保存到数据库。如你所见，SwiftDB里的方法包含了一个返回操作结果的闭包。返回的结果对象的更详细信息可以看[这里，我建议你现在就看。
+
+现在看看我们一直在讨论的这个新方法:
+
+```swift
+func saveNote(shouldUpdate: Bool = false, completionHandler: (success: Bool) -> Void) {
+    database.asyncAddObject(self, update: shouldUpdate) { (result) -> Void in
+        if let error = result.error {
+            print(error)
+            completionHandler(success: false)
+        }
+        else {
+            completionHandler(success: true)
+        }
+    }
+}
+```
+
+上面的代码很简单，这个方法同时也用来更新笔记。通过事先设置`shouldUpdate`这个布尔值，`asyncDataObject(...)`方法根据这个值来确定是创建一个新的数据库记录还是更新已有的笔记记录。
+
+还有，你看方法中第二个参数，是完成时的处理函数。我需要用合适的参数在笔记是否保存完成后调用这个方法。建议你在后台有异步的任务执行的时候一直用完成的回调处理函数。这样的话，在你后台任务执行完成的时候，你就能通知调用者的函数，那时就可以做任意的数据转换，或者数据备份。
+
+上面你所看到的在其他关系型数据库也能看到。我们应该总是对结果进行错误检查，无论是否有错误我们都应该检查。上面的例子如果发生错误，调用完成处理函数的时候就需要传`false`值，意思就是笔记保存失败。反之就是传`true`表示保存操作成功执行。
+
+再次回到`EditNoteViewController`类，完成`saveNote()`方法。我们调用一下刚写好的方法，如果保存成功则弹出一个窗口，如果发生错误就显示一条错误信息。
 
 
 
+```swift
+func saveNote() {
+    ...
+    
+    let shouldUpdate = (editedNoteID == nil) ? false : true
+    
+    note.saveNote(shouldUpdate) { (success) -> Void in
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            if success {
+                self.navigationController?.popViewControllerAnimated(true)
+            }
+            else {
+                let alertController = UIAlertController(title: "NotesDB", message: "An error occurred and the note could not be saved.", preferredStyle: UIAlertControllerStyle.Alert)
+                alertController.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
+                    
+                }))
+                self.presentViewController(alertController, animated: true, completion: nil)
+            }
+        })
+    }
+}
+```
 
+注意上面实现中的`shouldUpdate`变量。由`editedNoteID`是否为空来决定其值。意思是笔记是否是被更新。
 
-
+这时候你可以跑一下程序并试着保存一下笔记。如果你是按教程一步一步做到这步，那保存笔记应该不会出任何问题。
