@@ -153,6 +153,7 @@ switch (key, value) {
 ```
 
 逐步分析下:
+
 1. 切换到键值元组---重载的元组模式。
 2. 使用`is`类型转换模式检测教程的标题是否属于String类型，若是则转换它。
 3. 使用`as`类型转换模式检测教程的日期是否是String类型，若是则先将其转换成Int，然后传入枚举的可失败构造器init(rawValue:)中，得到对应的枚举值。将dayInt减去1是因为枚举的初始值是0，而tutorial.json中是从1开始的。
@@ -186,7 +187,8 @@ let randomDays = days.sorted { _ in random_uniform(value: 2) == 0 }
 ```
 
 这儿有点复杂，分解成如下步骤看下:
-1. 首先创建一个有关天数的数组，包含每天发生First you create an array of days, with every day of the week occurring exactly once.
+
+1. 首先创建一个有关天数的数组，包含每周中不重复的每一天。
 2. “整理”这个数组， random\_uniform(value:)函数用来生成随机数。在闭包中，使用下划线来忽略闭包参数，因为并不需要它。虽然有在技术上更加高效、在数学上更加准确的方法来随机变换数组元素位置，不过这就是一个通配符模式的实现!
 3. 最后，将一周中七天随机分配给了最开始的七个教程。
 
@@ -200,10 +202,10 @@ print(tutorials)
 
 ![](https://cdn2.raywenderlich.com/wp-content/uploads/2016/07/rage_bestEICever.png)
 
-## Optional Pattern
+## 可选模式
 
-The schedule has been conquered, but as editor-in-chief you also need to sort the tutorials. You’ll tackle this with optional patterns.
-To sort the tutorials array in ascending order—first the unscheduled tutorials by their title and then the scheduled ones by their day—add the following block of code at the end of the playground:
+日程表被占用了，作为主编你需要整理一下这些教程。The schedule has been conquered, but as editor-in-chief you also need to sort the tutorials. 使用可选模式来处理它。You’ll tackle this with optional patterns.
+将教程数组按升序排序，首先根据标题来整理未安排的教程，其次根据日期来整理来已安排的教程，在playground底部添加如下代码:
 
 ```swift
 // 1
@@ -225,25 +227,122 @@ tutorials.sort {
 }
 ```
 
-Here’s what’s going on, step-by-step:
-1. You sort the tutorials array with the array’s sort(_:) method. The method’s argument is a trailing closure which defines the sorting order of any two given tutorials in the array. It returns true if you sort the tutorials in ascending order, and false otherwise.
-2. You switch on a tuple made of the days of the two tutorials currently being sorted. This is the tuple pattern in action once more.
-3. If both tutorials are unscheduled, their days are nil, so you sort them in ascending order by their title using the array’s compare(_:options:) method.
-4. To test whether both tutorials are scheduled, you use an optional pattern. This pattern will only match a value that can be unwrapped. If both values can be unwrapped, you sort them in ascending order by their raw value.
-5. Again using an optional pattern, you test whether only one of the tutorials is scheduled. If so, you sort the unscheduled one before the scheduled one.
+逐步分析下:
 
-Add this line of code at the end of the playground to print the sorted tutorials:
+1. 使用sort(\_:)方法来整理教程数组，方法的参数是一个结尾闭包(trailing closure)，在闭包中定义了数组中两个教程的排序顺序。若将教程按升序进行排序则返回true，否则返回false。
+2. 切换到由当前被整理的两个教程组成的元组中，这又是一个`元组模式`。
+3. 若两个教程都未被安排，它们的day属性是nil，则使用数组的`compare(\_:options:)`方法按标题的升序来整理它们。
+4. 使用`可选模式`来检测两个教程是否都被安排了，这种模式仅匹配可以被解绑的值，若两个值都可被解绑，则按它们的raw value的升序来整理。
+5. 再次使用可选模式，检测只有一个教程被安排时的情况，若满足，则优先整理未被安排的教程。
+在playground的最后添加这行代码，打印出整理后的教程:
 
 ```swift
 print(tutorials)
 ```
 
-There—now you’ve got those tutorials ordered just how you want them. You’re doing so well at this gig that you deserve a raise! Instead, however … you get more work to do.
+There—now you’ve got those tutorials ordered just how you want them现在已经将教程按你想要的方式排序好了，做的这么好理应涨工资! 然而 … 还需要做的事有很多。
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/07/rage_nomoretrophies.png)
 
+
+## Enumeration Case Pattern
+
+
+Now let’s use the enumeration case pattern to determine the scheduled day’s name for each tutorial.
+In the extension on Tutorial, you used the enumeration case names from type Day to build your custom string. Instead of remaining tied to these names, add a computed property name to Day by adding the following block of code at the end of the playground:
+
 ```swift
+extension Day {
+ 
+  var name: String {
+    switch self {
+      case .monday:
+        return "Monday"
+      case .tuesday:
+        return "Tuesday"
+      case .wednesday:
+        return "Wednesday"
+      case .thursday:
+        return "Thursday"
+      case .friday:
+        return "Friday"
+      case .saturday:
+        return "Saturday"
+      case .sunday:
+        return "Sunday"
+    }
+  }
+}
 ```
+
+The switch statement in this code matches the current value (self) with the possible enumeration cases. This is the enumeration case pattern in action.
+
+Quite impressive, right? Numbers are cool and all, but names are always more intuitive and so much easier to understand after all! :]
+
+## Expression Pattern
+
+Next you’ll add a property to describe the tutorials’ scheduling order. You could use the enumeration case pattern again, as follows (don’t add this code to your playground!):
+
+```swift
+var order: String {
+  switch self {
+    case .monday:
+      return "first"
+    case .tuesday:
+      return "second"
+    case .wednesday:
+      return "third"
+    case .thursday:
+      return "fourth"
+    case .friday:
+      return "fifth"
+    case .saturday:
+      return "sixth"
+    case .sunday:
+      return "seventh"
+  }
+}
+```
+
+But doing the same thing twice is for lesser editors-in-chief, right? ;] Instead, take a different approach and use the expression pattern. First you need to overload the pattern matching operator in order to change its default functionality and make it work for days as well. Add the following code at the end of the playground:
+
+```swift
+func ~=(lhs: Int, rhs: Day) -> Bool {
+  return lhs == rhs.rawValue + 1
+}
+```
+This code allows you to match days to integers, in this case the numbers 1 through 7. You can use this overloaded operator to write your computed property in a different way.
+Add the following code at the end of the playground:
+
+```swift
+extension Tutorial {
+ 
+  var order: String {
+    guard let day = day else {
+      return "not scheduled"
+    }
+    switch day {
+      case 1:
+        return "first"
+      case 2:
+        return "second"
+      case 3:
+        return "third"
+      case 4:
+        return "fourth"
+      case 5:
+        return "fifth"
+      case 6:
+        return "sixth"
+      case 7:
+        return "seventh"
+      default:
+        fatalError("invalid day value")
+    }
+  }
+}
+```
+Thanks to the overloaded pattern matching operator, the day object can now be matched to integer expressions. This is the expression pattern in action.
 
 ```swift
 ```
