@@ -543,6 +543,69 @@ SwiftDB已经替你想到了，它提供了另一种方式从数据库中获取�
 可以在[这里](http://oyvindkg.github.io/swiftydb/#syncRetrieveData)和[这里](http://oyvindkg.github.io/swiftydb/#asyncRetrieveData)了解更多相关信息。留给你作为练习，增强一下`Note`类，不单单只获取对象，也能加载简单数据类型。
 
 
+## 更新笔记
+
+我们的demo程序其中一个功能是编辑并且修改已保存的笔记。也就是说，我们通过点击当前的笔记的cell，选中对应的笔记，然后在`EditNoteViewController中把对应笔记的详情展示出来。同时修改完后还能再次保存到数据库。
+
+打开`NoteListViewController.swift`文件，我们需要定义一个新的属性，用来保存已选中笔记的ID，在类的开头加入如下代码:
+
+```swift
+var idOfNoteToEdit: Int!
+```
+
+现在我们实现下一个`UITableViewDelegate`方法，在这个方法里我们根据选中的cell获取笔记的`noteID`，获取后马上执行页面跳转，显示`EditNoteViewController`:
+
+```swift
+func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    idOfNoteToEdit = notes[indexPath.row].noteID as Int
+    performSegueWithIdentifier("idSegueEditNote", sender: self)
+}
+```
+
+在`prepareForSegue(...)`方法中，我们把`idOfNoteToEdit`值传给之后要显示的视图控制器(view controller):
+
+```swift
+override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {    
+    if let identifier = segue.identifier {
+        if identifier == "idSegueEditNote" {
+            let editNoteViewController = segue.destinationViewController as! EditNoteViewController
+            
+            if idOfNoteToEdit != nil {
+                editNoteViewController.editedNoteID = idOfNoteToEdit
+                idOfNoteToEdit = nil
+            }
+        }
+    }
+}
+```
+
+现在这个功能已经完成一半了。在继续开始`EditNoteViewController`类的工作之前，为能访问`Note`类，我们先来实现另一个简单的函数，通过给定的`noteID`获取对应已存储的笔记实例对象。下面是具体实现:
+
+```swift
+func loadSingleNoteWithID(id: Int, completionHandler: (note: Note!) -> Void) {
+    database.asyncObjectsForType(Note.self, matchingFilter: Filter.equal("noteID", value: id)) { (result) -> Void in
+        if let notes = result.value {
+            let singleNote = notes[0]
+            
+            if singleNote.imagesData != nil {
+                singleNote.images = NSKeyedUnarchiver.unarchiveObjectWithData(singleNote.imagesData) as? [ImageDescriptor]
+            }
+            
+            completionHandler(note: singleNote)
+        }
+        
+        if let error = result.error {
+            print(error)
+            completionHandler(note: nil)
+        }
+    }
+}
+```
+
+这里有一个新用到的东西，我们通过`filter`筛选获取的数据结果。使用Fileter类的`equal(...)`类方法来设置过滤我们想要的结果。记得看一下[这个](http://oyvindkg.github.io/swiftydb/#filterResults)链接，有更多的方式来筛选从数据库获取的数据或者对象。
+
+通过上文所示的筛选方式，我们把`noteID`传给方法做为其参数，让SwiftDB只加载对应`noteID`的的数据库记录。当然，我们知道这只会返回一条数据库记录，因为`noteID这个字段是主键，数据库里相同的主键不可能返回多条记录。
+
 
 
 
