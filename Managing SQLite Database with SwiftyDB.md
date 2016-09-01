@@ -618,4 +618,5 @@ var editNote = Note()
 
 这个定义好的对象首先会被用于调用我们上文定义好的方法，调用之后，这个对象就包含了从数据库获取的数据。
 
-我们只需要加载通过`editedNoteID`属性用`loadSingleNote(...)`方法获取的数据。
+我们只需要加载通过`editedNoteID`属性用`loadSingleNote(...)`方法获取的数据。现在需要定义`viewWillAppear(_:)`方法，在这个方法里再写详细的逻辑。
+
