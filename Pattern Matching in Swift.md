@@ -240,12 +240,12 @@ tutorials.sort {
 print(tutorials)
 ```
 
-There—now you’ve got those tutorials ordered just how you want them现在已经将教程按你想要的方式排序好了，做的这么好理应涨工资! 然而 … 还需要做的事有很多。
+现在已经将教程按你想要的方式排序好了，做的这么好理应涨工资! 然而 … 还需要做的事有很多。
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/07/rage_nomoretrophies.png)
 
 
-## Enumeration Case Pattern
+## 枚举用例模式
 
 
 Now let’s use the enumeration case pattern to determine the scheduled day’s name for each tutorial.
@@ -344,5 +344,23 @@ extension Tutorial {
 ```
 Thanks to the overloaded pattern matching operator, the day object can now be matched to integer expressions. This is the expression pattern in action.
 
+## Putting It All Together
+
+Now that you’ve defined the day names and the tutorials’ order, you can print each tutorial’s status. Add the following block of code at the end of the playground:
+
 ```swift
+for (index, tutorial) in tutorials.enumerated() {
+  guard let day = tutorial.day else {
+    print("\(index + 1). \(tutorial.title) is not scheduled this week.")
+    continue
+  }
+  print("\(index + 1). \(tutorial.title) is scheduled on \(day.name). It's the \(tutorial.order) tutorial of the week.")   
+}
 ```
+Notice the tuple in the for-in statement? There’s the tuple pattern again!
+Whew! That was a lot of work for your day as editor-in-chief, but you did a fantastic job—now you can relax and kick back by the pool.
+
+![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/07/rage_pool.png)
+
+开个玩笑!主编的活儿是忙不完的。回去工作!
+![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/07/rage_morepatterns.png)
