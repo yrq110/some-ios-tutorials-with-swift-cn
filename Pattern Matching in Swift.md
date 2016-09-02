@@ -363,4 +363,5 @@ Whew! That was a lot of work for your day as editor-in-chief, but you did a fant
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/07/rage_pool.png)
 
 开个玩笑!主编的活儿是忙不完的。回去工作!
+
 ![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/07/rage_morepatterns.png)
