@@ -62,3 +62,72 @@ class ViewController: UIViewController {
 这儿没啥难的。在viewDidLoad中创建一个绿色的圆将其定位在屏幕中央，之后绑定一个UIPanGestureRecognizer手势，使dragCircle可以响应在它身上的拖动事件:在屏幕上移动圆圈。如你所想，结果就是一个可拖拽的圆:
 
 ![](http://i0.wp.com/jamesonquave.com/blog/wp-content/uploads/Rev-1.png?resize=432%2C702)
+
+## About UIViewPropertyAnimator
+
+UIViewPropertyAnimator is the main class we’ll be using to animate view properties, interrupt those animations, and change the course of animations mid-stream. Instances of UIViewPropertyAnimator maintain a collection of animations, and new animations can be attached at (almost) any time.
+
+Note: “UIViewPropertyAnimator instance” is a bit of a mouthful, so I’ll be using the term animator for the rest of this tutorial.
+
+If two or more animations change the same property on a view, the last animation to be added or started* “wins”. The interesting thing is than rather than an jarring shift, the new animation is combined with the old one. It’s faded in as the old animation is faded out.
+
+> Animations which are added later to a UIViewPropertyAnimator instance, or are added with a start delay override earlier animations. Last-to-start wins.
+
+## Interruptable, Reversible Animations
+
+Let’s dive in and add a simple animation to build upon later. With this animation, the circle will slowly expand to twice it’s original size when dragged. When released, it will shrink back to normal size.
+
+First, let’s add properties to our class for the animator and an duration:
+
+```swift
+// ...
+class ViewController: UIViewController {
+    // We will attach various animations to this in response to drag events
+    var circleAnimator: UIViewPropertyAnimator!
+    let animationDuration = 4.0
+// ...
+```
+
+Now we need to initialize the animator in viewDidLoad::
+
+```swift
+// ...
+// animations argument is optional
+circleAnimator = UIViewPropertyAnimator(duration: animationDuration, curve: .easeInOut, animations: { 
+[unowned circle] in
+    // 2x scale
+    circle.transform = CGAffineTransform(scaleX: 2.0, y: 2.0)
+})
+// self.view.addSubview(circle) here
+// ...
+```
+
+When we initialized circleAnimator, we passed in arguments for the duration and curveproperties. The curve can be set to one of four simple, predefined timing curves. In our example we choose easeInOut. The other options are easeIn, easeOut, and linear. We also passed an animations closure which doubles the size of our circle.
+
+Now we need a way to trigger the animation. Swap in this implementation of dragCircle:. This version starts the animation when the user begins dragging the circle, and manages the animation’s direction by setting the value of circleAnimator.isReversed.
+
+```swift
+func dragCircle(gesture: UIPanGestureRecognizer) {
+    let target = gesture.view!
+     
+    switch gesture.state {
+    case .began, .ended:
+        circleCenter = target.center
+         
+        if (circleAnimator.isRunning) {
+            circleAnimator.pauseAnimation()
+            circleAnimator.isReversed = gesture.state == .ended
+        }
+        circleAnimator.startAnimation()
+         
+        // Three important properties on an animator:
+        print("Animator isRunning, isReversed, state: \(circleAnimator.isRunning), \(circleAnimator.isReversed), \(circleAnimator.state)")
+    case .changed:
+        let translation = gesture.translation(in: self.view)
+        target.center = CGPoint(x: circleCenter!.x + translation.x, y: circleCenter!.y + translation.y)
+    default: break
+    }
+}
+```
+
+Run this version. Try to make the circle “breathe”. Hold it down for a second..
