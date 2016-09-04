@@ -29,7 +29,7 @@
 17. (进行中)[使用SwiftyDB管理SQLite数据库(Managing SQLite Database with SwiftyDB)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Managing%20SQLite%20Database%20with%20SwiftyDB.html)
 18. [使用Swift检测省电模式](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Detecting%20low%20Power%20Mode%20in%20Swift.html)
 19. (进行中)[在iOS 10中使用Swift 3与UIViewPropertyAnimator设计动画(Designing Animations with UIViewPropertyAnimator in iOS 10 and Swift 3)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Designing%20Animations%20with%20UIViewPropertyAnimator%20in%20iOS%2010%20and%20Swift%203.html)
-20. (进行中)[Swift中的模式匹配(Pattern Matching in Swift)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Pattern%20Matching%20in%20Swift.html)
+20. [Swift中的模式匹配](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Pattern%20Matching%20in%20Swift.html)
 21. (未开始)[CloudKit指南：入门(CloudKit Tutorial: Getting Started)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/CloudKit%20Tutorial:%20Getting%20Started.html)
 
 
