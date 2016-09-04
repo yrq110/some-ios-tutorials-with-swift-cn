@@ -682,3 +682,122 @@ if editedNoteID == nil {
 
 其余方法不变(至少目前不变)。
 
+## 更新笔记列表
+
+如果你现在测试一下，你会发现创建新笔记或者更新已存在的笔记时，笔记列表不会更新。这是正常的，因为程序里还没有实现这个功能，这部分内容里我们就来修复这个未预期的行为。
+
+正如你猜的，我们使用`代理模式(Delegation pattern)`在`EditNoteViewController`类中修改笔记的时候通知`NoteListViewController`类。入手点就是在`EditNoteViewController`里创建一个新协议，里面有二个必须实现的方法，如下:
+
+```swift
+protocol EditNoteViewControllerDelegate {
+    func didCreateNewNote(noteID: Int)
+    
+    func didUpdateNote(noteID: Int)
+}
+```
+
+这二个代理方法都需要一个笔记ID的参数，表示新创建的或者已编辑更新的笔记的ID。现在，在`EditNoteViewController`类中加如下属性:
+
+```swift
+var delegate: EditNoteViewControllerDelegate!
+```
+
+最后再次回到之前的`saveNote()`方法中。在完成回调函数中定位到下面这行代码:
+
+```swift
+self.navigationController?.popViewControllerAnimated(true)
+```
+
+用下面这段代码替换这行代码:
+
+```swift
+if self.delegate != nil {
+    if !shouldUpdate {
+        self.delegate.didCreateNewNote(note.noteID as Int)
+    }
+    else {
+        self.delegate.didUpdateNote(self.editedNoteID)
+    }
+}
+self.navigationController?.popViewControllerAnimated(true)
+```
+
+至此，之后每次创建新笔记或者编辑更新笔记都会调用对应的代理方法。但是到现在为止工作只做了一半。回到`NoteListViewController.swift`文件，首先在类开头适配我们刚才创建的新协议:
+
+```swift
+class NoteListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, EditNoteViewControllerDelegate {
+   ...
+}
+```
+
+接下来，在`prepareForSegue(...)`方法中设置`EditNoteViewController`做为这个类的代理。在`let editNoteViewController = segue.destinationViewController as! EditNoteViewController`这行代码之后加入如下所示代码:
+
+```swift
+override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    if let identifier = segue.identifier {
+        if identifier == "idSegueEditNote" {
+            let editNoteViewController = segue.destinationViewController as! EditNoteViewController
+            
+            editNoteViewController.delegate = self  // Add this line.
+            
+            ...
+        }
+    }
+}
+```
+
+非常好，现在大部分工作都差不多做完了。不过我们还忘了实现代理方法。首先处理创建新笔记的情况:
+
+```swift
+func didCreateNewNote(noteID: Int) {
+    note.loadSingleNoteWithID(noteID) { (note) -> Void in
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            if note != nil {
+                self.notes.append(note)
+                self.tblNotes.reloadData()
+            }
+        })
+    }
+}
+```
+
+通过`noteID`参数，从数据库获取笔记数据(如果数据存在)，直接加到`notes`数组中，并重新加载tableview。
+
+下面来看另一种情况:
+
+```swift
+func didUpdateNote(noteID: Int) {
+    var indexOfEditedNote: Int!
+    
+    for i in 0..<notes.count {
+        if notes[i].noteID == noteID {
+            indexOfEditedNote = i
+            break
+        }
+    }
+    
+    if indexOfEditedNote != nil {
+        note.loadSingleNoteWithID(noteID, completionHandler: { (note) -> Void in
+            if note != nil {
+                self.notes[indexOfEditedNote] = note
+                self.tblNotes.reloadData()
+            }
+        })
+    }
+}
+```
+
+这种情况，我们找到已更新笔记在`notes`数组中的索引位置。一旦笔记更新，便从数据库中载入已更新笔记并把旧的笔记用新的替换掉。同时刷新tableivew，新的笔记修改日期和修改过的笔记就会马上显示出来。
+
+
+
+
+
+
+
+
+
+
+
+
+
