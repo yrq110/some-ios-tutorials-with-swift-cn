@@ -345,9 +345,9 @@ extension Tutorial {
 ```
 多亏了重载的模式匹配操作符，day对象可以使用整数表达式来匹配了。这就是表达式模式的实现。
 
-## Putting It All Together
+## 整合
 
-Now that you’ve defined the day names and the tutorials’ order, you can print each tutorial’s status. Add the following block of code at the end of the playground:
+现在已经定义了day的名称与教程的顺序，可以打印出每个教程的信息看看。在playground底部添加如下代码:
 
 ```swift
 for (index, tutorial) in tutorials.enumerated() {
@@ -358,11 +358,16 @@ for (index, tutorial) in tutorials.enumerated() {
   print("\(index + 1). \(tutorial.title) is scheduled on \(day.name). It's the \(tutorial.order) tutorial of the week.")   
 }
 ```
-Notice the tuple in the for-in statement? There’s the tuple pattern again!
-Whew! That was a lot of work for your day as editor-in-chief, but you did a fantastic job—now you can relax and kick back by the pool.
+注意for-in语句中的元组了吗? 这又是一个元组模式!
+
+喔! 对于你的一日主编来说真是够忙啊，不过你做的不错，现在可以在泳池里放松休息一下了。
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/07/rage_pool.png)
 
 开个玩笑!主编的活儿是忙不完的。回去工作!
 
 ![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/07/rage_morepatterns.png)
+
+## 最后
+
+最终的[playground](https://cdn2.raywenderlich.com/wp-content/uploads/2016/07/patterns.playground-1.zip)下载。
