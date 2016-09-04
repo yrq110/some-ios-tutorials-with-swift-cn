@@ -247,9 +247,9 @@ print(tutorials)
 
 ## 枚举用例模式
 
+现在让我们来使用枚举用例模式来决定每个教程发布天的名称。
 
-Now let’s use the enumeration case pattern to determine the scheduled day’s name for each tutorial.
-In the extension on Tutorial, you used the enumeration case names from type Day to build your custom string. Instead of remaining tied to these names, add a computed property name to Day by adding the following block of code at the end of the playground:
+在Tutorial的扩展中，使用了Day类型中的枚举用例名称来构建自定义字符串。添加一个合适的名称，而不是与原有名称绑定，在playground的底部添加如下代码:
 
 ```swift
 extension Day {
@@ -275,13 +275,13 @@ extension Day {
 }
 ```
 
-The switch statement in this code matches the current value (self) with the possible enumeration cases. This is the enumeration case pattern in action.
+switch语句中使用当前值(self)来匹配枚举用例，这就是枚举用例模式的实现。
 
-Quite impressive, right? Numbers are cool and all, but names are always more intuitive and so much easier to understand after all! :]
+印象挺深的，不是吗? 虽然用数字挺酷的，不过毕竟用名称的话很直观并且更容易理解! :]
 
-## Expression Pattern
+## 表达式模式
 
-Next you’ll add a property to describe the tutorials’ scheduling order. You could use the enumeration case pattern again, as follows (don’t add this code to your playground!):
+接着来添加一个描述教程发布顺序的属性。也许你会再次使用枚举用例模式，如下(**别在playground中添加!**):
 
 ```swift
 var order: String {
@@ -304,15 +304,16 @@ var order: String {
 }
 ```
 
-But doing the same thing twice is for lesser editors-in-chief, right? ;] Instead, take a different approach and use the expression pattern. First you need to overload the pattern matching operator in order to change its default functionality and make it work for days as well. Add the following code at the end of the playground:
+不过同一件事做两遍的话就太不像主编了，不是吗? ;] 另辟蹊径，使用表示式模式。首先需要重载模式匹配的操作符，这是为了改变默认的功能并且使其对Day属性有效。在playground底部添加如下代码:
 
 ```swift
 func ~=(lhs: Int, rhs: Day) -> Bool {
   return lhs == rhs.rawValue + 1
 }
 ```
-This code allows you to match days to integers, in this case the numbers 1 through 7. You can use this overloaded operator to write your computed property in a different way.
-Add the following code at the end of the playground:
+这段代码用来匹配day与整数，会返回数字1~7。使用这个重载的操作符以不同的方法来得到计算后的属性。
+
+在playground底部添加如下代码:
 
 ```swift
 extension Tutorial {
@@ -342,7 +343,7 @@ extension Tutorial {
   }
 }
 ```
-Thanks to the overloaded pattern matching operator, the day object can now be matched to integer expressions. This is the expression pattern in action.
+多亏了重载的模式匹配操作符，day对象可以使用整数表达式来匹配了。这就是表达式模式的实现。
 
 ## Putting It All Together
 
