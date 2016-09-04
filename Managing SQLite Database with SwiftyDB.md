@@ -620,3 +620,65 @@ var editNote = Note()
 
 我们只需要加载通过`editedNoteID`属性用`loadSingleNote(...)`方法获取的数据。现在需要定义`viewWillAppear(_:)`方法，在这个方法里再写详细的逻辑。
 
+在下面的代码段里你会看到，当通过`loadSingleNoteWithID(...)`方法中的完成回调函数获取的笔记数据时，在完成回调里所有的对应属性都会被填充。我们可以通过这些设置笔记的标题，正文，文本颜色，字体等一系列属性。如果笔记中带有图片，还得使用`ImageDescriptor`中的尺寸数据为每个图片创建image视图。
+
+```swift
+override func viewWillAppear(animated: Bool) {
+    super.viewWillAppear(animated)
+    
+    if editedNoteID != nil {
+        editedNote.loadSingleNoteWithID(editedNoteID, completionHandler: { (note) -> Void in
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                if note != nil {
+                    self.txtTitle.text = note.title!
+                    self.tvNote.text = note.text!
+                    self.tvNote.textColor = NSKeyedUnarchiver.unarchiveObjectWithData(note.textColor!) as? UIColor
+                    self.tvNote.font = UIFont(name: note.fontName!, size: note.fontSize as CGFloat)
+                    
+                    if let images = note.images {
+                        for image in images {
+                            let imageView = PanningImageView(frame: image.frameData.toCGRect())
+                            imageView.image = Helper.loadNoteImageWithName(image.imageName)
+                            imageView.delegate = self
+                            self.tvNote.addSubview(imageView)
+                            self.imageViews.append(imageView)
+                            self.setExclusionPathForImageView(imageView)
+                        }
+                    }
+                    
+                    self.editedNote = note
+                    
+                    self.currentFontName = note.fontName!
+                    self.currentFontSize = note.fontSize as CGFloat
+                }
+            })
+        })
+    }
+}
+```
+
+把所有值都填充完别忘了把`note`对象赋值给`editedNote`对象，后面我们还会用到。
+
+还有最后一个必要的步骤: 修改`saveNote()`方法，就是当已存在笔记更新的时候，不要再创建一个`Note`对象设置主键和创建日期，不要把它当做一个新笔记再次保存。
+
+在`saveNote()`方法里找到下面这三行:
+
+```swift
+let note = Note()
+note.noteID = Int(NSDate().timeIntervalSince1970)
+note.creationDate = NSDate()
+```
+
+替换为下面的代码:
+
+```swift
+let note = (editedNoteID == nil) ? Note() : editedNote
+
+if editedNoteID == nil {
+    note.noteID = Int(NSDate().timeIntervalSince1970)
+    note.creationDate = NSDate()
+}
+```
+
+其余方法不变(至少目前不变)。
+
