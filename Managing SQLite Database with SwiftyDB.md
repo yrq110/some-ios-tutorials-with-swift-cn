@@ -790,14 +790,60 @@ func didUpdateNote(noteID: Int) {
 这种情况，我们找到已更新笔记在`notes`数组中的索引位置。一旦笔记更新，便从数据库中载入已更新笔记并把旧的笔记用新的替换掉。同时刷新tableivew，新的笔记修改日期和修改过的笔记就会马上显示出来。
 
 
+## 删除记录
 
+最后，这个笔记demo还缺一个比较重要的功能，就是删除笔记记录。很容易想到我们还需要最后一个需要在`Note`类中实现的方法。每次删除笔记的都会调用。打开`Note.swift`文件。
 
+这部分里我们唯一需要新加的东西就是用SwiftDB的方法在数据库中执行真正的数据删除操作，也就是下面你将看到的代码实现。像之前其他操作一样，这是多个异步执行的操作，有一个完成时的回调在操作执行完成的时候调用。最后，筛选出需要从数据库中删除的列。
 
+```swift
+func deleteNote(completionHandler: (success: Bool) -> Void) {
+    let filter = Filter.equal("noteID", value: noteID)
+    
+    database.asyncDeleteObjectsForType(Note.self, matchingFilter: filter) { (result) -> Void in
+        if let deleteOK = result.value {
+            completionHandler(success: deleteOK)
+        }
+        
+        if let error = result.error {
+            print(error)
+            completionHandler(success: false)
+        }
+    }
+}
+```
 
+现在我们打开`NoteListViewController.swift，定义下一个`UITableViewDataSource`方法:
 
+```swift
+func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+    if editingStyle == UITableViewCellEditingStyle.Delete {
+        
+    }
+}
+```
 
+在我们已有代码中添加以上方法，这样每次你在笔记记录的cell上左滑的时候，默认的`Delete`按钮就会在cell的右侧显示出来。当点击cell右侧出现的删除按钮的时候，就会执行上面定义的方法中`if`语句里面的逻辑。现在加入如下代码:
 
+```swift
+func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+    if editingStyle == UITableViewCellEditingStyle.Delete {
+        let noteToDelete = notes[indexPath.row]
+        
+        noteToDelete.deleteNote({ (success) -> Void in
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                if success {
+                    self.notes.removeAtIndex(indexPath.row)
+                    self.tblNotes.reloadData()
+                }
+            })
+        })
+    }
+}
+```
 
+上面代码的意思，首先，在保存笔记对象的集合里找到与选中的笔记相一致的笔记对象。接下来，调用我们先前在`Note`类中定义的删除方法删除这个笔记。如果操作成功，会把`notes`数组中对应的`Note`对象移除，同时重新载入tableview刷新UI界面。
 
+就是这样！
 
 
