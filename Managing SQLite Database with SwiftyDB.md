@@ -846,4 +846,84 @@ func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableV
 
 就是这样！
 
+## 怎么排序呢?
+
+可能你想知道如何从数据库取出数据时候就对我们的数据进行排序。排序非常有用，根据一个或者多个字段进行升序或者降序操作，最后返回改变顺序的数据。例如，我们可以对我们保存的笔记按这样的方式进行排序，修改日期越临近现的位置越靠上。
+
+不幸的是在写这篇入门教程的时候SwiftDB并不支持数据排序。这使用起来确实非常不便利。有一个解决方式:在需要的地方手动对数据进行排序。为了演示这个，我们在`NoteListViewController.swift`文件里创建最后一个方法，`sortNotes()`方法。在这里我们直接用Swift自带的`sort()`函数:
+
+```swift
+func sortNotes() {
+    notes = notes.sort({ (note1, note2) -> Bool in
+        let modificationDate1 = note1.modificationDate.timeIntervalSinceReferenceDate
+        let modificationDate2 = note2.modificationDate.timeIntervalSinceReferenceDate
+        
+        return modificationDate1 > modificationDate2
+    })
+}
+```
+
+因为`NSDate`对象不能直接进行比较，首先我们需要把它转换为时间戳(double类型)。我们执行比较操作之后返回排序结果。上面的代码对笔记排序，修改时间最靠近现在的就会排在`notes`数组里第一个位置。
+
+上面定义的方法必须在每次`notes`数组发生变化的时候都调用。首先，我们先像下面这样修改`loadNotes`方法:
+
+```swift
+func loadNotes() {
+    note.loadAllNotes { (notes) -> Void in
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            if notes != nil {
+                self.notes = notes
+                
+                self.sortNotes()  // Add this line to sort notes.
+                
+                self.tblNotes.reloadData()
+            }
+        })
+    }
+}
+```
+
+同时也得像下面这样修改二个代理方法:
+
+```swift
+func didCreateNewNote(noteID: Int) {
+    note.loadSingleNoteWithID(noteID) { (note) -> Void in
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            if note != nil {
+                self.notes.append(note)
+
+                self.sortNotes() // Add this line to sort notes.
+                
+                self.tblNotes.reloadData()
+            }
+        })
+    }
+}
+```
+
+```swift
+func didUpdateNote(noteID: Int) {
+    ...
+    
+    if indexOfEditedNote != nil {
+        note.loadSingleNoteWithID(noteID, completionHandler: { (note) -> Void in
+            if note != nil {
+                self.notes[indexOfEditedNote] = note
+                
+                self.sortNotes()  // Add this line to sort notes.
+                
+                self.tblNotes.reloadData()
+            }
+        })
+    }
+}
+```
+
+现在再运行一下程序，你就会发现tableview里面的笔记列表已经按笔记修改日期来排列了。
+
+## 结语
+
+不可否认，SwiftDB是个非常棒的工具，可以不用太大成本就能用在很多的应用程序里。我们都认同这一点，就是在我们的应用内同时使用几个数据库的时候，SwiftDB做到了快速可靠。在这个demo的入门教程中贯穿了这个库的基本用法，但是你还需要去了解更多的用法。当然，有正式的文档供你查阅让你参考。在我们今天这个例子中，出于新手入门的目的，我们创建了只有一个表的数据库，这个表的字段也只匹配`Note`类。而在真正的应用程序中，只要你在代码中创建对应的数据模型(不同的类)，就可以按你所想有任意多的数据表。就我个人而言，我是一定会在我的项目中使用SwiftDB的，实际上我已经开始计划了。无论如何，你现在已经了解SwiftDB了，已经知道它如何工作以及如何使用它了。是不是把它放到你的工具箱里，这由你决定。总之，我希望你阅读这篇入门的时间没有浪费，希望你学会了一二个新东西。在下一个教程发布之前，过得愉快！
+
+你可以在[GitHub下载整个工程]([download the full project on GitHub](https://github.com/appcoda/SwiftyDB-Demo))做为参考。
 
