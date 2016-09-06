@@ -684,7 +684,7 @@ if editedNoteID == nil {
 
 ## 更新笔记列表
 
-如果你现在测试一下，你会发现创建新笔记或者更新已存在的笔记时，笔记列表不会更新。这是正常的，因为程序里还没有实现这个功能，这部分内容里我们就来修复这个未预期的行为。
+如果你现在测试一下，你会发现创建新笔记或者更新已存在的笔记时，笔记列表不会更新。这是正常的，因为程序里还没有实现这个功能，这部分内容里我们就来修复这个非预期的行为。
 
 正如你猜的，我们使用`代理模式(Delegation pattern)`在`EditNoteViewController`类中修改笔记的时候通知`NoteListViewController`类。入手点就是在`EditNoteViewController`里创建一个新协议，里面有二个必须实现的方法，如下:
 
@@ -792,7 +792,7 @@ func didUpdateNote(noteID: Int) {
 
 ## 删除记录
 
-最后，这个笔记demo还缺一个比较重要的功能，就是删除笔记记录。很容易想到我们还需要最后一个需要在`Note`类中实现的方法。每次删除笔记的都会调用。打开`Note.swift`文件。
+最后，这个笔记demo还缺一个比较重要的功能，就是删除笔记记录。很显然我们还需要在`Note`类中添加最后一个方法。这个方法在每次删除笔记的时候都会调用。打开`Note.swift`文件。
 
 这部分里我们唯一需要新加的东西就是用SwiftDB的方法在数据库中执行真正的数据删除操作，也就是下面你将看到的代码实现。像之前其他操作一样，这是多个异步执行的操作，有一个完成时的回调在操作执行完成的时候调用。最后，筛选出需要从数据库中删除的列。
 
@@ -813,7 +813,7 @@ func deleteNote(completionHandler: (success: Bool) -> Void) {
 }
 ```
 
-现在我们打开`NoteListViewController.swift，定义下一个`UITableViewDataSource`方法:
+现在我们打开`NoteListViewController.swift`，定义下一个`UITableViewDataSource`方法:
 
 ```swift
 func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
@@ -823,7 +823,7 @@ func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableV
 }
 ```
 
-在我们已有代码中添加以上方法，这样每次你在笔记记录的cell上左滑的时候，默认的`Delete`按钮就会在cell的右侧显示出来。当点击cell右侧出现的删除按钮的时候，就会执行上面定义的方法中`if`语句里面的逻辑。现在加入如下代码:
+在我们已有代码中添加以上方法，这样每次你在笔记记录的cell上左滑的时候，默认的`Delete`按钮就会在cell的右侧显示出来。当点击cell右侧出现的删除按钮的时候，就会执行上面定义的方法中`if`语句里面的逻辑。现在在其中加入如下代码:
 
 ```swift
 func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
@@ -842,13 +842,13 @@ func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableV
 }
 ```
 
-上面代码的意思，首先，在保存笔记对象的集合里找到与选中的笔记相一致的笔记对象。接下来，调用我们先前在`Note`类中定义的删除方法删除这个笔记。如果操作成功，会把`notes`数组中对应的`Note`对象移除，同时重新载入tableview刷新UI界面。
+解释一下上面的代码，首先，在保存笔记对象的集合里找到与选中的笔记相一致的笔记对象。接下来，调用我们先前在`Note`类中定义的删除方法删除这个笔记。如果操作成功，会把`notes`数组中对应的`Note`对象移除，同时重新载入tableview刷新UI界面。
 
 就是这样！
 
 ## 怎么排序呢?
 
-可能你想知道如何从数据库取出数据时候就对我们的数据进行排序。排序非常有用，根据一个或者多个字段进行升序或者降序操作，最后返回改变顺序的数据。例如，我们可以对我们保存的笔记按这样的方式进行排序，修改日期越临近现的位置越靠上。
+可能你想知道如何从数据库取出数据时候就对我们的数据进行排序。排序非常有用，根据一个或者多个字段进行升序或者降序操作，最后返回改变顺序的数据。例如，我们可以对我们保存的笔记按这样的方式进行排序，修改日期越临近现在的位置越靠上。
 
 不幸的是在写这篇入门教程的时候SwiftDB并不支持数据排序。这使用起来确实非常不便利。有一个解决方式:在需要的地方手动对数据进行排序。为了演示这个，我们在`NoteListViewController.swift`文件里创建最后一个方法，`sortNotes()`方法。在这里我们直接用Swift自带的`sort()`函数:
 
@@ -923,7 +923,6 @@ func didUpdateNote(noteID: Int) {
 
 ## 结语
 
-不可否认，SwiftDB是个非常棒的工具，可以不用太大成本就能用在很多的应用程序里。我们都认同这一点，就是在我们的应用内同时使用几个数据库的时候，SwiftDB做到了快速可靠。在这个demo的入门教程中贯穿了这个库的基本用法，但是你还需要去了解更多的用法。当然，有正式的文档供你查阅让你参考。在我们今天这个例子中，出于新手入门的目的，我们创建了只有一个表的数据库，这个表的字段也只匹配`Note`类。而在真正的应用程序中，只要你在代码中创建对应的数据模型(不同的类)，就可以按你所想有任意多的数据表。就我个人而言，我是一定会在我的项目中使用SwiftDB的，实际上我已经开始计划了。无论如何，你现在已经了解SwiftDB了，已经知道它如何工作以及如何使用它了。是不是把它放到你的工具箱里，这由你决定。总之，我希望你阅读这篇入门的时间没有浪费，希望你学会了一二个新东西。在下一个教程发布之前，过得愉快！
+不可否认，SwiftDB是个非常棒的工具，可以不用太大成本就能集成在很多的应用程序里。我们都认同这一点，就是在我们的应用内同时使用几个数据库的时候，SwiftDB做到了快速可靠。在这个demo的入门教程中贯穿了这个库的基本用法，但你还需要去了解更多。当然，有正式的文档供你查阅让你参考。在我们今天这个例子中，出于新手入门的目的，我们创建了只有一个表的数据库，这个表的字段也只匹配`Note`类。而在真正的应用程序中，只要你在代码中创建对应的数据模型(不同的类)，就可以按你所想有任意多的数据表。就我个人而言，我是一定会在我的项目中使用SwiftDB的，实际上我已经开始计划了。不管怎样，你现在已经了解SwiftDB了，已经知道它如何工作以及如何使用它了。是不是把它放到你的工具箱里，这由你决定。总之，我希望你阅读这篇入门的时间没有浪费，并希望你在此学会了一二个新东西。在下一个教程发布之前，过得愉快！
 
 你可以在[GitHub下载整个工程]([download the full project on GitHub](https://github.com/appcoda/SwiftyDB-Demo))做为参考。
-
