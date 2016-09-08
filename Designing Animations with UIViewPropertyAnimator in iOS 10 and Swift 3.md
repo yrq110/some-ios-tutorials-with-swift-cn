@@ -25,29 +25,29 @@ iOS 10中的UIKit中加入了一些新的对象与协议，具有“基于对象
 
 ```swift
 import UIKit
- 
+
 class ViewController: UIViewController {
     // this records our circle's center for use as an offset while dragging
     var circleCenter: CGPoint!
-     
+
     override func viewDidLoad() {
         super.viewDidLoad()
-         
+
         // Add a draggable view
         let circle = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0))
         circle.center = self.view.center
         circle.layer.cornerRadius = 50.0
         circle.backgroundColor = UIColor.green()
-         
+
         // add pan gesture recognizer to
         circle.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.dragCircle)))
-         
+
         self.view.addSubview(circle)
     }
-     
+
     func dragCircle(gesture: UIPanGestureRecognizer) {
         let target = gesture.view!
-         
+
         switch gesture.state {
         case .began, .ended:
             circleCenter = target.center
@@ -63,21 +63,21 @@ class ViewController: UIViewController {
 
 ![](http://i0.wp.com/jamesonquave.com/blog/wp-content/uploads/Rev-1.png?resize=432%2C702)
 
-## About UIViewPropertyAnimator
+## 关于UIViewPropertyAnimator
 
-UIViewPropertyAnimator is the main class we’ll be using to animate view properties, interrupt those animations, and change the course of animations mid-stream. Instances of UIViewPropertyAnimator maintain a collection of animations, and new animations can be attached at (almost) any time.
+我们主要使用UIViewPropertyAnimator类给view属性添加动画效果、中断动画，与改变动画进行过程中的状态等。UIViewPropertyAnimator实例持有一个动画集，并且可以随时添加进新的动画。
 
-Note: “UIViewPropertyAnimator instance” is a bit of a mouthful, so I’ll be using the term animator for the rest of this tutorial.
+> 注意: “UIViewPropertyAnimator实例”有点拗口，下面我会使用animator来表示它。
 
-If two or more animations change the same property on a view, the last animation to be added or started* “wins”. The interesting thing is than rather than an jarring shift, the new animation is combined with the old one. It’s faded in as the old animation is faded out.
+若有多个动画改变了一个view的同一个属性，则之后添加或开始\*的动画“胜出”(ps:应该是有效的意思)。有趣的是不会发生不协调的变化，而是将新旧动画结合在了一起，当旧动画淡出时新动画淡入。
 
-> Animations which are added later to a UIViewPropertyAnimator instance, or are added with a start delay override earlier animations. Last-to-start wins.
+\* 后来向UIViewPropertyAnimator实例中添加的动画或者是有一个开始延迟覆盖了之前的动画。"后开始者"胜出。
 
-## Interruptable, Reversible Animations
+## 可中断, 可逆的动画
 
-Let’s dive in and add a simple animation to build upon later. With this animation, the circle will slowly expand to twice it’s original size when dragged. When released, it will shrink back to normal size.
+来深入研究下，做个简单的动画。这个动画的效果是：当圆圈被拖拽时，会慢慢扩大到原始尺寸的两倍，一松手就会缩回原始大小。
 
-First, let’s add properties to our class for the animator and an duration:
+首先，在类中添加animator属性与一个持续时间:
 
 ```swift
 // ...
@@ -88,12 +88,12 @@ class ViewController: UIViewController {
 // ...
 ```
 
-Now we need to initialize the animator in viewDidLoad::
+需要在viewDidLoad中初始化animator:
 
 ```swift
 // ...
 // animations argument is optional
-circleAnimator = UIViewPropertyAnimator(duration: animationDuration, curve: .easeInOut, animations: { 
+circleAnimator = UIViewPropertyAnimator(duration: animationDuration, curve: .easeInOut, animations: {
 [unowned circle] in
     // 2x scale
     circle.transform = CGAffineTransform(scaleX: 2.0, y: 2.0)
@@ -102,24 +102,24 @@ circleAnimator = UIViewPropertyAnimator(duration: animationDuration, curve: .eas
 // ...
 ```
 
-When we initialized circleAnimator, we passed in arguments for the duration and curveproperties. The curve can be set to one of four simple, predefined timing curves. In our example we choose easeInOut. The other options are easeIn, easeOut, and linear. We also passed an animations closure which doubles the size of our circle.
+当我们初始化circleAnimator时将duration与curve属性作为参数输入。curve可以设置为4个预置的时间变化曲线，在这个例子中选用easeInOut，其它的还有easeIn, easeOut和linear。还需要输入一个倍增圆圈尺寸的闭包函数。
 
-Now we need a way to trigger the animation. Swap in this implementation of dragCircle:. This version starts the animation when the user begins dragging the circle, and manages the animation’s direction by setting the value of circleAnimator.isReversed.
+现在需要一个触发动画的方法。使用下面的代码替换dragCircle方法的内容，当用户开始拖拽时开始动画，通过设定circleAnimator.isReversed的值来控制动画的方向。
 
 ```swift
 func dragCircle(gesture: UIPanGestureRecognizer) {
     let target = gesture.view!
-     
+
     switch gesture.state {
     case .began, .ended:
         circleCenter = target.center
-         
+
         if (circleAnimator.isRunning) {
             circleAnimator.pauseAnimation()
             circleAnimator.isReversed = gesture.state == .ended
         }
         circleAnimator.startAnimation()
-         
+
         // Three important properties on an animator:
         print("Animator isRunning, isReversed, state: \(circleAnimator.isRunning), \(circleAnimator.isReversed), \(circleAnimator.state)")
     case .changed:
@@ -130,4 +130,75 @@ func dragCircle(gesture: UIPanGestureRecognizer) {
 }
 ```
 
-Run this version. Try to make the circle “breathe”. Hold it down for a second..
+执行动画，让"圆圈"呼吸起来，按下一段时间试试..
+
+## A Sticking Point
+
+Take a look at this video of our circle after it has made it all the way to the end of the animation:
+
+![](http://i0.wp.com/jamesonquave.com/blog/wp-content/uploads/Rev-2.png?resize=404%2C674)
+
+It’s not moving. It’s stuck in at the expanded size.
+
+Ok, so what’s happening here? The short answer is that the animation threw away the reference it had to the animation when it finished.
+
+Animators can be in one of three states:
+* inactive: the initial state, and the state the animator returns to after the animations reach an end point (transitions to active)
+* active: the state while animations are running (transitions to stopped or inactive)
+* stopped: a state the animator enters when you call the stopAnimation: method (returns to inactive)
+
+Here it is, represented visually:
+
+![](http://i0.wp.com/jamesonquave.com/blog/wp-content/uploads/apple-states.png?resize=584%2C370)
+
+(source: UIViewAnimating protocol reference)
+
+Any transition to the inactive state will cause all animations to be purged from the animator (along with the animator’s completion block, if it exists).
+
+We’ve already seen the startAnimation method, and we’ll delve into the other two shortly.
+
+Let’s get our circle unstuck. We need to change up the initialization of circleAnimator:
+
+```swift
+expansionAnimator = UIViewPropertyAnimator(duration: expansionDuration, curve: .easeInOut)
+```
+
+…and modify dragCircle::
+
+```swift
+// ...
+// dragCircle:
+case .began, .ended:
+    circleCenter = target.center
+         
+    if circleAnimator.state == .active {
+        // reset animator to inactive state
+        circleAnimator.stopAnimation(true)
+    }
+     
+    if (gesture.state == .began) {
+        circleAnimator.addAnimations({
+            target.transform = CGAffineTransform(scaleX: 2.0, y: 2.0)
+        })
+    } else {
+        circleAnimator.addAnimations({
+            target.transform = CGAffineTransform.identity
+        })
+    }
+ 
+case .changed:
+// ...
+```
+Now, whenever the user starts or stops dragging, we stop and finalize the animator (if it’s active). The animator purges the attached animation and returns to the inactive state. From there, we attach a new animation that will send our circle towards the desired end state.
+
+A nice benefit of using transforms to change a view’s appearence is that you can reset the view’s appearance easily by setting its transform property to CGAffineTransform.identity. No need to keep track of old values.
+
+Note that circleAnimator.stopAnimation(true) is equivalent to:
+
+```swift
+circleAnimator.stopAnimation(false) // don't finish (stay in stopped state)
+circleAnimator.finishAnimation(at: .current) // set view's actual properties to animated values at this moment
+```
+
+The finishAnimationAt: method takes a UIViewAnimatingPosition value. If we pass start or end, the circle will instantly transform to the scale it should have at the beginning or end of the animation, respectively.
+
