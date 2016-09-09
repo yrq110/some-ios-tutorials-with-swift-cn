@@ -26,7 +26,7 @@
 14. [使用iOS 10的Speech框架构建一个语音转文本app](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Building%20a%20Speech-to-Text%20App%20Using%20Speech%20Framework%20in%20iOS%2010.html)
 15. (未开始)[如何创建一个Uber启动动画(How To Create an Uber Splash Screen)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/How%20To%20Create%20an%20Uber%20Splash%20Screen.html)
 16. [在Xamarin与Visual Studio中构建iOS应用](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Building%20iOS%20Apps%20with%20Xamarin%20and%20Visual%20Studio.html)
-17. (进行中)[使用SwiftyDB管理SQLite数据库(Managing SQLite Database with SwiftyDB)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Managing%20SQLite%20Database%20with%20SwiftyDB.html)
+17. [使用SwiftyDB管理SQLite数据库](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Managing%20SQLite%20Database%20with%20SwiftyDB.html)
 18. [使用Swift检测省电模式](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Detecting%20low%20Power%20Mode%20in%20Swift.html)
 19. (进行中)[在iOS 10中使用Swift 3与UIViewPropertyAnimator设计动画(Designing Animations with UIViewPropertyAnimator in iOS 10 and Swift 3)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Designing%20Animations%20with%20UIViewPropertyAnimator%20in%20iOS%2010%20and%20Swift%203.html)
 20. [Swift中的模式匹配](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Pattern%20Matching%20in%20Swift.html)
