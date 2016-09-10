@@ -202,3 +202,42 @@ circleAnimator.finishAnimation(at: .current) // set view's actual properties to 
 
 The finishAnimationAt: method takes a UIViewAnimatingPosition value. If we pass start or end, the circle will instantly transform to the scale it should have at the beginning or end of the animation, respectively.
 
+## About Durations
+
+There’s a subtle bug in this version. The problem is, every time we stop an animation and start a new one, the new animation will take 4.0 seconds to complete, no matter how close the view is to reaching the end goal.
+
+Here’s how we can fix it:
+
+```swift
+// dragCircle:
+// ...
+case .began, .ended:
+    circleCenter = target.center
+     
+    let durationFactor = circleAnimator.fractionComplete // Multiplier for original duration
+    // multiplier for original duration that will be used for new duration
+    circleAnimator.stopAnimation(false)
+    circleAnimator.finishAnimation(at: .current)
+     
+    if (gesture.state == .began) {
+        circleAnimator.addAnimations({
+            target.backgroundColor = UIColor.green()
+            target.transform = CGAffineTransform(scaleX: 2.0, y: 2.0)
+        })
+    } else {
+        circleAnimator.addAnimations({
+            target.backgroundColor = UIColor.green()
+            target.transform = CGAffineTransform.identity
+        })
+    }
+     
+    circleAnimator.startAnimation()
+    circleAnimator.pauseAnimation()
+    // set duration factor to change remaining time
+    circleAnimator.continueAnimation(withTimingParameters: nil, durationFactor: durationFactor)
+case .changed:
+// ...
+```
+Now, we explicitly stop the animator, attach one of two animations depending on the direction, and restart the animator, using continueAnimationWithTimingParameters:durationFactor:to adjust the remaining duration. This is so that “deflating” from a short expansion does not take the full duration of the original animation. The method continueAnimationWithTimingParameters:durationFactor:can also be used to change an animator’s timing function on the fly*.
+
+* When you pass in a new timing function, the transition from the old timing function is interpolated. If you go from a springy timing function to a linear one, for example, the animations may remain “bouncy” for a moment, before smoothing out.
