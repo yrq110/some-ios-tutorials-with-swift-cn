@@ -132,50 +132,50 @@ func dragCircle(gesture: UIPanGestureRecognizer) {
 
 执行动画，让"圆圈"呼吸起来，按下一段时间试试..
 
-## A Sticking Point
+## 一个关键点
 
-Take a look at this video of our circle after it has made it all the way to the end of the animation:
+在动画执行后:
 
 ![](http://i0.wp.com/jamesonquave.com/blog/wp-content/uploads/Rev-2.png?resize=404%2C674)
 
-It’s not moving. It’s stuck in at the expanded size.
+没有变化，而是卡在了扩大后的尺寸。
 
-Ok, so what’s happening here? The short answer is that the animation threw away the reference it had to the animation when it finished.
+那么到底发生了什么? 简而言之就是当动画完成时丢弃了引用动画。
 
-Animators can be in one of three states:
-* inactive: the initial state, and the state the animator returns to after the animations reach an end point (transitions to active)
-* active: the state while animations are running (transitions to stopped or inactive)
-* stopped: a state the animator enters when you call the stopAnimation: method (returns to inactive)
+Animators有三种状态:
+* inactive: 初始状态。当动画达到终点时animator会返回这个状态(可转换为active)。
+* active: 动画运行时的状态(可转换为stopped或inactive)。
+* stopped: 当调用stopAnimation:方法时animator的状态(返回到inactive)。
 
-Here it is, represented visually:
+如图所示:
 
 ![](http://i0.wp.com/jamesonquave.com/blog/wp-content/uploads/apple-states.png?resize=584%2C370)
 
-(source: UIViewAnimating protocol reference)
+(来源 [UIViewAnimating protocol reference](https://developer.apple.com/reference/uikit/uiviewanimating))
 
-Any transition to the inactive state will cause all animations to be purged from the animator (along with the animator’s completion block, if it exists).
+任何向inactive状态的转换会使所有animator中的动画被清除(along with the animator’s completion block, if it exists)。
 
-We’ve already seen the startAnimation method, and we’ll delve into the other two shortly.
+我们已经见过了startAnimation方法，接下来研究一下其它两个。
 
-Let’s get our circle unstuck. We need to change up the initialization of circleAnimator:
+为了让圆圈动起来，需要改变circleAnimator的初始化代码:
 
 ```swift
 expansionAnimator = UIViewPropertyAnimator(duration: expansionDuration, curve: .easeInOut)
 ```
 
-…and modify dragCircle::
+…修改dragCircle:
 
 ```swift
 // ...
 // dragCircle:
 case .began, .ended:
     circleCenter = target.center
-         
+
     if circleAnimator.state == .active {
         // reset animator to inactive state
         circleAnimator.stopAnimation(true)
     }
-     
+
     if (gesture.state == .began) {
         circleAnimator.addAnimations({
             target.transform = CGAffineTransform(scaleX: 2.0, y: 2.0)
@@ -185,22 +185,22 @@ case .began, .ended:
             target.transform = CGAffineTransform.identity
         })
     }
- 
+
 case .changed:
 // ...
 ```
-Now, whenever the user starts or stops dragging, we stop and finalize the animator (if it’s active). The animator purges the attached animation and returns to the inactive state. From there, we attach a new animation that will send our circle towards the desired end state.
+现在，当用户开始或停止拖拽时，停止或终止animator(如果它是active状态的话)，animator会清除所有关联动画返回到inactive状态。这样我们就可以关联一个新的动画向圆圈发送期望的最终状态。
 
-A nice benefit of using transforms to change a view’s appearence is that you can reset the view’s appearance easily by setting its transform property to CGAffineTransform.identity. No need to keep track of old values.
+使用变换来改变视图样式的一个好处就是你可以通过CGAffineTransform.identity来轻松地重置视图的样式，不需要保留旧值。
 
-Note that circleAnimator.stopAnimation(true) is equivalent to:
+注意，circleAnimator.stopAnimation(true)与下面的代码是等效的:
 
 ```swift
-circleAnimator.stopAnimation(false) // don't finish (stay in stopped state)
-circleAnimator.finishAnimation(at: .current) // set view's actual properties to animated values at this moment
+circleAnimator.stopAnimation(false) // 未完成 (停留在stopped状态)
+circleAnimator.finishAnimation(at: .current) // 设置视图的实际属性为这一刻的变换值
 ```
 
-The finishAnimationAt: method takes a UIViewAnimatingPosition value. If we pass start or end, the circle will instantly transform to the scale it should have at the beginning or end of the animation, respectively.
+finishAnimationAt:方法接受一个UIViewAnimatingPosition值。若输入start或end，则圆圈最终会变换为起始动画或终止动画。
 
 ## About Durations
 
@@ -213,12 +213,12 @@ Here’s how we can fix it:
 // ...
 case .began, .ended:
     circleCenter = target.center
-     
+
     let durationFactor = circleAnimator.fractionComplete // Multiplier for original duration
     // multiplier for original duration that will be used for new duration
     circleAnimator.stopAnimation(false)
     circleAnimator.finishAnimation(at: .current)
-     
+
     if (gesture.state == .began) {
         circleAnimator.addAnimations({
             target.backgroundColor = UIColor.green()
@@ -230,7 +230,7 @@ case .began, .ended:
             target.transform = CGAffineTransform.identity
         })
     }
-     
+
     circleAnimator.startAnimation()
     circleAnimator.pauseAnimation()
     // set duration factor to change remaining time
