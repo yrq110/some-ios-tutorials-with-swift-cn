@@ -31,7 +31,7 @@
 19. (进行中)[在iOS 10中使用Swift 3与UIViewPropertyAnimator设计动画(Designing Animations with UIViewPropertyAnimator in iOS 10 and Swift 3)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Designing%20Animations%20with%20UIViewPropertyAnimator%20in%20iOS%2010%20and%20Swift%203.html)
 20. [Swift中的模式匹配](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Pattern%20Matching%20in%20Swift.html)
 21. (未开始)[CloudKit指南：入门(CloudKit Tutorial: Getting Started)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/CloudKit%20Tutorial:%20Getting%20Started.html)
-22. (未开始)[Swift中的模式匹配(Pattern Matching in Swift)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Face%20Detection%20in%20iOS%20Using%20Core%20Image.html)
+22. (未开始)[使用Core Image的iOS人脸识别(Face Detection in iOS Using Core Image)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Face%20Detection%20in%20iOS%20Using%20Core%20Image.html)
 
 ### 原文
 * [Ray Wenderlich](https://www.raywenderlich.com/)
