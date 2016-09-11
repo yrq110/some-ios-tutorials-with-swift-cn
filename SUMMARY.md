@@ -22,3 +22,4 @@
 * [在iOS 10中使用Swift 3与UIViewPropertyAnimator设计动画](Designing Animations with UIViewPropertyAnimator in iOS 10 and Swift 3.md)
 * [Swift中的模式匹配](Pattern Matching in Swift.md)
 * [CloudKit指南:入门](CloudKit Tutorial: Getting Started.md)
+* [使用Core Image的iOS人脸识别](Face Detection in iOS Using Core Image.md)
