@@ -1,5 +1,5 @@
 #Designing Animations with UIViewPropertyAnimator in iOS 10 and Swift 3
-##在iOS 10中Swift 3中与UIViewPropertyAnimator设计动画
+##在iOS 10中使用Swift 3与UIViewPropertyAnimator设计动画
 
 ***
 
