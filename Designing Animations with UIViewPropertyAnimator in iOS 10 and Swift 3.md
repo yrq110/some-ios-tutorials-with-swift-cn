@@ -202,11 +202,11 @@ circleAnimator.finishAnimation(at: .current) // 设置视图的实际属性为�
 
 finishAnimationAt:方法接受一个UIViewAnimatingPosition值。若输入start或end，则圆圈最终会变换为起始动画或终止动画。
 
-## About Durations
+## 关于持续时间
 
-There’s a subtle bug in this version. The problem is, every time we stop an animation and start a new one, the new animation will take 4.0 seconds to complete, no matter how close the view is to reaching the end goal.
+这里有一个微妙的小bug，每次我们停止一个动画并开始一个新的时，不论视图离最终变换的目标还差多少，新的动画都会持续4秒。
 
-Here’s how we can fix it:
+可以这样来修复:
 
 ```swift
 // dragCircle:
@@ -238,6 +238,6 @@ case .began, .ended:
 case .changed:
 // ...
 ```
-Now, we explicitly stop the animator, attach one of two animations depending on the direction, and restart the animator, using continueAnimationWithTimingParameters:durationFactor:to adjust the remaining duration. This is so that “deflating” from a short expansion does not take the full duration of the original animation. The method continueAnimationWithTimingParameters:durationFactor:can also be used to change an animator’s timing function on the fly*.
+现在，我们显式的停止了animator，根据方向来关联2个中的一个动画，并重启animator，使用continueAnimationWithTimingParameters:durationFactor:调整剩余的持续时间。这样的话就不会以完整的时间执行原始动画，而是一个`瘦身`过的短时间的扩展动画。continueAnimationWithTimingParameters:durationFactor:方法也被用来修改animator的timing函数*。
 
-* When you pass in a new timing function, the transition from the old timing function is interpolated. If you go from a springy timing function to a linear one, for example, the animations may remain “bouncy” for a moment, before smoothing out.
+\* 当输入一个新的timing函数时，旧timing函数中的变换会被插入进来。若将一个弹性timing函数变成一个线性的话，举个例子，动画在变得平滑之前会保持`弹性`一段时间。
