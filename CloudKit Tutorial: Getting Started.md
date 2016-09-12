@@ -19,6 +19,7 @@ CloudKit是苹果基于iCloud的远程数据存储服务，使用用户的iCloud
 学习如何使用CloudKit在云端存储你的app数据!
 
 CloudKit中的两个主要部分:
+
 1. 一个管理记录类型与其它公共数据的web控制台。
 2. 一个在iCloud与设备之间传输数据的API集合。
 
