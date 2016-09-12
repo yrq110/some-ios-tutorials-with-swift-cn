@@ -9,17 +9,17 @@
 
 ***
 
-Core Image is a powerful API built into Cocoa Touch. It’s a critical piece of the iOS SDK. However, it often gets overlooked. In this tutorial, we’re going to examine Core Image’s face detection features and how to make use of this technology in your own iOS apps!
+Core Image是Cocoa Touch中一个强大的API，是iOS SDK中的关键部分，不过它经常被忽略。在这篇教程中，会验证Core Image的人脸识别特性并在你的iOS app中应用这项技术!
 
-> Note: This is an intermediate-advanced level iOS tutorial. We assume you have already used technologies such as UIImagePicker, Core Image, etc. If you are unfamiliar with these technologies, then please check out our excellent course series and return here when you are ready.
+> 注意: 这是一篇中高级的iOS教程，假定你已经使用过UIImagePicker, Core Image等技术。若你不太熟悉这些技术，可以看看我们的[系列教程](http://www.appcoda.com/ios-programming-course)然后准备好了再回来。
 
-## What We’re Going to Build
+## 将要构建的东西
 
-Face detection in iOS has been around since the days of iOS 5 (circa 2011) but it is often overlooked. The facial detection API allows developers to not only detect faces, but also check those faces for particular properties such as if a smile is present or if the person is blinking.
+iOS的人脸识别从iOS 5(2011)就有了不过一直被无视。面部识别API允许开发者不仅可以检测人脸，也可以检测到面部的一些特殊属性，比如说微笑或眨眼。
 
-First, we’re going to explore Core Image’s face detection technology by creating a simple app that recognizes a face in a photo and highlights it with a box. In the second example, we’ll take a look at a more detailed use case by creating an app that lets a user take a photo, detect if a face(s) is present, and retrieve the user’s facial coordinates. In so doing, we’re going to learn all about face detection on iOS and how to make use of this powerful, yet often overlooked API.
+首先，为了了解Core Image的人脸识别技术我们会创建一个app来识别照片中的人脸并用一个方框来标记它。在第二个例子中，让用户拍摄一张照片，检测其中的人脸并检索用户面部坐标。这样一来，就充分掌握了iOS中的人脸识别，并且学会如何利用这个强大却总被忽略的API。
 
-Let’s roll!
+开搞!
 
 ## Setting up the Project
 
