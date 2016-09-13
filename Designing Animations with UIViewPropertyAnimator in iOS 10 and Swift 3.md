@@ -132,7 +132,7 @@ func dragCircle(gesture: UIPanGestureRecognizer) {
 
 执行动画，让"圆圈"呼吸起来，按下一段时间试试..
 
-## 一个关键点
+### 一个关键点
 
 在动画执行后:
 
@@ -202,7 +202,7 @@ circleAnimator.finishAnimation(at: .current) // 设置视图的实际属性为�
 
 finishAnimationAt:方法接受一个UIViewAnimatingPosition值。若输入start或end，则圆圈最终会变换为起始动画或终止动画。
 
-## 关于持续时间
+### 关于持续时间
 
 这里有一个微妙的小bug，每次我们停止一个动画并开始一个新的时，不论视图离最终变换的目标还差多少，新的动画都会持续4秒。
 
@@ -241,3 +241,143 @@ case .changed:
 现在，我们显式的停止了animator，根据方向来关联2个中的一个动画，并重启animator，使用continueAnimationWithTimingParameters:durationFactor:调整剩余的持续时间。这样的话就不会以完整的时间执行原始动画，而是一个`瘦身`过的短时间的扩展动画。continueAnimationWithTimingParameters:durationFactor:方法也被用来修改animator的timing函数*。
 
 \* 当输入一个新的timing函数时，旧timing函数中的变换会被插入进来。若将一个弹性timing函数变成一个线性的话，举个例子，动画在变得平滑之前会保持`弹性`一段时间。
+
+## Timing函数
+
+新的timing函数比之前的要好很多。
+
+旧的 **UIViewAnimationCurve** 参数依旧可用(比如之前用过的easeInOut)，这里有两个新的可用timing对象 : **UISpringTimingParameters** 与 **UICubicTimingParameters**
+
+### UISpringTimingParameters
+
+要使用UISpringTimingParameters实例需要设置衰减率(damping ratio)、质量(mass)、刚度(stiffness)与初始速率(initial velocity)，这些参数会参与适当的算式式计算，得到一个逼真的弹性动画。animator在初始化时输入一个UISpringTimingParameters参数的同时仍然可以接收一个duration参数，不过这个参数会被忽略掉，不会参与算式的计算，这解决了一些以前的sping动画函数中的弊病。
+
+来做些不同的事情，使用一个sping animator让圆圈吸附在屏幕的中央。
+
+ViewController.swift
+```swift
+import UIKit
+
+class ViewController: UIViewController {
+    // this records our circle's center for use as an offset while dragging
+    var circleCenter: CGPoint!
+    // We will attach various animations to this in response to drag events
+    var circleAnimator: UIViewPropertyAnimator?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Add a draggable view
+        let circle = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0))
+        circle.center = self.view.center
+        circle.layer.cornerRadius = 50.0
+        circle.backgroundColor = UIColor.green()
+
+        // add pan gesture recognizer to circle
+        circle.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(self.dragCircle)))
+
+        self.view.addSubview(circle)
+    }
+
+    func dragCircle(gesture: UIPanGestureRecognizer) {
+        let target = gesture.view!
+
+        switch gesture.state {
+        case .began:
+             if circleAnimator != nil && circleAnimator!.isRunning {
+                circleAnimator!.stopAnimation(false)
+            }
+            circleCenter = target.center
+        case .changed:
+            let translation = gesture.translation(in: self.view)
+            target.center = CGPoint(x: circleCenter!.x + translation.x, y: circleCenter!.y + translation.y)
+        case .ended:
+            let v = gesture.velocity(in: target)
+            // 500 is an arbitrary value that looked pretty good, you may want to base this on device resolution or view size.
+            // The y component of the velocity is usually ignored, but is used when animating the center of a view
+            let velocity = CGVector(dx: v.x / 500, dy: v.y / 500)
+            let springParameters = UISpringTimingParameters(mass: 2.5, stiffness: 70, damping: 55, initialVelocity: velocity)
+            circleAnimator = UIViewPropertyAnimator(duration: 0.0, timingParameters: springParameters)
+
+            circleAnimator!.addAnimations({
+                target.center = self.view.center
+            })
+            circleAnimator!.startAnimation()
+        default: break
+        }
+    }
+}
+```
+
+拖拽圆圈然后松开，它不仅会弹回初始点的位置，并且依旧会保持松手时的动量。这是由于在初始化sping timing的参数时给initialVelocity设置了一个速率:
+
+```swift
+// dragCircle: .ended:
+// ...
+let velocity = CGVector(dx: v.x / 500, dy: v.y / 500)
+let springParameters = UISpringTimingParameters(mass: 2.5, stiffness: 70, damping: 55, initialVelocity: velocity)
+circleAnimator = UIViewPropertyAnimator(duration: 0.0, timingParameters: springParameters)
+// ...
+```
+
+![](http://i2.wp.com/jamesonquave.com/blog/wp-content/uploads/Animations-2-1.png?resize=320%2C533)
+
+- At an interval, I drew a small circle at our main circle’s center point in order to trace the animation path for this screenshot. The “straight” lines curve a little, because some momentum was retained as the circle was released and pulled inward by the spring.
+
+### UICubicTimingParameters
+
+UICubicTimingParameters允许你添加自定义三次贝塞尔曲线的控制点，需要注意的是超过 0.0 - 1.0 范围的坐标点会被调整到这个范围内:
+
+```swift
+// Same as setting the y arguments to 0.0 and 1.0 respectively
+let curveProvider = UICubicTimingParameters(controlPoint1: CGPoint(x: 0.2, y: -0.48), controlPoint2: CGPoint(x: 0.79, y: 1.41))
+expansionAnimator = UIViewPropertyAnimator(duration: expansionDuration, timingParameters: curveProvider)
+```
+
+若你不喜欢这些提供的timing曲线，可以在满足UITimingCurveProvider协议的基础上来实现自己想要的时序曲线。
+
+## 取消动画
+
+You can manually set the progress of an paused animation by passing a value between 0.0 and 1.0* to your animator’s fractionComplete property. A value of 0.5, for example, will place the animatable properties halfway towards their final value, regardless of timing curve. Note that the position you set is mapped to the timing curve when you restart an animation, so a fractionComplete of 0.5 does not necessarily mean the remaining duration will be half of the original duration.
+
+Let’s try out a different example. First, let’s initialize our animator at the bottom of viewDidLoad: and pass in two animations:
+```swift
+// viewDidLoad:
+// ...
+circleAnimator = UIViewPropertyAnimator(duration: 1.0, curve: .linear, animations: {
+    circle.transform = CGAffineTransform(scaleX: 3.0, y: 3.0)
+})
+
+circleAnimator?.addAnimations({
+    circle.backgroundColor = UIColor.blue()
+}, delayFactor: 0.75)
+// ...
+```
+We aren’t going to call startAnimation this time. The circle should get larger as the animation progresses and start turning blue at 75%.
+
+We need a new dragCircle: implementation as well:
+```swift
+func dragCircle(gesture: UIPanGestureRecognizer) {
+    let target = gesture.view!
+
+    switch gesture.state {
+    case .began:
+        circleCenter = target.center
+    case .changed:
+        let translation = gesture.translation(in: self.view)
+        target.center = CGPoint(x: circleCenter!.x + translation.x, y: circleCenter!.y + translation.y)
+
+        circleAnimator?.fractionComplete = target.center.y / self.view.frame.height
+    default: break
+    }
+}
+```
+Now we’re updating the animator’s fractionComplete to the circle’s vertical position on the view as it’s dragged:
+
+
+![](http://i2.wp.com/jamesonquave.com/blog/wp-content/uploads/Rev-3.png?resize=432%2C702)
+![](http://i2.wp.com/jamesonquave.com/blog/wp-content/uploads/Rev-4.png?resize=432%2C702)
+
+I’ve used the linear timing curve, but this sample would be a good way to get a feel for other curves or a timing curve provider instance. The animation that changes the circle blue follows a compressed version of the animator’s timing curve.
+
+\* Custom animators can accept value outside of range 0.0 – 1.0, if they support animations going past their endpoints.
