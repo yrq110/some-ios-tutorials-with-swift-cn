@@ -32,8 +32,8 @@
 20. [Swift中的模式匹配](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Pattern%20Matching%20in%20Swift.html)
 21. (进行中)[CloudKit指南：入门(CloudKit Tutorial: Getting Started)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/CloudKit%20Tutorial:%20Getting%20Started.html)
 22. (进行中)[使用Core Image的iOS人脸识别(Face Detection in iOS Using Core Image)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Face%20Detection%20in%20iOS%20Using%20Core%20Image.html)
-23. (进行中)[Unit Testing on macOS: Part 1]
-24. (进行中)[Unit Testing on macOS: Part 2]
+23. (进行中)[Unit Testing on macOS: Part 1]()
+24. (进行中)[Unit Testing on macOS: Part 2]()
 
 ### 原文
 * [Ray Wenderlich](https://www.raywenderlich.com/)
