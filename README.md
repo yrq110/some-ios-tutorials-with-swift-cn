@@ -34,6 +34,7 @@
 22. (进行中)[使用Core Image的iOS人脸识别(Face Detection in iOS Using Core Image)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Face%20Detection%20in%20iOS%20Using%20Core%20Image.html)
 23. (进行中)[Unit Testing on macOS: Part 1]()
 24. (进行中)[Unit Testing on macOS: Part 2]()
+25. (进行中)[Core Location的地理围栏开发指南(Geofencing Tutorial with Core Location)]()
 
 ### 原文
 * [Ray Wenderlich](https://www.raywenderlich.com/)
