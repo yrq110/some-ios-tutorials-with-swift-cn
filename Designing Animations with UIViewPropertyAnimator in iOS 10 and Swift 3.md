@@ -69,7 +69,7 @@ class ViewController: UIViewController {
 
 > 注意: “UIViewPropertyAnimator实例”有点拗口，下面我会使用animator来表示它。
 
-若有多个动画改变了一个view的同一个属性，则之后添加或开始\*的动画“胜出”(ps:应该是有效的意思)。有趣的是不会发生不协调的变化，而是将新旧动画结合在了一起，当旧动画淡出时新动画淡入。
+若有多个动画改变了一个view的同一个属性，则之后添加或开始<sup>\*</sup>的动画“胜出”(ps:应该是有效的意思)。有趣的是不会发生不协调的变化，而是将新旧动画结合在了一起，当旧动画淡出时新动画淡入。
 
 \* 后来向UIViewPropertyAnimator实例中添加的动画或者是有一个开始延迟覆盖了之前的动画。"后开始者"胜出。
 
@@ -238,7 +238,7 @@ case .began, .ended:
 case .changed:
 // ...
 ```
-现在，我们显式的停止了animator，根据方向来关联2个中的一个动画，并重启animator，使用continueAnimationWithTimingParameters:durationFactor:调整剩余的持续时间。这样的话就不会以完整的时间执行原始动画，而是一个`瘦身`过的短时间的扩展动画。continueAnimationWithTimingParameters:durationFactor:方法也被用来修改animator的timing函数*。
+现在，我们显式的停止了animator，根据方向来关联2个中的一个动画，并重启animator，使用continueAnimationWithTimingParameters:durationFactor:调整剩余的持续时间。这样的话就不会以完整的时间执行原始动画，而是一个`瘦身`过的短时间的扩展动画。continueAnimationWithTimingParameters:durationFactor:方法也被用来修改animator的timing函数<sup>\*</sup>。
 
 \* 当输入一个新的timing函数时，旧timing函数中的变换会被插入进来。若将一个弹性timing函数变成一个线性的话，举个例子，动画在变得平滑之前会保持`弹性`一段时间。
 
@@ -322,7 +322,7 @@ circleAnimator = UIViewPropertyAnimator(duration: 0.0, timingParameters: springP
 
 ![](http://i2.wp.com/jamesonquave.com/blog/wp-content/uploads/Animations-2-1.png?resize=320%2C533)
 
-- At an interval, I drew a small circle at our main circle’s center point in order to trace the animation path for this screenshot. The “straight” lines curve a little, because some momentum was retained as the circle was released and pulled inward by the spring.
+- 为了体现动画执行的路径，每隔一段时间就在主圆圈的中心点绘制一个小圆圈。可以看出，“直线”路径有些弯曲，因为在松开圆圈时会保留一些动量，并且由于弹性被拉向屏幕中心。
 
 ### UICubicTimingParameters
 
@@ -336,11 +336,11 @@ expansionAnimator = UIViewPropertyAnimator(duration: expansionDuration, timingPa
 
 若你不喜欢这些提供的timing曲线，可以在满足UITimingCurveProvider协议的基础上来实现自己想要的时序曲线。
 
-## 取消动画
+## 擦除动画
 
-You can manually set the progress of an paused animation by passing a value between 0.0 and 1.0* to your animator’s fractionComplete property. A value of 0.5, for example, will place the animatable properties halfway towards their final value, regardless of timing curve. Note that the position you set is mapped to the timing curve when you restart an animation, so a fractionComplete of 0.5 does not necessarily mean the remaining duration will be half of the original duration.
+可以手动设置一个动画暂停的进度，通过使用animator的fractionComplete属性，输入一个0.0 - 1.0<sup>\*</sup>范围内的值。比如说值为0.5的话，则会将动画属性折半赋给最终的值，并且会忽略timing曲线。注意你设置的位置会被映射到当你重启动画时的timing曲线，因此值为0.5的fractionComplete属性并不意味着剩余的持续时间等于原始持续时间。
 
-Let’s try out a different example. First, let’s initialize our animator at the bottom of viewDidLoad: and pass in two animations:
+来做个别的例子。首先，在viewDidLoad:顶部初始化animator，然后输入两个动画:
 ```swift
 // viewDidLoad:
 // ...
@@ -353,9 +353,9 @@ circleAnimator?.addAnimations({
 }, delayFactor: 0.75)
 // ...
 ```
-We aren’t going to call startAnimation this time. The circle should get larger as the animation progresses and start turning blue at 75%.
+这次没有使用startAnimation，当动画进行时圆圈会逐渐变大并且在进行到75%的进度时变为蓝色。
 
-We need a new dragCircle: implementation as well:
+同样需要实现一个新的dragCircle:方法:
 ```swift
 func dragCircle(gesture: UIPanGestureRecognizer) {
     let target = gesture.view!
@@ -372,12 +372,12 @@ func dragCircle(gesture: UIPanGestureRecognizer) {
     }
 }
 ```
-Now we’re updating the animator’s fractionComplete to the circle’s vertical position on the view as it’s dragged:
+现在当拖拽圆圈时会根据它垂直方向的坐标来更新animator的fractionCompleteNow属性:
 
 
 ![](http://i2.wp.com/jamesonquave.com/blog/wp-content/uploads/Rev-3.png?resize=432%2C702)
 ![](http://i2.wp.com/jamesonquave.com/blog/wp-content/uploads/Rev-4.png?resize=432%2C702)
 
-I’ve used the linear timing curve, but this sample would be a good way to get a feel for other curves or a timing curve provider instance. The animation that changes the circle blue follows a compressed version of the animator’s timing curve.
+这里我用的是线性的timing曲线，不过在这个例子中用其它或者提供的timing曲线的话效果会更好。圆圈颜色变蓝的动画伴随一个压缩版的animatortiming曲线。
 
-\* Custom animators can accept value outside of range 0.0 – 1.0, if they support animations going past their endpoints.
+\* 若自定义的animator支持越过端点的动画，则可以接受超出0.0 - 1.0范围外的值。
