@@ -68,7 +68,43 @@ BabiFüd是这篇教程中的示例app，一个标准的“餐厅评价”类app
 app中包含4个标签：一个附近餐厅的列表，一张附近餐厅的地图，用户评价与设置。附近餐厅的列表是唯一会在教程中用到的，看看下面的app截图
 
 ![](http://www.raywenderlich.com/wp-content/uploads/2014/09/nearby.png)
-
 ![](http://www.raywenderlich.com/wp-content/uploads/2014/09/map.png)
 
 这些视图后有一个模型类，与调用CloudKit的操作绑定。CloudKit对象被称为records，模型中主要的record类型是**Establishment**，代表app中不同的餐厅。
+
+## Getting Started
+
+Start by downloading the starter project for this tutorial.
+
+You’ll have to change the Bundle Identifier and Team of your app before you can start coding. You need to set the team in order to get the necessary entitlements from Apple. Having a unique bundle identifier makes the process a whole lot easier.
+
+Open BabiFud.xcodeproj in Xcode. Select the BabiFud project in the Project Navigator, then select the BabiFud target. With the General tab selected, replace the Bundle Identifier with something unique. Standard practice is to use reverse domain name notation and include the project name. Next, select the appropriate Team:
+
+![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/05/S1-BabiFud-Bundle-ID-480x138.png)
+
+That takes care of the Bundle Identifier and Team. Now you’ll need to get your app set up for CloudKit and create some containers to hold your data.
+
+## Entitlements and Containers
+
+You’ll need a container to hold the app’s records before you can add any data via your app. A container is the term for the conceptual location of all the app’s data on the server. It is the grouping of public and private databases.
+
+![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/06/CloudKit-container-diagram.png)
+
+To create a container, you first need to enable the iCloud entitlements for your app. Select the Capabilities tab in the target editor. Next flip the switch in the iCloud section to ON.
+
+![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/05/S2-Enable-iCloud-480x220.png)
+
+At this point, Xcode might prompt you to enter the Apple ID associated with your iOS developer account. If so, then type it in as requested. Finally, enable CloudKit by checking the CloudKit checkbox in the Services group.
+This creates a default container named iCloud.<your app’s bundle id>, as illustrated below:
+
+![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/05/S3-Enable-CloudKit-480x220.png)
+
+### Troubleshooting iCloud Setup in Xcode
+
+If you see any warnings or errors when creating entitlements, building the project, or running the app, and Xcode is complaining about the container ID, then here are some troubleshooting tips:
+
+* If there are any warnings or errors shown in the Steps group in the iCloud section, then try pressing the Fix Issue button. This might need to be done a few times.
+  ![](http://www.raywenderlich.com/wp-content/uploads/2014/09/0_fix_issue.png)
+* It’s important that the app’s bundle id and iCloud containers match and exist in the developer account. For example, if the bundle identifier is “com.<your domain>.BabiFud”, then the iCloud container name should be “iCloud.” plus the bundle bundle id: “iCloud.com.<your domain>.BabiFud”.
+* The iCloud container name must be unique because this is the global identifier used by CloudKit to access the data. Since the iCloud container name contains the bundle id, the bundle id must also be unique (which is why it has to be changed from com.raywendrelich.BabiFud).
+* In order for the entitlements piece to work, the app/bundle id has to be listed in the App IDs portion of the Certificates, Identifiers, and Profiles portal. This means the certificate used to sign the app has to be from the set team id and has to list the app id, which also implies the iCloud container id.Normally, Xcode does all of this automatically if you are signed in to a valid developer account. Unfortunately, this sometimes gets out of sync. It can help to start with a fresh ID and, using the iCloud capabilities pane, change the CloudKit container ID to match. Otherwise, to fix it you may have to edit the info.plist or BabiFud.entitlements files to make sure the id values there reflect what you set for the bundle id.
