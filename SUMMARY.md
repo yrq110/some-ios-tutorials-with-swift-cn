@@ -23,3 +23,8 @@
 * [Swift中的模式匹配](Pattern Matching in Swift.md)
 * [CloudKit指南:入门](CloudKit Tutorial: Getting Started.md)
 * [使用Core Image的iOS人脸识别](Face Detection in iOS Using Core Image.md)
+* [Unit Testing on macOS: Part 1](Unit Testing on macOS: Part 1.md)
+* [Unit Testing on macOS: Part 2](Unit Testing on macOS: Part 2.md)
+* [Core Location的地理围栏开发指南](Geofencing Tutorial with Core Location.md)
+* [使用Vapor构建你的第一个Web应用](Building Your First Web App in Swift Using Vapor.md)
+* [Swift中的ARC与内存管理](ARC and Memory Management in Swift.md)
