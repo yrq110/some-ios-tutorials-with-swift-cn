@@ -25,7 +25,7 @@ CloudKit中的两个主要部分:
 
 CloudKit同样很安全，用户的私有数据被完全保护了起来，开发者只能访问他们自己的私有数据库而不能查看用户的私有数据。
 
-对于一个仅有iOS平台并且使用大量数据的app来说，CloudKit是一个好的选择，无需编写服务端的一些繁琐的逻辑。此外，CloudKit也可以应用于web与服务器应用。 
+对于一个仅有iOS平台并且使用大量数据的app来说，CloudKit是一个好的选择，无需编写服务端的一些繁琐的逻辑。此外，CloudKit也可以应用于web与服务器应用。
 
 在这篇CloudKit教程中，会使用CloudKit创建一个餐厅评分app来进行实践，它有一个拗口的名字-BabiFüd.
 
@@ -33,41 +33,42 @@ CloudKit同样很安全，用户的私有数据被完全保护了起来，开发
 
 ## 为何使用CloudKit?
 
-You might wonder why you should choose CloudKit over Core Data, other commercial BaaS (Back end as a Service) offerings, or even rolling your own server.
-There are three reasons: simplicity, trust, and cost.
+也许你会疑惑为何不选Core Data或其他商业型BaaS服务，甚至是自己的服务器。
 
-### Simplicity
+这里有三个原因: 简便, 信任, 与开销。
 
-Unlike other backend solutions, CloudKit requires little setup. You don’t have to choose, configure, or install servers. Security and scaling are handled by Apple as well.
+### 简便
 
-Simply registering for the iOS Developer Program makes you eligible to use CloudKit. You don’t have to register for additional services or create new accounts. When you enable CloudKit capabilities in your app all necessary server setup magic happens automatically.
+不像其它的后端解决方案，CloudKit仅需要少量的配置即可使用。无需进行服务器的选择、配置与安装，并且安全问题也是由苹果来处理。
 
-There’s no need to download additional libraries and configure them. CloudKit is imported like any other iOS framework. The CloudKit framework itself also provides a level of simplicity by offering convenient APIs for common operations.
+进行简单的iOS开发者注册后即可使用CloudKit，不需要注册额外的服务或创建新账号，当在app中启用CloudKit功能时所有必要的服务器都会神奇的自动设置完成。
 
-It’s also easy for users. Since CloudKit uses the iCloud credentials entered when the device is set up (or entered after set up via the Settings app), there’s no need to build complicated login screens. As long as they are logged in, users can seamlessly start using your app. That should put you on Cloud 9!
+无需下载额外的库与配置。CloudKit与其它iOS框架同等重要，CloudKit框架本身也提供了一些针对于通用操作的方便的API。
 
-### Trust
+对用户来说很简单，CloudKit在设备启动好时通过iCloud证书来登入(或者在启动后的设置界面登入)，无需构建复杂的登录界面。只要登入成功后，就可以直接使用你的app了。That should put you on Cloud 9(PS: 也许指的是北美的那支游戏战队)!
 
-Another benefit of CloudKit is that users can trust the privacy and security of their data by relying on Apple rather than app developers. CloudKit insulates user data from you, the developer.
+### 信任
 
-While this lack of access can be frustrating while debugging, it is a net plus since you don’t have to worry about security or convince users their data is secure. If an app user trusts iCloud, then they can also trust you.
+另一个CloudKit的好处就是用户可以放心它们数据的隐私性与安全性，这些数据都是由苹果处理的而不是app开发者。CloudKit将用户数据与开发者隔离开来。
 
-### Cost
+虽然这个访问权限的缺失在debug过程中也许会使人沮丧，不过你不用担心安全性并且思考如何使用户相信他们的数据是安全的。若用户信任iCloud的话他们也会信任你。
 
-Finally, for any developer, the cost of running a service is a huge deal. Even the least expensive server hosts cannot offer low-cost solutions for small, free or cheap apps. So there will always be a cost associated with running an app.
+### 开销
 
-With CloudKit, you get a reasonable amount of storage and data transfer for public data for free. There is a very thorough explanation of fees in the What’s New in CloudKit WWDC 2015 Video.
+最后，对开发者而言，运行一个服务总会产生一笔不小的开销，即使是价格最便宜的服务器主机也很难有为小型免费的app提供的低开销解决方案。因此在运行一个app时难免会产生一个相关的开销。
 
-These strengths make the CloudKit service a low-hassle solution for Mac and iOS apps.
+使用CloudKit的话会得到一个免费的用于公共数据传输的容量适当的存储空间。在WWDC 2015视频中的[What’s New in CloudKit](https://developer.apple.com/videos/play/wwdc2015/704/)详细讲解了它的费用。
 
-## Introducing BabiFüd
+强有力的CloudKit能为Mac与iOS app提供一个麻烦少的解决方案。
 
-The sample app for this tutorial, BabiFüd, is the freshest take on the standard “rate a restaurant” style of app. Instead of reviewing restaurants based upon food quality, speed of service, or price, users rate child-friendliness. This includes availability of changing facilities, booster seats, and healthy food options.
+## BabiFüd简介
 
-The app contains four tabs: a list of nearby restaurants, a map of nearby restaurants, user-generated notes, and settings. The list of nearby restaurants is the only tab you’ll use in this tutorial. You can get a glimpse of the app in action below.
+BabiFüd是这篇教程中的示例app，一个标准的“餐厅评价”类app。然而不通过食物质量、服务速度与价格来进行评估，而是通过针对儿童的友好度，这就包含了可更换的设施，安全座椅与可选择的健康食品选择。
+
+app中包含4个标签：一个附近餐厅的列表，一张附近餐厅的地图，用户评价与设置。附近餐厅的列表是唯一会在教程中用到的，看看下面的app截图
 
 ![](http://www.raywenderlich.com/wp-content/uploads/2014/09/nearby.png)
 
 ![](http://www.raywenderlich.com/wp-content/uploads/2014/09/map.png)
 
-A model class backs these views and wraps the calls to CloudKit. CloudKit objects are called records. The main record type in your model is an Establishment, which represents the various restaurants in your app.
+这些视图后有一个模型类，与调用CloudKit的操作绑定。CloudKit对象被称为records，模型中主要的record类型是**Establishment**，代表app中不同的餐厅。
