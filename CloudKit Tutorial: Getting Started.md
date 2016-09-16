@@ -72,30 +72,31 @@ app中包含4个标签：一个附近餐厅的列表，一张附近餐厅的地�
 
 这些视图后有一个模型类，与调用CloudKit的操作绑定。CloudKit对象被称为records，模型中主要的record类型是**Establishment**，代表app中不同的餐厅。
 
-## Getting Started
+## 开始
 
-Start by downloading the starter project for this tutorial.
+先下载这篇教程的[开始工程](https://cdn2.raywenderlich.com/wp-content/uploads/2016/06/BabiFud-Cloudkit-Starter.zip)。
 
-You’ll have to change the Bundle Identifier and Team of your app before you can start coding. You need to set the team in order to get the necessary entitlements from Apple. Having a unique bundle identifier makes the process a whole lot easier.
+在开始编码前需要修改下Bundle Identifier和app的Team属性，需要设置team来从Apple那里获权，给予一个独一无二的bundle identifier会省不少事儿。
 
-Open BabiFud.xcodeproj in Xcode. Select the BabiFud project in the Project Navigator, then select the BabiFud target. With the General tab selected, replace the Bundle Identifier with something unique. Standard practice is to use reverse domain name notation and include the project name. Next, select the appropriate Team:
+在Xcode中打开BabiFud.xcodeproj，工程导航栏中选择BabiFud工程，接着选择BabiFud target，选中General标签，修改Bundle Identifier，一个经典的做法是反转标记的区域名称再加上工程名称，接着选择适合的Team:
 
 ![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/05/S1-BabiFud-Bundle-ID-480x138.png)
 
-That takes care of the Bundle Identifier and Team. Now you’ll need to get your app set up for CloudKit and create some containers to hold your data.
+好了，现在需要设置CloudKit，创建一些存放数据的容器(container)。
 
-## Entitlements and Containers
+## 授权与容器
 
-You’ll need a container to hold the app’s records before you can add any data via your app. A container is the term for the conceptual location of all the app’s data on the server. It is the grouping of public and private databases.
+通过app添加数据前需要一个存放app记录(record)的容器。容器是存放在服务器的保存所有app数据的一个概念性位置，分为公共数据库与私有数据库。
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/06/CloudKit-container-diagram.png)
 
-To create a container, you first need to enable the iCloud entitlements for your app. Select the Capabilities tab in the target editor. Next flip the switch in the iCloud section to ON.
+为了创建一个容器，首先需要启用app的iCloud功能，选择target中的Capabilities标签，将iCloud区域的开关拨到ON。
 
 ![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/05/S2-Enable-iCloud-480x220.png)
 
-At this point, Xcode might prompt you to enter the Apple ID associated with your iOS developer account. If so, then type it in as requested. Finally, enable CloudKit by checking the CloudKit checkbox in the Services group.
-This creates a default container named iCloud.<your app’s bundle id>, as illustrated below:
+这时，Xcode可能会让你输入与iOS开发者账号关联的Apple ID，若有的话就输入下。最后，在Services分组里勾选CloudKit复选框来启用CloudKit。
+
+这样就创建了一个默认的名为iCloud.<你的bundle id>的容器，如下所示:
 
 ![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/05/S3-Enable-CloudKit-480x220.png)
 
