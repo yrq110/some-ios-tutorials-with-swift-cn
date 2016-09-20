@@ -100,17 +100,17 @@ app中包含4个标签：一个附近餐厅的列表，一张附近餐厅的地�
 
 ![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/05/S3-Enable-CloudKit-480x220.png)
 
-### Troubleshooting iCloud Setup in Xcode
+### Xcode中配置iCloud的一些问题
 
-If you see any warnings or errors when creating entitlements, building the project, or running the app, and Xcode is complaining about the container ID, then here are some troubleshooting tips:
+如果你在创建entitlement，构建构成，运行app或者Xcode提示容器ID时遇到警告或错误时，这里有一些提示:
 
-* If there are any warnings or errors shown in the Steps group in the iCloud section, then try pressing the Fix Issue button. This might need to be done a few times.
+* 若在iCloud部分设置时出现警告或错误，试试点击Fix Issue按钮，可能需要多试几次。
   ![](http://www.raywenderlich.com/wp-content/uploads/2014/09/0_fix_issue.png)
-* It’s important that the app’s bundle id and iCloud containers match and exist in the developer account. For example, if the bundle identifier is “com.<your domain>.BabiFud”, then the iCloud container name should be “iCloud.” plus the bundle bundle id: “iCloud.com.<your domain>.BabiFud”.
-* The iCloud container name must be unique because this is the global identifier used by CloudKit to access the data. Since the iCloud container name contains the bundle id, the bundle id must also be unique (which is why it has to be changed from com.raywendrelich.BabiFud).
-* In order for the entitlements piece to work, the app/bundle id has to be listed in the App IDs portion of the Certificates, Identifiers, and Profiles portal. This means the certificate used to sign the app has to be from the set team id and has to list the app id, which also implies the iCloud container id.Normally, Xcode does all of this automatically if you are signed in to a valid developer account. Unfortunately, this sometimes gets out of sync. It can help to start with a fresh ID and, using the iCloud capabilities pane, change the CloudKit container ID to match. Otherwise, to fix it you may have to edit the info.plist or BabiFud.entitlements files to make sure the id values there reflect what you set for the bundle id.
+* 有一点很重要：app的bundle id需要与iCloud容器相对应，并且在开发者账号中是存在的。比如说，bundle id是“com.<your domain>.BabiFud”，则iCloud容器名称就应该是“iCloud.”加上bundle id变成“iCloud.com.<your domain>.BabiFud”。
+* iCloud容器名必须是唯一的，因为这是Cloudkit用来访问数据所使用的全局标识符。由于iCloud容器名包含bundle id，因此bundle id也必须是唯一的(这就是为何需要修改com.raywendrelich.BabiFud)。
+* 为了让entitlements起作用，需要在App的证书、标识符与配置文件中ID的部分列出app/bundle id。这意味着标识的证书使用了设置的team id与app id，从中可得到了iCloud容器的id。若已经在一个可用的开发者账号中标识了的话Xcode会自动完成这一切。不巧的是，这有时是不同步的，需要更新ID-使用iCloud功能面板修改CloudKit容器ID。否则的话需要修改info.plist文件或BabiFud.entitlements文件来确保id values与所设置的bundle id一致。
 
-## Introducing the CloudKit Dashboard
+## CloudKit控制台介绍 
 
 After setting up the necessary entitlements, the next step is to create some record types that define the data used by your app. You can do this using the CloudKit dashboard. Click CloudKit Dashboard, found in the target’s Capabilities pane, under iCloud.
 
