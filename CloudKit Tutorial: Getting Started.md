@@ -108,29 +108,29 @@ app中包含4个标签：一个附近餐厅的列表，一张附近餐厅的地�
   ![](http://www.raywenderlich.com/wp-content/uploads/2014/09/0_fix_issue.png)
 * 有一点很重要：app的bundle id需要与iCloud容器相对应，并且在开发者账号中是存在的。比如说，bundle id是“com.<your domain>.BabiFud”，则iCloud容器名称就应该是“iCloud.”加上bundle id变成“iCloud.com.<your domain>.BabiFud”。
 * iCloud容器名必须是唯一的，因为这是Cloudkit用来访问数据所使用的全局标识符。由于iCloud容器名包含bundle id，因此bundle id也必须是唯一的(这就是为何需要修改com.raywendrelich.BabiFud)。
-* 为了让entitlements起作用，需要在App的证书、标识符与配置文件中ID的部分列出app/bundle id。这意味着标识的证书使用了设置的team id与app id，从中可得到了iCloud容器的id。若已经在一个可用的开发者账号中标识了的话Xcode会自动完成这一切。不巧的是，这有时是不同步的，需要更新ID-使用iCloud功能面板修改CloudKit容器ID。否则的话需要修改info.plist文件或BabiFud.entitlements文件来确保id values与所设置的bundle id一致。
+* 为了让entitlements起作用，需要在App的证书、标识符与配置文件中ID的部分列出app/bundle id。这意味着标识的证书使用了设置的team id与app id，从中可得到iCloud容器的id。若已经在一个可用的开发者账号中标识了的话Xcode会自动完成这一切。不巧的是，这有时是不同步的，需要更新ID-使用iCloud功能面板修改CloudKit容器ID。否则的话需要修改info.plist文件或BabiFud.entitlements文件来确保id values与所设置的bundle id一致。
 
 ## CloudKit控制台介绍 
 
-After setting up the necessary entitlements, the next step is to create some record types that define the data used by your app. You can do this using the CloudKit dashboard. Click CloudKit Dashboard, found in the target’s Capabilities pane, under iCloud.
+设置完必要的entitlements后，下一步就是创建与定义app所使用的record type，可以使用CloudKit控制台来做这件事。在target的Capabilities面板中，在iCloud下方点击CloudKit Dashboard即可。
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/05/S5-CloudKit-Dashboard-Button-480x220.png)
 
-> Note: You can also launch the CloudKit dashboard by opening the URL https://icloud.developer.apple.com/dashboard/ in your browser.
+> 提示: 也可以在浏览器中用URL打开CloudKit控制台https://icloud.developer.apple.com/dashboard/ 
 
-Here’s what the dashboard looks like:
+控制台长这样:
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/05/S6-CloudKit-Dashboard-480x262.png)
 
-The CloudKit dashboard consists of four sections: Schema, Public Data, Private Data, and Admin.
+CloudKit控制台由四个部分组成: Schema(方案), Public Data(公有数据), Private Data(私有数据), and Admin(用户)。
 
-The SCHEMA section represents the high level objects of a CloudKit container: Record Types, Security Roles, and Subscription Types. You’ll only be concerned with Record Types in this tutorial.
+SCHEMA区域展示了CloudKit容器的高级对象: Record Types(记录类型), Security Roles(安全规则), and Subscription Types(订阅类型). 在此教程中只需要关注Record Type。You’ll only be concerned with Record Types in this tutorial.
 
-A Record Type is a set of fields that defines individual records. In terms of object-oriented programming, a Record Type is like a class. A record can be considered an instance of a particular Record Type. It represents structured data in the container, much like a typical row in a database, and encapsulates a series of key/value pairs.
+一个Record Type就是定义了一些record个体的集合。就像面向对象编程中的class。一个record可以作为一个特殊的Record Type实例，表示容器中的结构化数据，就像数据库中的一行数据，封装了一系列的键值对。 is a set of fields that defines individual records. In terms of object-oriented programming, a Record Type is like a class. A record can be considered an instance of a particular Record Type. It represents structured data in the container, much like a typical row in a database, and encapsulates a series of key/value pairs.
 
-The PUBLIC DATA and PRIVATE DATA sections let you add data to, or search for data in the databases to which you have access. Remember, as a developer you access all public data, but only your own private data. The User Records store data about the current iCloud user such as name and email. A Record Zone (here noted as the Default Zone) is used to provide a logical organization to a private database by grouping records together. Custom zones support atomic transactions by allowing multiple records to be saved at the same time before processing other operations. Custom zones are outside the scope of this tutorial.
+PUBLIC DATA与PRIVATE DATA区域允许你添加、搜索数据。记住，作为一个开发者可以访问所有公有数据与自己的私有数据。User Records存储当前iCloud用户数据，比如姓名与邮箱。 Record Zone中通过进行分组记录来给私有数据库提供一个逻辑性的组织结构。 Custom zones支持原子事务(PS:原子事务：web服务上的操作或者全部发生，或者根本不发生。)，允许多个记录在进行其它操作前同时存储。此教程中不涉及Custom zones。
 
-The ADMIN section provides the ability to configure the dashboard permissions for your team members. If you have multiple development team members, you can restrict their ability to edit data here. This, too, is out-of-scope for this tutorial.
+ADMIN区域允许你配置team成员的控制台访问权限。若你的team中有多个开发者同伴，可以在这里编辑他们的权限。同样，这个也不是此教程的内容。
 
 ## Adding the Establishment Record Type
 
