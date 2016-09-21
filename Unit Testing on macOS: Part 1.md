@@ -22,6 +22,24 @@
 
 如果你看过raywenderlich.com中的任何一个教程，在这步你都想去构建运行程序了。但这次不同--你得去测试。打开**Product**菜单，选择**Test** ，提示你一个快捷键-- **Command-U** -- 之后你会多次用到这个快捷键。
 
+
 当运行测试的时候，Xcode会先构建应用程序，然后应用程序的窗口出现几次之后，会看到消息提示“Test Succeeded”。在左侧的**Navigator**(导航栏)中，选中**Test Navigator**
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/08/TestNavigator2.png)
+
+
+这里显示三个默认加入的测试栏目；每个测试栏目的边上都有一个绿色的小对勾，表示测试已经通过。如果想看测试栏目都包含了哪些文件，点击**Test Navigator**的里面第二行有大写T字母图标开头的叫**High Roller Tests**的栏目。
+
+![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/08/DefaultTests3.png)
+
+有几个要点需要提示一下:
+
+- import引用: **XCTest**是Xcode提供的测试框架。`@testable import High_Roller`引入是用来给测试代码访问`High_Roller`模块用的。每个测试文件都需要引入这二个。
+- `setup()`和`tearDown()` : 这二个方法会分别在每个单独的测试方法调用前后被调用。
+- `testExample()`和`testPerformanceExample()`:真正的测试部分。第一个方法用来测试代码功能，第二个用来测试代码性能。每个测试方法都必须以test开头，这样Xcode才能区分出这些代码是用于执行测试的。
+
+### 单元测试是什么
+
+在你开始写单元测试之前，有必要简要了解一下什么是单元测试以及我们为什么要用单元测试。
+
+单元测试就是测试单独的代码片段或者一组代码片段的一个函数。它并不会被包含到你开始的应用程序当中，只是在开发阶段用来测试你所写的代码是否按你的期望来运行的。
