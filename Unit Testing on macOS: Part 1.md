@@ -25,3 +25,13 @@
 当运行测试的时候，Xcode会先构建应用程序，然后应用程序的窗口出现几次之后，会看到消息提示“Test Succeeded”。在左侧的**Navigator**(导航栏)中，选中**Test Navigator**
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/08/TestNavigator2.png)
+
+这里显示三个默认加入的测试栏目；每个测试栏目的边上都有一个绿色的小对勾，表示测试已经通过。如果想看测试栏目都包含了哪些文件，点击**Test Navigator**的里面第二行有大写T字母图标的叫**High Roller Tests的栏目。
+
+![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/08/DefaultTests3.png)
+
+有几个要点需要提示一下:
+
+- import引用: **XCTest**是Xcode提供的测试框架。`@testable import High_Roller`引入是用来给测试代码访问`High_Roller`模块用的。每个测试文件都需要引入这二个。
+- `setup()`和`tearDown()` : 这二个方法会分别在每个单独的测试方法调用前后被调用。
+- `testExample()`和`testPerformanceExample()`:真正的测试部分。第一个方法用来测试代码功能，第二个用来测试代码性能。每个测试方法都必须以test开头，这样Xcode才能区分出这些代码是用于执行测试的。
