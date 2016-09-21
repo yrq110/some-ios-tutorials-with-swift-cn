@@ -26,7 +26,8 @@
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/08/TestNavigator2.png)
 
-这里显示三个默认加入的测试栏目；每个测试栏目的边上都有一个绿色的小对勾，表示测试已经通过。如果想看测试栏目都包含了哪些文件，点击**Test Navigator**的里面第二行有大写T字母图标的叫**High Roller Tests的栏目。
+
+这里显示三个默认加入的测试栏目；每个测试栏目的边上都有一个绿色的小对勾，表示测试已经通过。如果想看测试栏目都包含了哪些文件，点击**Test Navigator**的里面第二行有大写T字母图标开头的叫**High Roller Tests**的栏目。
 
 ![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/08/DefaultTests3.png)
 
