@@ -331,3 +331,51 @@ Here are some common error enums and related descriptions:
 When you fetched the list of establishments, you probably noticed that you can see the establishment name and the services the establishments offer. But none of the images are being displayed! Are the clouds in the way?
 
 When you retrieved the establishment records, you automatically retrieved the images as well. You still, however, need to perform the necessary steps to load the images into your app. That’ll chase those clouds away! :]
+
+## Working with Binary Assets
+
+An asset is binary data, such as an image, that you associate with a record. In your case, your app’s assets are the establishment photos shown in the MasterViewController table view.
+
+In this section you’ll add the logic to load the assets that were downloaded when you retrieved the establishment records.
+
+Open Model/Establishment.swift and replace the loadCoverPhoto(_:) method with the following code:
+
+```swift
+func loadCoverPhoto(completion:(photo: UIImage!) -&gt; ()) {
+  // 1
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
+    var image: UIImage!
+ 
+    // 4
+    defer {
+      completion(photo: image)
+    }
+ 
+    // 2
+    guard let asset = self.record["CoverPhoto"] as? CKAsset,
+      path = asset.fileURL.path,
+      imageData = NSData(contentsOfFile: path) else {
+        return
+    }
+ 
+    // 3
+    image = UIImage(data: imageData)
+  }
+}
+```
+
+This method loads the image from the asset attribute as follows:
+
+1. Although you download the asset at the same time you retrieve the rest of the record, you want to load the image asynchronously. So wrap everything in a dispatch_async block.
+2. Assets are stored in CKRecord as instances of CKAsset, so cast appropriately. Next load the image data from the local file URL provided by the asset.
+3. Use the image data to create an instance of UIImage.
+4.Execute the completion callback with the retrieved image. Note that this defer block gets executed regardless of which return is executed. For example, if there is no image asset, then image never gets set upon the return and no image appears for the restaurant.
+
+Build and run. You’ve chased the clouds away and the establishment images should now appear. Great job!
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/06/Build-Run-2-With-Images.png)
+
+There are two gotchas with CloudKit assets:
+
+1. Assets can only exist in CloudKit as attributes on records. You can’t store them on their own. Deleting a record will also delete any associated assets.
+2. Retrieving assets can negatively impact performance because the assets are downloaded at the same time as the rest of the record data. If your app makes heavy use of assets, then you should store a reference to a different type of record that holds just the asset.
