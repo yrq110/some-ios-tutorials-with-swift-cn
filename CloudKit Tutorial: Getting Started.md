@@ -126,37 +126,37 @@ CloudKit控制台由四个部分组成: Schema(方案), Public Data(公有数据
 
 SCHEMA区域展示了CloudKit容器的高级对象: Record Types(记录类型), Security Roles(安全规则), and Subscription Types(订阅类型). 在此教程中只需要关注Record Type。You’ll only be concerned with Record Types in this tutorial.
 
-一个Record Type就是定义了一些record个体的集合。就像面向对象编程中的class。一个record可以作为一个特殊的Record Type实例，表示容器中的结构化数据，就像数据库中的一行数据，封装了一系列的键值对。 is a set of fields that defines individual records. In terms of object-oriented programming, a Record Type is like a class. A record can be considered an instance of a particular Record Type. It represents structured data in the container, much like a typical row in a database, and encapsulates a series of key/value pairs.
+一个Record Type就是定义了一些record个体的集合。就像面向对象编程中的class。一个record可以作为一个特殊的Record Type实例，表示容器中的结构化数据，就像数据库中的一行数据，封装了一系列的键值对。 
 
 PUBLIC DATA与PRIVATE DATA区域允许你添加、搜索数据。记住，作为一个开发者可以访问所有公有数据与自己的私有数据。User Records存储当前iCloud用户数据，比如姓名与邮箱。 Record Zone中通过进行分组记录来给私有数据库提供一个逻辑性的组织结构。 Custom zones支持原子事务(PS:原子事务：web服务上的操作或者全部发生，或者根本不发生。)，允许多个记录在进行其它操作前同时存储。此教程中不涉及Custom zones。
 
 ADMIN区域允许你配置team成员的控制台访问权限。若你的team中有多个开发者同伴，可以在这里编辑他们的权限。同样，这个也不是此教程的内容。
 
-## Adding the Establishment Record Type
+## 添加Record Type
 
-Think about the design of your app for a moment. Each establishment you’ll want to track has lots of data: name, location, and availability of various child-friendly options. Record types use fields to define the various pieces of data contained in each record.
+考虑一下app中如何设计，每一条想要获取的信息都含有多个数据：名称，地点，还有多种针对儿童友好度的选项。Record types使用字段来定义记录中的多种数据。
 
-With Record Types selected, click the + icon in the top left of the detail pane to add a new record type.
+选择Record Types，点击左上角的 + 号添加一个新的record type。
 
 ![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/05/S7-Add-Record-Type-480x139.png)
 
-Name your new record type Establishment.
+将这个新的record type命名为Establishment。
 
-You’ll see a row of fields where you can define the Field Name, Field Type, and Index, as shown below. A field with the default name of, StringField, has been automatically created for you.
+会看到一行字段，可以在这里定义Field Name(字段名), Field Type(字段类型) 与 Index(索引)，如下所示。 自动创建的的默认字段名为StringField。
 
 ![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/05/S8-New-Record-Type-480x284.png)
 
-Start by replacing StringField with Name. The Field Type and Index defaults already match what you need for this first field definition, but you’ll need to make changes to the Field Type and Index for some of the other fields. Click Add Field… to add new fields as required. Add the following fields:
+首先替换字段名，字段类型与索引在首次定义时是默认的值，需要改变一些字段。点击**Add Field…** 添加所需的字段，如下所示:
 
 ![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/05/T1-Entitlement-Record-Fields.png)
 
-When you’re done, your list of fields should look like this:
+搞定后列表应像下面这样:
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/05/S10-List-of-Fields-308x320.png)
 
-Click Save at the bottom of the page to save your new record type.
+点击页面上方的Save进行保存。
 
-You’re now ready to add some sample establishment records to your database.
+好了，现在在数据库中添加一些样本记录。
 
 Select Default Zone under the PUBLIC DATA section in the navigation pane on the left. This zone will contain the public records for your app. Select the Establishment record type from the dropdown list in the center pane if it’s not already selected. Then click the + icon or the New Record button in the right detail pane, as shown in the screenshot below:
 
@@ -331,51 +331,3 @@ Here are some common error enums and related descriptions:
 When you fetched the list of establishments, you probably noticed that you can see the establishment name and the services the establishments offer. But none of the images are being displayed! Are the clouds in the way?
 
 When you retrieved the establishment records, you automatically retrieved the images as well. You still, however, need to perform the necessary steps to load the images into your app. That’ll chase those clouds away! :]
-
-## Working with Binary Assets
-
-An asset is binary data, such as an image, that you associate with a record. In your case, your app’s assets are the establishment photos shown in the MasterViewController table view.
-
-In this section you’ll add the logic to load the assets that were downloaded when you retrieved the establishment records.
-
-Open Model/Establishment.swift and replace the loadCoverPhoto(_:) method with the following code:
-
-```swift
-func loadCoverPhoto(completion:(photo: UIImage!) -&gt; ()) {
-  // 1
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
-    var image: UIImage!
- 
-    // 4
-    defer {
-      completion(photo: image)
-    }
- 
-    // 2
-    guard let asset = self.record["CoverPhoto"] as? CKAsset,
-      path = asset.fileURL.path,
-      imageData = NSData(contentsOfFile: path) else {
-        return
-    }
- 
-    // 3
-    image = UIImage(data: imageData)
-  }
-}
-```
-
-This method loads the image from the asset attribute as follows:
-
-1. Although you download the asset at the same time you retrieve the rest of the record, you want to load the image asynchronously. So wrap everything in a dispatch_async block.
-2. Assets are stored in CKRecord as instances of CKAsset, so cast appropriately. Next load the image data from the local file URL provided by the asset.
-3. Use the image data to create an instance of UIImage.
-4.Execute the completion callback with the retrieved image. Note that this defer block gets executed regardless of which return is executed. For example, if there is no image asset, then image never gets set upon the return and no image appears for the restaurant.
-
-Build and run. You’ve chased the clouds away and the establishment images should now appear. Great job!
-
-![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/06/Build-Run-2-With-Images.png)
-
-There are two gotchas with CloudKit assets:
-
-1. Assets can only exist in CloudKit as attributes on records. You can’t store them on their own. Deleting a record will also delete any associated assets.
-2. Retrieving assets can negatively impact performance because the assets are downloaded at the same time as the rest of the record data. If your app makes heavy use of assets, then you should store a reference to a different type of record that holds just the asset.
