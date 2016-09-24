@@ -132,7 +132,7 @@ PUBLIC DATA与PRIVATE DATA区域允许你添加、搜索数据。记住，作为
 
 ADMIN区域允许你配置team成员的控制台访问权限。若你的team中有多个开发者同伴，可以在这里编辑他们的权限。同样，这个也不是此教程的内容。
 
-## 添加Record Type
+## 添加商家的Record Type
 
 考虑一下app中如何设计，每一条想要获取的信息都含有多个数据：名称，地点，还有多种针对儿童友好度的选项。Record types使用字段来定义记录中的多种数据。
 
@@ -158,39 +158,41 @@ ADMIN区域允许你配置team成员的控制台访问权限。若你的team中�
 
 好了，现在在数据库中添加一些样本记录。
 
-Select Default Zone under the PUBLIC DATA section in the navigation pane on the left. This zone will contain the public records for your app. Select the Establishment record type from the dropdown list in the center pane if it’s not already selected. Then click the + icon or the New Record button in the right detail pane, as shown in the screenshot below:
+选择PUBLIC DATA区域的Default Zone，这个区域包含app中的公有记录。从中间面板的列表中选择Establishment记录类型，选择 + 图标或右侧细节面板的New Record按钮，如下图所示:
 
 ![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/05/S11-Create-New-Establishment-Record-480x183.png)
 
-This will create a new, empty Establishment record.
+会创建一个新的，空的Establishment记录。
 
 ![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/05/S12-New-Establishment-Record-Blank-415x320.png)
 
-At this point you’re ready to enter some test data for your app.
+这时需要录入一些用于app测试的数据。
 
-The following sample establishment data is fictional. The establishments are located near Apple’s headquarters so they’re easy to find in the simulator.
+下面的这些商家数据是虚构的，这些商家都在Apple总部的附近，在模拟器中容易找到。
 
-Enter each record as described below:
+录入下面这些记录:
 
 > Note: The image for each CoverPhoto element is included in the Supporting Files\Sample Images folder in the Xcode project. To add the image to the establishment record, simply drag it to the CoverPhoto field.
 
 ![](https://cdn2.raywenderlich.com/wp-content/uploads/2016/05/T2-Entitlement-Records-Data.png)
 
-Once all three records have been saved, the dashboard should look like this:
+保存完成后，在控制台中应如下所示:
 
 ![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/05/S14-All-Three-Records-429x320.png)
 
-For each record, the values entered are the database representation of the data. On the app side, the data types are different. For example, SeatingType and ChangingTable are structs. So the specified Int value for a SeatingType might correspond to a “high chair” or a “booster” seat. For HealthyOption and KidsMenu, the Int values represent Boolean types: a 0 means that establishment doesn’t have that option and a 1 means that it does.
+对于每条记录，输入的值都是数据库中所表现的数据。在app端数据类型是不同的。比如说SeatingType与ChangingTable是结构体，给SeatingType分配的整型值对应“high chair”或“booster”。对于HealthyOption与KidsMenu, 用整型值来表示布尔值，0意味着商家没有这个选项，1则是有。
 
-Running the app requires you to have an iCloud account that can be used for development.
-[Creating an iCloud Account for Development](https://developer.apple.com/library/tvos/documentation/DataManagement/Conceptual/CloudKitQuickStart/EnablingiCloudandConfiguringCloudKit/EnablingiCloudandConfiguringCloudKit.html#//apple_ref/doc/uid/TP40014987-CH2-SW7)
+运行app时需要你有一个用于开发的iCloud账号。
 
-You will also need to enter into the iOS Simulator the iCloud credentials associated with this account.
-[Enter iCloud Credentials Before Running Your App](https://developer.apple.com/library/tvos/documentation/DataManagement/Conceptual/CloudKitQuickStart/CreatingaSchemabySavingRecords/CreatingaSchemabySavingRecords.html#//apple_ref/doc/uid/TP40014987-CH3-SW12)
+[创建一个开发用的iCloud账号](https://developer.apple.com/library/tvos/documentation/DataManagement/Conceptual/CloudKitQuickStart/EnablingiCloudandConfiguringCloudKit/EnablingiCloudandConfiguringCloudKit.html#//apple_ref/doc/uid/TP40014987-CH2-SW7)
 
-Return to Xcode. It’s time to start integrating this data into your app!
+也需要在iOS模拟器中录入与这个账号关联的iCloud证书。
 
-## Querying Establishment Records
+[运行app前录入iCloud证书](https://developer.apple.com/library/tvos/documentation/DataManagement/Conceptual/CloudKitQuickStart/CreatingaSchemabySavingRecords/CreatingaSchemabySavingRecords.html#//apple_ref/doc/uid/TP40014987-CH3-SW12)
+
+回到Xcode中，是时候在app中整合数据了!
+
+## 查询商家记录
 
 CKQuery objects are used to select records from a database. A CKQuery describes how to find all records of a specified record type that match certain criteria. These criteria can be something like “all records with a Name field that starts with ‘M’”, or “all records that have booster seats”, or “all records within 3km.” These types of expressions are coded in Cocoa with NSPredicate objects. An NSPredicate evaluates objects to see if they match the specified criteria. Predicates are also used in Core Data and are a natural fit for CloudKit, because predicates commonly are defined as a comparison on a field.
 
