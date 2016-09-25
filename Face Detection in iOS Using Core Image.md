@@ -93,3 +93,70 @@ Base on the console output, it looks like the detector can detect the face:
 ```swift
 Found bounds are (177.0, 415.0, 380.0, 380.0)
 ```
+There are a couple of issues that we haven’t dealt with in the current implementation:
+
+* The face detection is applied on the original image, which has a higher resolution than the image view. And we have set the content mode of the image view to aspect fit. To draw the rectangle properly, we have to calculate the actual position and size of the face in the image view.
+* Furthermore, Core Image and UIView (or UIKit) use two different coordinate systems (see the figure below). We have to provide an implementation to translate the Core Image coordinates to UIView coordinates.
+
+![](http://www.appcoda.com/wp-content/uploads/2016/09/core-image-coordinate-1024x690.jpg)
+
+Now replace the detect() method with the following code:
+
+```swift
+func detect() {
+    
+    guard let personciImage = CIImage(image: personPic.image!) else {
+        return
+    }
+ 
+    let accuracy = [CIDetectorAccuracy: CIDetectorAccuracyHigh]
+    let faceDetector = CIDetector(ofType: CIDetectorTypeFace, context: nil, options: accuracy)
+    let faces = faceDetector.featuresInImage(personciImage)
+ 
+    // For converting the Core Image Coordinates to UIView Coordinates
+    let ciImageSize = personciImage.extent.size
+    var transform = CGAffineTransformMakeScale(1, -1)
+    transform = CGAffineTransformTranslate(transform, 0, -ciImageSize.height)
+    
+    for face in faces as! [CIFaceFeature] {
+        
+        print("Found bounds are \(face.bounds)")
+        
+        // Apply the transform to convert the coordinates
+        var faceViewBounds = CGRectApplyAffineTransform(face.bounds, transform)
+        
+        // Calculate the actual position and size of the rectangle in the image view
+        let viewSize = personPic.bounds.size
+        let scale = min(viewSize.width / ciImageSize.width,
+                        viewSize.height / ciImageSize.height)
+        let offsetX = (viewSize.width - ciImageSize.width * scale) / 2
+        let offsetY = (viewSize.height - ciImageSize.height * scale) / 2
+        
+        faceViewBounds = CGRectApplyAffineTransform(faceViewBounds, CGAffineTransformMakeScale(scale, scale))
+        faceViewBounds.origin.x += offsetX
+        faceViewBounds.origin.y += offsetY
+        
+        let faceBox = UIView(frame: faceViewBounds)
+ 
+        faceBox.layer.borderWidth = 3
+        faceBox.layer.borderColor = UIColor.redColor().CGColor
+        faceBox.backgroundColor = UIColor.clearColor()
+        personPic.addSubview(faceBox)
+        
+        if face.hasLeftEyePosition {
+            print("Left eye bounds are \(face.leftEyePosition)")
+        }
+        
+        if face.hasRightEyePosition {
+            print("Right eye bounds are \(face.rightEyePosition)")
+        }
+    }
+}
+```
+
+The code changes are highlighted in yellow above. First, we use the affine transform to convert the Core Image coordinates to UIKit coordinates. Secondly, we write extra code to compute the actual position and size of the rectangular view.
+
+Now run the app again. You should see a box around the face. Great job! You’ve successfully detected a face using Core Image.
+
+![](http://www.appcoda.com/wp-content/uploads/2016/09/face-detection-result-1024x668.jpg)
+
