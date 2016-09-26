@@ -4,7 +4,7 @@
 * [Swift指南:使用JSON](Swift Tutorial: Working with JSON.md)
 * [Apple Pencil指南:入门](Apple Pencil Tutorial: Getting Started.md)
 * [Swift函数式编程介绍](Introduction to Functional Programming in Swift.md)
-* [Sprite Kit Swift 2初学指南](Sprite Kit Swift 2 Tutorial for Beginners.md)
+* [Sprite Kit初学指南](Sprite Kit Swift 2 Tutorial for Beginners.md)
 * [Swift的OAuth 2.0使用指南](OAuth 2.0 with Swift Tutorial.md)
 * [使用Swift在Xcode7中的单元测试](Unit Testing in Xcode 7 with Swift.md)
 * [Bond指南:Swift数据绑定](Bond Tutorial: Bindings in Swift.md)
@@ -28,3 +28,4 @@
 * [Core Location的地理围栏开发指南](Geofencing Tutorial with Core Location.md)
 * [使用Vapor构建你的第一个Web应用](Building Your First Web App in Swift Using Vapor.md)
 * [Swift中的ARC与内存管理](ARC and Memory Management in Swift.md)
+* [Xcode 8中的Auto Layout新手指南](A Beginner’s Guide to Auto Layout with Xcode 8.md)
