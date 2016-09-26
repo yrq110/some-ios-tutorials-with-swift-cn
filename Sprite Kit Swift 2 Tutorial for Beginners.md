@@ -1,5 +1,5 @@
 #Sprite Kit Swift 2 Tutorial for Beginners
-##Sprite Kit Swift 2 初学指南
+##Sprite Kit初学指南
 
 ***
 
@@ -10,6 +10,8 @@
 ***
 
 ![](http://www.raywenderlich.com/wp-content/uploads/2015/10/iOS9_feast_SpriteKit.jpg)
+
+>注意:本文使用的是swift2，并非最新版本。
 
 就像蝙蝠侠与罗宾、超人与路易斯霍恩一样，Sprite Kit与Swift是一对惊艳的组合:
 * **Sprite Kit**是一种非常棒的写iOS游戏的方法，它易学、功能强大，并且由苹果全面支持。
