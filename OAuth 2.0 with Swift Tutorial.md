@@ -416,7 +416,7 @@ AFOAuth2Manager使用一种与其他OAuth2库完全不同的方式：使用基�
 
 打开一个新工程进入ViewController.swift中，首先定义一些帮助方法与扩展。
 
-在文件头部添加如下的String扩展：
+在文件头部添加如下String扩展：
 ````swift
 extension String {
   public func urlEncode() -> String {
@@ -547,7 +547,7 @@ UIApplication.sharedApplication().openURL(NSURL(string: "https://accounts.google
 
 还差一步!
 
-搞定之前的后，打开AppDelegate.swift添加如下方法：
+完成上面的操作后，打开AppDelegate.swift，添加如下方法：
 ```swift
 func application(application: UIApplication,
   openURL url: NSURL,
@@ -561,7 +561,7 @@ func application(application: UIApplication,
     return true
 }
 ```
-启动了一个监听授权码的notification，目的是为了获得URL的授权码。
+启动了一个监听授权码的notification，目的是为了获得URL中的授权码。
 
 最后一次构建并运行工程，再次成功运行! 效果如之前一样不过这次使用了AFOAuth2Manager!
 
