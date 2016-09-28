@@ -51,7 +51,7 @@
 
 不可能的任务? 不，没有你搞不定的:]
 
-让我来给你讲个故事吧，而非让你看RFC6749 OAuth2的规范以至于太无聊。
+让我来给你讲个故事吧，而非让你看RFC6749 OAuth2的规范，那样太无聊了。
 
 <a name="why-need"></a>
 ##讲讲为何需要OAuth2
@@ -548,7 +548,7 @@ UIApplication.sharedApplication().openURL(NSURL(string: "https://accounts.google
 还差一步!
 
 搞定之前的后，打开AppDelegate.swift添加如下方法：
-````swift
+```swift
 func application(application: UIApplication,
   openURL url: NSURL,
   sourceApplication: String?,
@@ -560,8 +560,8 @@ func application(application: UIApplication,
     NSNotificationCenter.defaultCenter().postNotification(notification)
     return true
 }
-````
-启动了一个notification, 授权代码所监听的对象，为了获得URL的授权码。
+```
+启动了一个监听授权码的notification，目的是为了获得URL的授权码。
 
 最后一次构建并运行工程，再次成功运行! 效果如之前一样不过这次使用了AFOAuth2Manager!
 
