@@ -194,15 +194,16 @@ ADMIN区域允许你配置team成员的控制台访问权限。若你的team中�
 
 ## 查询商家记录
 
-CKQuery对象用来从数据库中选择记录，找到所有符合一定规则的记录，这个规则可以是“所有name是M开头的记录”，“包含增高座椅的记录”，“3km之内的记录”。这些表达式在Cocoa中使用NSPredicate对象来编写，NSPredicate通过匹配特殊的规则来评估对象是否符合要求。谓词也同样用在CoreData中，自然支持CloudKit。
+使用CKQuery对象从数据库中选择记录，找到所有符合一定规则的记录，这个规则可以是“所有name是M开头的记录”，“包含增高座椅的记录”，“3km之内的记录”。这些表达式在Cocoa中使用NSPredicate对象来编写，NSPredicate通过匹配特殊的规则来评估对象是否符合要求。谓词也同样用在CoreData中，自然支持CloudKit。
 
 CloudKit仅支持一部分可用的NSPredicate函数，包含数学的比较、一些字符串与设置的操作(例如“匹配列表中的一项的字段”)，和一个特殊的距离函数。NSPredicate的distanceToLocation:fromLocation:函数通过与已知位置相距一个特殊半径的位置字段来匹配CloudKit中的记录，这种类型的谓词会在之后来详细说明。对于其他查询类型，看看苹果的官方文档[CKQuery Class 
 Reference](https://developer.apple.com/library/ios/documentation/CloudKit/Reference/CKQuery_class/)，列表中包含了所支持的函数与它们的使用方法。
 
 > Note: CloudKit includes support for CLLocation objects. These are Core Location Framework objects that contain geospatial coordinates. This makes it quite easy to create a query for finding establishments inside of a geographic region – without doing all of the messy coordinate math yourself.
 
-So, in Xcode, open Model/Model.swift. This file contains stubs for all the server calls your app will make.
-Replace the fetchEstablishments(\_:radiusInMeters:) method with the following:
+在Xcode中打开Model/Model.swift，This file contains stubs for all the server calls your app will make.
+
+使用如下代码替换fetchEstablishments(\_:radiusInMeters:)方法:
 
 ```swift
 func fetchEstablishments(location:CLLocation, radiusInMeters:CLLocationDistance) {
@@ -234,11 +235,11 @@ func fetchEstablishments(location:CLLocation, radiusInMeters:CLLocationDistance)
   }
 }
 ```
-Taking each numbered comment in turn:
-1. CloudKit uses kilometers in its distance predicates. This line simply converts radiusInMeters to kilometers.
-2. The predicate filters establishments based on their distance in kilometers from the current location. This statement finds all establishments with a location value within the specified distance from the user’s current location.
-3. CKQuery objects are created using a predicate and a record type. Both will be used when performing the query.
-4. Finally, performQuery(\_:inZoneWithID:completionHandler:) sends your query up to iCloud, and waits for any matching results. By passing nil as the inZoneWithID parameter, you’re running the query against your default zone; that is, your public database. If you want to retrieve records from both public and private databases, then you have to query each database using a separate call.
+逐步分析下:
+1. CloudKit中距离谓词的单位是千米，这行代码将radiusInMeters的单位转换为千米。
+2. 谓词过滤出的商家是基于离当前位置一定的距离得到的。这个语句根据用户当前位置找到所有一定距离内的商家。
+3. 使用一个谓词与一个record type来创建CKQuery对象，两者在执行查询时都会被用到。
+4. 最后，performQuery(\_:inZoneWithID:completionHandler:)将你的查询提交给iCloud，并等待查询结果。By passing nil as the inZoneWithID parameter, you’re running the query against your default zone; that is, your public database. If you want to retrieve records from both public and private databases, then you have to query each database using a separate call.
 
 Oh. That reminds me. What did CKQuery say to iCloud?
 
