@@ -49,7 +49,7 @@ CloudKit同样很安全，用户的私有数据被完全保护了起来，开发
 
 ### 信任
 
-另一个CloudKit的好处就是用户可以放心它们数据的隐私性与安全性，这些数据都是由苹果处理的而不是app开发者。CloudKit将用户数据与开发者隔离开来。
+另一个使用CloudKit的好处就是用户可以放心它们数据的隐私性与安全性，这些数据都是由苹果处理的而不是app开发者。CloudKit将用户数据与开发者隔离开来。
 
 虽然这个访问权限的缺失在debug过程中也许会使人沮丧，不过你不用担心安全性并且思考如何使用户相信他们的数据是安全的。若用户信任iCloud的话他们也会信任你。
 
@@ -162,17 +162,17 @@ ADMIN区域允许你配置team成员的控制台访问权限。若你的team中�
 
 ![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/05/S11-Create-New-Establishment-Record-480x183.png)
 
-会创建一个新的，空的Establishment记录。
+会创建一个新的Establishment记录。
 
 ![](https://cdn1.raywenderlich.com/wp-content/uploads/2016/05/S12-New-Establishment-Record-Blank-415x320.png)
 
 这时需要录入一些用于app测试的数据。
 
-下面的这些商家数据是虚构的，这些商家都在Apple总部的附近，在模拟器中容易找到。
+下面的这些商家数据是虚构的，都设定在Apple总部的附近，容易在模拟器中找到。
 
 录入下面这些记录:
 
-> Note: The image for each CoverPhoto element is included in the Supporting Files\Sample Images folder in the Xcode project. To add the image to the establishment record, simply drag it to the CoverPhoto field.
+> 注意: 图中的CoverPhoto元素在Xcode项目中的Supporting Files\Sample Images文件夹。将其拖拽到CoverPhoto字段即可添加到establishment record中。
 
 ![](https://cdn2.raywenderlich.com/wp-content/uploads/2016/05/T2-Entitlement-Records-Data.png)
 
@@ -199,9 +199,9 @@ ADMIN区域允许你配置team成员的控制台访问权限。若你的team中�
 CloudKit仅支持一部分可用的NSPredicate函数，包含数学的比较、一些字符串与设置的操作(例如“匹配列表中的一项的字段”)，和一个特殊的距离函数。NSPredicate的distanceToLocation:fromLocation:函数通过与已知位置相距一个特殊半径的位置字段来匹配CloudKit中的记录，这种类型的谓词会在之后来详细说明。对于其他查询类型，看看苹果的官方文档[CKQuery Class 
 Reference](https://developer.apple.com/library/ios/documentation/CloudKit/Reference/CKQuery_class/)，列表中包含了所支持的函数与它们的使用方法。
 
-> Note: CloudKit includes support for CLLocation objects. These are Core Location Framework objects that contain geospatial coordinates. This makes it quite easy to create a query for finding establishments inside of a geographic region – without doing all of the messy coordinate math yourself.
+> 注意: CloudKit支持CLLocation对象(CoreLocation框架的对象，包含地理空间坐标)，这使得查询一个地理区域内的商家变得很简单 - 不需要做任何额外的坐标变换等操作。
 
-在Xcode中打开Model/Model.swift，This file contains stubs for all the server calls your app will make.
+在Xcode中打开Model/Model.swift，这个文件中包含了app中需要的所有调用服务器方法的存根。
 
 使用如下代码替换fetchEstablishments(\_:radiusInMeters:)方法:
 
@@ -266,17 +266,16 @@ Here you define your databases:
 
 This code will retrieve some local establishments from the public database, but it has to be wired up to a view controller in order to see anything in the app.
 
-### Setting Up the Requisite Callbacks
+### 设置必要的回调函数 Setting Up the Requisite Callbacks
 
-You can take care of notifications with the familiar delegate pattern. Here’s the protocol from the top of Model.swift that you’ll implement in your view controller:
+可以用熟悉的代理模式来编写通知函数，在Model.swift的顶部有需要在view controller中实现的协议You can take care of notifications with the familiar delegate pattern. Here’s the protocol from the top of Model.swift that you’ll implement in your view controller:
 ```swift
 protocol ModelDelegate {
   func errorUpdating(error: NSError)
   func modelUpdated()
 }
 ```
-
-Open MasterViewController.swift and replace the modelUpdated() method with the following:
+打开MasterViewController.swift，使用下面的代码替换modelUpdated()方法:
 
 ```swift
 func modelUpdated() {
