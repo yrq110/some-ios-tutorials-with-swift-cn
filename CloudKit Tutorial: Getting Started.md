@@ -132,7 +132,7 @@ PUBLIC DATA与PRIVATE DATA区域允许你添加、搜索数据。记住，作为
 
 ADMIN区域允许你配置team成员的控制台访问权限。若你的team中有多个开发者同伴，可以在这里编辑他们的权限。同样，这个也不是此教程的内容。
 
-## 添加商家的Record Type
+## 添加商家(Establishment)的Record Type
 
 考虑一下app中如何设计，每一条想要获取的信息都含有多个数据：名称，地点，还有多种针对儿童友好度的选项。Record types使用字段来定义记录中的多种数据。
 
@@ -239,11 +239,9 @@ func fetchEstablishments(location:CLLocation, radiusInMeters:CLLocationDistance)
 1. CloudKit中距离谓词的单位是千米，这行代码将radiusInMeters的单位转换为千米。
 2. 谓词过滤出的商家是基于离当前位置一定的距离得到的。这个语句根据用户当前位置找到所有一定距离内的商家。
 3. 使用一个谓词与一个record type来创建CKQuery对象，两者在执行查询时都会被用到。
-4. 最后，performQuery(\_:inZoneWithID:completionHandler:)将你的查询提交给iCloud，并等待查询结果。By passing nil as the inZoneWithID parameter, you’re running the query against your default zone; that is, your public database. If you want to retrieve records from both public and private databases, then you have to query each database using a separate call.
+4. 最后，performQuery(\_:inZoneWithID:completionHandler:)将你的查询提交给iCloud，并等待查询结果。将inZoneWithID参数设为nil，即在你的默认区域中执行查询，这个默认区域就是公有数据库。若你想同时在私有与公有数据库中检索数据，需要分别调用每个数据库的查询功能。
 
-Oh. That reminds me. What did CKQuery say to iCloud?
-
-After making a miraculous recovery from such a bad joke, you’re probably wondering where the CKDatabase instance, publicDB, comes from. Take a look the top of Model.swift.
+你也许会疑问CKDatabase实例与publicDB到底来自哪里？看看Model.swift的文件顶部。
 
 ```swift
 let container: CKContainer
@@ -259,16 +257,16 @@ init() {
   privateDB = container.privateCloudDatabase 
 }
 ```
-Here you define your databases:
-1. The default container represents the one you specified in the iCloud capabilities pane.
-2. The public database is the one shared amongst all users of your app.
-3. The private database contains only the data belonging to the currently logged-in user; in this case, you.
+在这里定义了数据库:
+1. 这个默认容器就是在iCloud Capabilities面板中的那个。
+2. 公有数据库中的数据由所有app的用户共享。
+3. 私有数据库仅包含当前登入用户的数据。
 
-This code will retrieve some local establishments from the public database, but it has to be wired up to a view controller in order to see anything in the app.
+这段代码会从公有数据库中检索到一些本地的商家数据，不过需要将这些数据与一个view controller结合才能在app中显式的看到。
 
-### 设置必要的回调函数 Setting Up the Requisite Callbacks
+### 准备必要的回调函数 Setting Up the Requisite Callbacks
 
-可以用熟悉的代理模式来编写通知函数，在Model.swift的顶部有需要在view controller中实现的协议You can take care of notifications with the familiar delegate pattern. Here’s the protocol from the top of Model.swift that you’ll implement in your view controller:
+可以用熟悉的代理模式来编写notification函数，在Model.swift的顶部有需要在view controller中实现的协议:
 ```swift
 protocol ModelDelegate {
   func errorUpdating(error: NSError)
@@ -284,9 +282,9 @@ func modelUpdated() {
 }
 ```
 
-This is called when new data is available. All the wiring up of the table view cells to CloudKit objects has already been taken care of in tableView(\_:cellForRowAtIndexPath:). Feel free to take a look.
+当有新的可用数据时会调用这个方法，在tableView(\_:cellForRowAtIndexPath:)方法中已经将所有列表项与CloudKit对象绑定好了，可以如释重负的去瞥一眼。
 
-Next, in MasterViewController.swift, replace the errorUpdating(\_:) method with the following:
+接下来，在MasterViewController.swift中使用如下代码替换errorUpdating(\_:)方法:
 
 ```swift
 func errorUpdating(error: NSError) {
@@ -301,9 +299,9 @@ func errorUpdating(error: NSError) {
     presentViewController(alertController, animated: true, completion: nil)
 }
 ```
-This method is called when the query produces an error. Errors can occur as a result of poor network conditions or CloudKit-specific issues (such as missing or incorrect user credentials or no records being returned from the query).
+当查询过程产生错误时会调用这个方法。较差的网络条件或者特殊的CloudKit问题(比如缺失或错误的用户证书、没有返回结果的查询)都会引起错误。
 
-Good error handling is essential when dealing with any kind of remote server. For now, this code just displays to the user the message returned with the error.
+在操作各种远程服务器时一个良好的错误处理是很必要的，在这里仅仅给用户显示错误信息。
 
 One very common issue, however, is the user not being logged into iCloud and/or not having the iCloud drive turned on for this app. Can you modify errorUpdating(\_:) to at least handle these situations? Hint: Both errors return a CKErrorCode of 1.
 
