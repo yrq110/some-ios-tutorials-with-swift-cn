@@ -38,6 +38,7 @@
 26. (未开始)[使用Vapor构建你的第一个Web应用(Building Your First Web App in Swift Using Vapor)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Building%20Your%20First%20Web%20App%20in%20Swift%20Using%20Vapor.html)
 27. (未开始)[Swift中的ARC与内存管理(ARC and Memory Management in Swift)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/ARC%20and%20Memory%20Management%20in%20Swift.html)
 28. (未开始)[Xcode 8中的Auto Layout新手指南(A Beginner’s Guide to Auto Layout with Xcode 8)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/A%20Beginner%E2%80%99s%20Guide%20to%20Auto%20Layout%20with%20Xcode%208.html)
+29. (未开始)[iOS10中的User Notifications Framework介绍(Introduction to User Notifications Framework in iOS 10)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Introduction%20to%20User%20Notifications%20Framework%20in%20iOS%2010.html)
 
 ### 原文
 * [Ray Wenderlich](https://www.raywenderlich.com/)
