@@ -9,11 +9,11 @@
 
 ***
 
-睡眠革命是一个当今很流行的话题，用户们对这个有着很大的兴趣，不论是对他们自己的睡眠时间，还是对通过分析采集到的数据揭示的周期性睡眠趋势。伴随着硬件中技术的提升，尤其是手机，给予了这个关注度日益增长的问题一个全新的视角。 
+睡眠革命是一个当今很流行的话题，用户对这个有着很大的兴趣，不论是对他们自己的睡眠时间，还是对通过分析采集的数据所揭示的周期性睡眠趋势。伴随着硬件中技术的提升，尤其是手机，给予了这个关注度日益增长的问题一个全新的视角。 
 
-苹果提供了个很cool的手段，以一种安全的方式去操作用户的个人健康数据，将数据安全的存放在了内置的Health app中。你不仅可以使用HealthKit来做健身app，也可以获取睡眠分析的数据。
+苹果提供了个很cool的手段，以一种安全的方式去处理用户的个人健康数据，将数据安全的存放在了内置的Health app中。你不仅可以使用HealthKit来做健身app，也可以获取睡眠分析的数据。
 
-在这篇教程中，会简要介绍HealthKit框架，并告诉你如何构建一个睡眠分析的简单app。
+在这篇教程中会简要介绍HealthKit框架，并告诉你如何构建一个简单的睡眠分析app。
 
 **目录**
 * [简介](#简介)
@@ -25,7 +25,7 @@
 
 ##简介
 
-HealthKit提供了一种在加密数据库中存储数据的结构，叫做HealthKit store。可以使用HKHealthStore类来访问数据库。iPhone和Apple Watch有各自的HealthKit store。Apple Watch与iPhone的健康数据是同步的，不过Apple Watch会定期清理旧数据以节省空间。HealthKit与健康app在iPad上不可用。
+HealthKit提供了一种在加密数据库中存储数据的结构，叫做HealthKit store，可以使用HKHealthStore类来访问对应的数据库。iPhone和Apple Watch有各自的HealthKit store。Apple Watch与iPhone的健康数据是同步的，不过Apple Watch会定期清理旧数据以节省空间。HealthKit与Health app在iPad上不可用。
 
 如果你想做一个基于健康数据的iOS或watchOS的app，HealthKit将会是一个有力的工具。HealthKit用于管理多个来源的数据，根据用户的喜好来融合整理这些数据，App也可以访问每一个来源的原始数据，并且自己来处理数据。这些数据不仅可以进行人体测量，用来健身、控制营养，也可以用来睡眠分析。
 
@@ -40,7 +40,7 @@ HealthKit提供了一种在加密数据库中存储数据的结构，叫做Healt
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/05/HealthKit-allow-1024x640.png)
 
-接下来，先在ViewController类中创建一个HKHealthStore的实例，使用如下代码:
+接下来，先在ViewController类中创建一个HKHealthStore的实例，代码如下:
 ````swift
 let healthStore = HKHealthStore()
 ````
