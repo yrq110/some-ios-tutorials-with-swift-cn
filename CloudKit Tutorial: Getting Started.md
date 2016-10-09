@@ -10,7 +10,7 @@
 
 ***
 
-> 更新: 此教程已更新至 Xcode 7.3, iOS 9.3, Swift 2.2。原教程由Michael Katz所著。
+> 更新: 此教程已更新至 Xcode 8, iOS 10, Swift 3。原教程由Michael Katz所著。
 
 CloudKit是苹果基于iCloud的远程数据存储服务。提供了一个低开销的存储与分享app数据的方案，使用用户的iCloud账户进行后端存储。
 
@@ -206,35 +206,34 @@ Reference](https://developer.apple.com/library/ios/documentation/CloudKit/Refere
 使用如下代码替换fetchEstablishments(\_:radiusInMeters:)方法:
 
 ```swift
-func fetchEstablishments(location:CLLocation, radiusInMeters:CLLocationDistance) {
+func fetchEstablishments(_ location:CLLocation, radiusInMeters:CLLocationDistance) {
   // 1
-  let radiusInKilometers = radiusInMeters / 1000.0    
+  let radiusInKilometers = radiusInMeters / 1000.0
   // 2
-  let locationPredicate = NSPredicate(format: "distanceToLocation:fromLocation:(%K,%@) &lt; %f", "Location", location, radiusInKilometers)    
+  let locationPredicate = NSPredicate(format: "distanceToLocation:fromLocation:(%K,%@) < %f", "Location", location, radiusInKilometers)
   // 3
-  let query = CKQuery(recordType: EstablishmentType, predicate: locationPredicate)    
+  let query = CKQuery(recordType: EstablishmentType, predicate: locationPredicate)
   // 4
-  publicDB.performQuery(query, inZoneWithID: nil) { [unowned self] results, error in
+  publicDB.perform(query, inZoneWith: nil) { [unowned self] results, error in
     if let error = error {
-      dispatch_async(dispatch_get_main_queue()) {
-        self.delegate?.errorUpdating(error)
+      DispatchQueue.main.async {
+        self.delegate?.errorUpdating(error as NSError)
         print("Cloud Query Error - Fetch Establishments: \(error)")
       }
       return
     }
- 
-    self.items.removeAll(keepCapacity: true)
+    self.items.removeAll(keepingCapacity: true)
     results?.forEach({ (record: CKRecord) in
       self.items.append(Establishment(record: record,
-        database: self.publicDB))
+                                      database: self.publicDB))
     })
- 
-    dispatch_async(dispatch_get_main_queue()) {
+    DispatchQueue.main.async {
       self.delegate?.modelUpdated()
     }
   }
 }
 ```
+
 逐步分析下:
 1. CloudKit中距离谓词的单位是千米，这行代码将radiusInMeters的单位转换为千米。
 2. 谓词过滤出的商家是基于离当前位置一定的距离得到的。这个语句根据用户当前位置找到所有一定距离内的商家。
@@ -247,10 +246,10 @@ func fetchEstablishments(location:CLLocation, radiusInMeters:CLLocationDistance)
 let container: CKContainer
 let publicDB: CKDatabase
 let privateDB: CKDatabase
-
+ 
 init() {
   // 1
-  container = CKContainer.defaultContainer()
+  container = CKContainer.defaultContainer() 
   // 2
   publicDB = container.publicCloudDatabase 
   // 3
@@ -287,16 +286,14 @@ func modelUpdated() {
 接下来，在MasterViewController.swift中使用如下代码替换errorUpdating(\_:)方法:
 
 ```swift
-func errorUpdating(error: NSError) {
-    let alertController = UIAlertController(title: nil,
-                                            message: error.localizedDescription,
-                                            preferredStyle: .Alert)
+func errorUpdating(_ error: NSError) {
+  let alertController = UIAlertController(title: nil,
+                                          message: error.localizedDescription,
+                                          preferredStyle: .alert)
  
-    alertController.addAction(UIAlertAction(title: "Dismiss",
-                                            style: .Default,
-                                            handler: nil))
+  alertController.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: nil))
  
-    presentViewController(alertController, animated: true, completion: nil)
+  present(alertController, animated: true, completion: nil)
 }
 ```
 当查询过程产生错误时会调用这个方法。较差的网络条件或者特殊的CloudKit问题(比如缺失或错误的用户证书、没有返回结果的查询)都会引起错误。
