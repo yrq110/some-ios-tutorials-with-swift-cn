@@ -247,10 +247,10 @@ func fetchEstablishments(location:CLLocation, radiusInMeters:CLLocationDistance)
 let container: CKContainer
 let publicDB: CKDatabase
 let privateDB: CKDatabase
- 
+
 init() {
   // 1
-  container = CKContainer.defaultContainer() 
+  container = CKContainer.defaultContainer()
   // 2
   publicDB = container.publicCloudDatabase 
   // 3
@@ -264,7 +264,7 @@ init() {
 
 这段代码会从公有数据库中检索到一些本地的商家数据，不过需要将这些数据与一个view controller结合才能在app中显式的看到。
 
-### 准备必要的回调函数 Setting Up the Requisite Callbacks
+### 准备必要的回调函数
 
 可以用熟悉的代理模式来编写notification函数，在Model.swift的顶部有需要在view controller中实现的协议:
 ```swift
@@ -303,9 +303,28 @@ func errorUpdating(error: NSError) {
 
 在操作各种远程服务器时一个良好的错误处理是很必要的，在这里仅仅给用户显示错误信息。
 
-One very common issue, however, is the user not being logged into iCloud and/or not having the iCloud drive turned on for this app. Can you modify errorUpdating(\_:) to at least handle these situations? Hint: Both errors return a CKErrorCode of 1.
+有个很常见的问题：用户未登入iCloud或者没有为app打开iCloud drive。你能修改一下errorUpdating(\_:)来处理这几种情况吗？ 提示: 两种错误均会返回一个值为1的CKErrorCode。
 
-Build and run. You should see a list of nearby establishments.
+解决方法：在MasterViewController.swift文件中使用如下代码替换errorUpdating(_:)方法:
+```swift
+func errorUpdating(_ error: NSError) {
+  let message: String
+  if error.code == 1 {
+    message = "Log into iCloud on your device and make sure the iCloud drive is turned on for this app."
+  } else {
+    message = error.localizedDescription
+  }
+  let alertController = UIAlertController(title: nil,
+                                          message: message,
+                                          preferredStyle: .alert)
+ 
+  alertController.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: nil))
+ 
+  present(alertController, animated: true, completion: nil)
+}
+```
+
+构建并运行，应该会看到一个附近商家的列表。
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/06/Build-Run-1-No-Images-179x320.png)
 
