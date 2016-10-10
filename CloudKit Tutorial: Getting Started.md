@@ -325,25 +325,69 @@ func errorUpdating(_ error: NSError) {
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/06/Build-Run-1-No-Images-179x320.png)
 
-### Troubleshooting Queries
+### 调试时的问题
 
-If you’re using the iOS simulator and the list doesn’t populate, then make sure you have the correct location set by selecting from the Xcode menu, Debug\Simulate Location\San Francisco, CA, USA. If you needed to change the location in Xcode, then pull the table down in the app to force a refresh instead of waiting for a location trigger.
+如果你使用的是iOS模拟器，并且列表没有被填充，确认一下你的地理位置设置是正确的(Xcode菜单:Debug\Simulate Location\San Francisco, CA, USA)。若需要修改在Xcode中设置的位置，在app中下拉列表刷新一下位置信息。
 
-If you’re using an iPhone or iPad, location services are enabled, and the list still isn’t populating, then the establishments aren’t close enough to your current location. You have two options: change the coordinates of the sample data to be closer to your current location or use the simulator to run the app. There is a third option, but it’s not terribly practical as you’d have to travel to Cupertino and hang around the Apple campus.
+若你使用的iPhone或iPad，位置服务是可用的并且商家位置并不在你当前位置的附近的话，此时有两个选择:改变样例数据的坐标使其位置靠近你当前的位置或者使用模拟器运行app。不过这里还有第三个选项：你可以去苹果总部附近转转。
 
-If the data isn’t appearing properly – or isn’t appearing at all – inspect the sample data using the CloudKit dashboard. Make sure all of the records are present, you’ve added them to the default zone and they have the correct values. If you need to re-enter the data, then you can delete records by clicking the trash icon.
+若数据没有正确显示或显示不完全，则使用CloudKit控制台检查一下样例数据。为了保证所有记录都是存在的，要将它们添加到默认域中并且有正确的值。若要重新输入数据，可以点击垃圾箱图标删除记录。
 
 ![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/05/S16-Delete-Record-1-480x122.png)
 
-Debugging CloudKit errors can be tricky at times. As of this writing, CloudKit error messages don’t contain a tremendous amount of information. To determine the cause of the error you’ll need to look at the error code in conjunction with the particular database operation you’re attempting. Using the numerical error code, look up the matching CKErrorCode enum. The name and description in the documentation will help narrow down the cause of the issue. See below for some examples.
+有时修复CloudKit的错误是很棘手的。CloudKit的错误消息并不包含大量的信息，为了搞清楚错误发生的原因需要结合当前所操作数据库的错误代码。使用数字型错误代码，查找对应的CKErrorCode枚举值。查看文档中的名称与描述有助于找到问题所在，看看下面的例子。
 
-> Note: For a list of error codes that can be returned by CloudKit, read the CloudKit Framework Constants Reference.
+> 注意: 可以在[CloudKit Framework Constants Reference](https://developer.apple.com/library/ios/documentation/CloudKit/Reference/CloudKit_constants/#//apple_ref/c/tdef/CKErrorCode)中查看CloudKit返回的错误代码列表。
 
-Here are some common error enums and related descriptions:
-* .BadContainer – The specified container is unknown or unauthorized.
-* .NotAuthenticated – The current user is not authenticated and no user record was available. This might happen if the user is not * logged into iCloud.
-* .UnknownItem – The specified record does not exist.
+这里是一些常见的错误枚举值与相关描述:
+* .BadContainer – 指定的容器未知或未授权。
+* .NotAuthenticated – 当前用户没有认证，没有可用的用户记录。当用户没有登入iCloud时可能会出现这个错误。
+* .UnknownItem – 指定的记录不存在。
 
-When you fetched the list of establishments, you probably noticed that you can see the establishment name and the services the establishments offer. But none of the images are being displayed! Are the clouds in the way?
+当抓取到商家列表数据时，会注意到可以看到商家名称与提供的服务，不过没有显示的图片，被云挡住了？
 
-When you retrieved the establishment records, you automatically retrieved the images as well. You still, however, need to perform the necessary steps to load the images into your app. That’ll chase those clouds away! :]
+这是因为虽然在检索商家记录的同时也会自动检索图片数据，不过你需要执行一些必要的步骤去加载图片才能显示出来，这样就可以让云散去了! :]
+
+## Working with Binary Assets
+
+An asset is binary data, such as an image, that you associate with a record. In your case, your app’s assets are the establishment photos shown in the MasterViewController table view.
+In this section you’ll add the logic to load the assets that were downloaded when you retrieved the establishment records.
+Open Model/Establishment.swift and replace the loadCoverPhoto(_:) method with the following code:
+```swift
+func loadCoverPhoto(completion:@escaping (_ photo: UIImage?) -> ()) {
+  // 1
+  DispatchQueue.global(qos: DispatchQoS.QoSClass.background).async {
+    var image: UIImage!
+    defer {
+      completion(image)
+    }
+      // 2
+    guard let asset = self.record["CoverPhoto"] as? CKAsset else {
+      return
+    }
+ 
+    let imageData: Data
+    do {
+      imageData = try Data(contentsOf: asset.fileURL)
+    } catch {
+      return
+    }
+    image = UIImage(data: imageData)
+  }
+}
+```
+This method loads the image from the asset attribute as follows:
+
+1. Although you download the asset at the same time you retrieve the rest of the record, you want to load the image asynchronously. So wrap everything in a dispatch_async block.
+2. Assets are stored in CKRecord as instances of CKAsset, so cast appropriately. Next load the image data from the local file URL provided by the asset.
+3. Use the image data to create an instance of UIImage.
+4. Execute the completion callback with the retrieved image. Note that this defer block gets executed regardless of which return is executed. For example, if there is no image asset, then image never gets set upon the return and no image appears for the restaurant.
+
+Build and run. You’ve chased the clouds away and the establishment images should now appear. Great job!
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/06/Build-Run-2-With-Images-180x320.png)
+
+There are two gotchas with CloudKit assets:
+
+1. Assets can only exist in CloudKit as attributes on records. You can’t store them on their own. Deleting a record will also delete any associated assets.
+2. Retrieving assets can negatively impact performance because the assets are downloaded at the same time as the rest of the record data. If your app makes heavy use of assets, then you should store a reference to a different type of record that holds just the asset.
