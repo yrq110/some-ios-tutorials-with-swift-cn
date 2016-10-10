@@ -235,6 +235,7 @@ func fetchEstablishments(_ location:CLLocation, radiusInMeters:CLLocationDistanc
 ```
 
 逐步分析下:
+
 1. CloudKit中距离谓词的单位是千米，这行代码将radiusInMeters的单位转换为千米。
 2. 谓词过滤出的商家是基于离当前位置一定的距离得到的。这个语句根据用户当前位置找到所有一定距离内的商家。
 3. 使用一个谓词与一个record type来创建CKQuery对象，两者在执行查询时都会被用到。
@@ -257,6 +258,7 @@ init() {
 }
 ```
 在这里定义了数据库:
+
 1. 这个默认容器就是在iCloud Capabilities面板中的那个。
 2. 公有数据库中的数据由所有app的用户共享。
 3. 私有数据库仅包含当前登入用户的数据。
