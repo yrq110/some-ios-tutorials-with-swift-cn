@@ -128,7 +128,7 @@ SCHEMA区域展示了CloudKit容器的高级对象: Record Types(记录类型), 
 
 一个Record Type就是定义了一些record个体的集合。就像面向对象编程中的class。一个record可以作为一个特殊的Record Type实例，表示容器中的结构化数据，就像数据库中的一行数据，封装了一系列的键值对。 
 
-PUBLIC DATA与PRIVATE DATA区域允许你添加、搜索数据。记住，作为一个开发者可以访问所有公有数据与自己的私有数据。User Records存储当前iCloud用户数据，比如姓名与邮箱。 Record Zone中通过进行分组记录来给私有数据库提供一个逻辑性的组织结构。 Custom zones支持原子事务(PS:原子事务：web服务上的操作或者全部发生，或者根本不发生。)，允许多个记录在进行其它操作前同时存储。此教程中不涉及Custom zones。
+PUBLIC DATA与PRIVATE DATA区域允许你添加、搜索数据。记住，作为一个开发者可以访问所有公有数据与自己的私有数据。User Records存储当前iCloud用户数据，比如姓名与邮箱。 Record Zone中通过进行分组记录来给私有数据库提供一个逻辑性的组织结构。Custom zones支持原子事务(PS:原子事务：web服务上的操作或者全部发生，或者根本不发生。)，允许多个记录在进行其它操作前同时存储。此教程中不涉及Custom zones。
 
 ADMIN区域允许你配置team成员的控制台访问权限。若你的team中有多个开发者同伴，可以在这里编辑他们的权限。同样，这个也不是此教程的内容。
 
@@ -196,7 +196,7 @@ ADMIN区域允许你配置team成员的控制台访问权限。若你的team中�
 
 使用CKQuery对象从数据库中选择记录，找到所有符合一定规则的记录，这个规则可以是“所有name是M开头的记录”，“包含增高座椅的记录”，“3km之内的记录”。这些表达式在Cocoa中使用NSPredicate对象来编写，NSPredicate通过匹配特殊的规则来评估对象是否符合要求。谓词也同样用在CoreData中，自然支持CloudKit。
 
-CloudKit仅支持一部分可用的NSPredicate函数，包含数学的比较、一些字符串与设置的操作(例如“匹配列表中的一项的字段”)，和一个特殊的距离函数。NSPredicate的distanceToLocation:fromLocation:函数通过与已知位置相距一个特殊半径的位置字段来匹配CloudKit中的记录，这种类型的谓词会在之后来详细说明。对于其他查询类型，看看苹果的官方文档[CKQuery Class 
+CloudKit仅支持一部分可用的NSPredicate函数，包含数学的比较、一些字符串与设置的操作(例如“匹配列表中的一项的字段”)和一个特殊的距离函数。NSPredicate的distanceToLocation:fromLocation:函数通过与已知位置相距一个特殊半径的位置字段来匹配CloudKit中的记录，这种类型的谓词会在之后来详细说明。对于其他查询类型，看看苹果的官方文档[CKQuery Class 
 Reference](https://developer.apple.com/library/ios/documentation/CloudKit/Reference/CKQuery_class/)，列表中包含了所支持的函数与它们的使用方法。
 
 > 注意: CloudKit支持CLLocation对象(CoreLocation框架的对象，包含地理空间坐标)，这使得查询一个地理区域内的商家变得很简单 - 不需要做任何额外的坐标变换等操作。
@@ -323,6 +323,7 @@ func errorUpdating(_ error: NSError) {
 }
 ```
 
+
 构建并运行，应该会看到一个附近商家的列表。
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/06/Build-Run-1-No-Images-179x320.png)
@@ -333,7 +334,7 @@ func errorUpdating(_ error: NSError) {
 
 若你使用的iPhone或iPad，位置服务是可用的并且商家位置并不在你当前位置的附近的话，此时有两个选择:改变样例数据的坐标使其位置靠近你当前的位置或者使用模拟器运行app。不过这里还有第三个选项：你可以去苹果总部附近转转。
 
-若数据没有正确显示或显示不完全，则使用CloudKit控制台检查一下样例数据。为了保证所有记录都是存在的，要将它们添加到默认域中并且有正确的值。若要重新输入数据，可以点击垃圾箱图标删除记录。
+若数据没有正确显示或显示不完全，则需要使用CloudKit控制台检查一下样例数据。为了保证所有记录都是存在的，要将它们添加到默认域中并且有正确的值。若要重新输入数据，可以点击垃圾箱图标删除记录。
 
 ![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/05/S16-Delete-Record-1-480x122.png)
 
@@ -348,13 +349,15 @@ func errorUpdating(_ error: NSError) {
 
 当抓取到商家列表数据时，会注意到可以看到商家名称与提供的服务，不过没有显示的图片，被云挡住了？
 
-这是因为虽然在检索商家记录的同时也会自动检索图片数据，不过你需要执行一些必要的步骤去加载图片才能显示出来，这样就可以让云散去了! :]
+这是因为在检索商家记录的同时也会自动检索图片数据，不过你需要执行一些必要的步骤去加载图片才能显示出来，这样就可以让云散去了! :]
 
-## Working with Binary Assets
+## 操作二进制资源
 
-An asset is binary data, such as an image, that you associate with a record. In your case, your app’s assets are the establishment photos shown in the MasterViewController table view.
-In this section you’ll add the logic to load the assets that were downloaded when you retrieved the establishment records.
-Open Model/Establishment.swift and replace the loadCoverPhoto(_:) method with the following code:
+资源就是与记录(record)相关的二进制数据，比如说一张图片。对你而言，app中的资源是MasterViewController列表中的商家图片。
+
+在这一部分中会添加一些逻辑代码，用来加载之前检索并下载的商家记录中的资源。
+
+打开Model/Establishment.swift文件，使用如下代码替换loadCoverPhoto(_:)方法:
 ```swift
 func loadCoverPhoto(completion:@escaping (_ photo: UIImage?) -> ()) {
   // 1
@@ -378,18 +381,15 @@ func loadCoverPhoto(completion:@escaping (_ photo: UIImage?) -> ()) {
   }
 }
 ```
-This method loads the image from the asset attribute as follows:
+上述代码按下列步骤从资源属性中加载了图像数据:
 
-1. Although you download the asset at the same time you retrieve the rest of the record, you want to load the image asynchronously. So wrap everything in a dispatch_async block.
-2. Assets are stored in CKRecord as instances of CKAsset, so cast appropriately. Next load the image data from the local file URL provided by the asset.
-3. Use the image data to create an instance of UIImage.
-4. Execute the completion callback with the retrieved image. Note that this defer block gets executed regardless of which return is executed. For example, if there is no image asset, then image never gets set upon the return and no image appears for the restaurant.
+1. 虽然在检索记录的同时下载了资源，还需要异步加载图片才行，因此在dispatch_async闭包中要搞定这一切。
+2. 资源作为CKAsset实例存放在CKRecord中，适当的组合代码获取资源。接下来从本地文件URL提供的资源中加载图像数据。
+3. 使用图像数据创建一个UIImage实例。
+4. 使用检索到的图像数据执行completion回调函数。注意这个defer闭包在执行时是不管之前执行的是哪个return的（不会判断是否获得资源）。比如说没有图片资源时，会在没有设置image值的情况下return，那么就不会显示任何餐厅的图片。
 
-Build and run. You’ve chased the clouds away and the establishment images should now appear. Great job!
+构建并运行，这样商家图片就能正常显示了。干得好!
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/06/Build-Run-2-With-Images-180x320.png)
 
-There are two gotchas with CloudKit assets:
-
-1. Assets can only exist in CloudKit as attributes on records. You can’t store them on their own. Deleting a record will also delete any associated assets.
-2. Retrieving assets can negatively impact performance because the assets are downloaded at the same time as the rest of the record data. If your app makes heavy use of assets, then you should store a reference to a different type of record that holds just the asset.
+可以在[这里](https://koenig-media.raywenderlich.com/uploads/2016/08/BabiFud-Cloudkit-Final.zip)下载最后的工程
