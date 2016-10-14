@@ -167,43 +167,6 @@ Let’s imagine you have a camera/photo app that takes a photo. As soon as the i
 In the starter project, I have already created the CameraViewController class. Update the code like this to implement the camera feature:
 
 ```swift
-
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
 class CameraViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     @IBOutlet var imageView: UIImageView!
     let imagePicker = UIImagePickerController()
