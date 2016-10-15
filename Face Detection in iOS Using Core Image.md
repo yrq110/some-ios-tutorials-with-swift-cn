@@ -84,7 +84,7 @@ func detect() {
 ```swift
 detect()
 ```
-编译并运行app，结果应如下所示:
+编译并运行app，结果应如下图所示:
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/face-detection-2.png)
 
@@ -95,7 +95,7 @@ Found bounds are (177.0, 415.0, 380.0, 380.0)
 ```
 当前的实现中一些没有解决的问题:
 
-* 人脸识别是在原始图像上执行的，原始图像的分辨率比image view要高，因此需要设置image view的content mode为aspect fit(保持纵横比的情况下缩放图片)。为了合适的绘制矩形框，需要计算image view中人脸的实际位置与尺寸
+* 人脸识别是在原始图像上进行的，由于原始图像的分辨率比image view要高，因此需要设置image view的content mode为aspect fit(保持纵横比的情况下缩放图片)。为了合适的绘制矩形框，需要计算image view中人脸的实际位置与尺寸
 * 还要注意的是，Core Image与UIView使用两种不同的坐标系统(看下表)，因此要实现一个CoreImage坐标到UIView坐标的转换。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/core-image-coordinate-1024x690.jpg)
@@ -154,17 +154,17 @@ func detect() {
 }
 ```
 
-The code changes are highlighted in yellow above. First, we use the affine transform to convert the Core Image coordinates to UIKit coordinates. Secondly, we write extra code to compute the actual position and size of the rectangular view.
+上述代码中，首先使用仿射变换将Core Image坐标转换为UIKit坐标，然后编写了计算实际位置与矩形视图尺寸的代码。
 
-Now run the app again. You should see a box around the face. Great job! You’ve successfully detected a face using Core Image.
+再次运行app，应该会看到人的面部周围会有一个框，干得漂亮！你已经成功使用Core Image识别出了人脸。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/face-detection-result-1024x668.jpg)
 
-## Building a Camera App with Face Detection
+## 构建一个人脸识别的相机应用
 
-Let’s imagine you have a camera/photo app that takes a photo. As soon as the image is taken you want to run face detection to determine if a face is or is not present. If any given face is present, you might want to classify that photo with some tags or so. While we’re not here to build a photo storing app, we will experiment with a live camera app. To do so, we’ll need to integrate with the UIImagePicker class and run our Face Detection code immediately after a photo is taken.
+想象一下你有一个用来照相的相机app，照完相后你想运行一下人脸识别来检测一下是否存在人脸。若存在一些人脸，你也许想用一些标签来对这些照片进行分类。我们不会构建一个保存照片后再处理的app，而是一个实时的相机app，因此需要整合一下UIImagePicker类，在照完相时立刻进行人脸识别。
 
-In the starter project, I have already created the CameraViewController class. Update the code like this to implement the camera feature:
+在开始工程中已经创建好了CameraViewController类，使用如下代码实现相机的功能:
 
 ```swift
 class CameraViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -206,9 +206,9 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate, U
 }
 ```
 
-The first few lines setup the UIImagePicker delegate. In the didFinishPickingMediaWithInfo method (this is a UIImagePicker delegate method), we set the imageView to the image passed in from the method. We then dismiss the picker and call the detect function.
+前面几行设置UIImagePicker委托为当前视图类，在didFinishPickingMediaWithInfo方法(UIImagePicker的委托方法)中设置imageView为在方法中所选择的图像，接着返回上一视图调用detect函数。
 
-We haven’t implemented the detect function yet. Insert the following code and let’s take a closer look at it:
+还没有实现detect函数，插入下面代码并分析一下:
 
 ```swift
 func detect() {
@@ -244,7 +244,7 @@ func detect() {
     }
 ```
 
-Our detect() function is very much similar to its previous implementation. This time, however, we’re using it on the captured image. When a face is detected, we display an alert message “We detected a face!” Otherwise, we display a “No Face!” message. Run the app and have a quick test.
+这个detect()函数与之前实现的detect函数非常像，不过这次只用它来获取图像不做变换。当识别到人脸后显示一个警告信息“检测到了人脸！”，否则显示“未检测到”。运行app测试一下
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/08/faces-1024x862.png)
 
