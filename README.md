@@ -1,9 +1,6 @@
 # 一些使用Swift的iOS教程
 
 ***
-> 希望对大家有所帮助。
-
-***
 > * [**Gitbook阅读地址**](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/)
 * [**Github源码地址**](https://github.com/yrq110/Some_IOS_Tutorials_With_Swift)
 
