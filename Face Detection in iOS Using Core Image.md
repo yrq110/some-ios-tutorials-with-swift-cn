@@ -259,7 +259,7 @@ if (face.hasMouthPosition) {
 ```
 As you can see, detecting facial features is incredibly simple using Core Image. In addition to detecting a mouth, smile, or eyePosition, we can also check if an eye is open or closed by calling leftEyeClosed for the left eye and rightEyeClosed to check for the right eye.
 
-## Wrapping Up
+## 总结
 
 In this tutorial, we explored Core Image’s Face Detection APIs and how to use this in a camera app. We setup a basic UIImagePicker to snap a photo and detect whether a person present in an image or not.
 
@@ -267,4 +267,4 @@ As you can see, Core Image’s face detection is a powerful API with many applic
 
 > NOTE: Stay tuned for our tutorial series on neural nets, the technology that powers facial detection!
 
-Feel free to download the final project [here](https://github.com/appcoda/FaceDetector).
+在[这里](https://github.com/appcoda/FaceDetector)下载最终工程。
