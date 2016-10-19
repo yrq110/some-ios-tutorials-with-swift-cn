@@ -9,15 +9,15 @@
 
 ***
 
-Core Image是Cocoa Touch中一个强大的API，是iOS SDK中的关键部分，不过它经常被忽略。在这篇教程中，会验证Core Image的人脸识别特性并在你的iOS app中应用这项技术!
+Core Image是Cocoa Touch中一个强大的API，是iOS SDK中的关键部分，不过它经常被忽视。在这篇教程中，会验证Core Image的人脸识别特性并在你的iOS app中应用这项技术!
 
-> 注意: 这是一篇中高级的iOS教程，假定你已经使用过UIImagePicker, Core Image等技术。若你不太熟悉这些技术，可以看看我们的[系列教程](http://www.appcoda.com/ios-programming-course)然后准备好了再回来。
+> 注意: 这是一篇中高级的iOS教程，假定你已经使用过UIImagePicker, Core Image等技术。若你不太熟悉这些技术，可以先看看我们的[系列教程](http://www.appcoda.com/ios-programming-course)，准备好了再回来。
 
-## 将要构建的东西
+## 将要构建的应用
 
-iOS的人脸识别从iOS 5(2011)就有了不过一直被无视。面部识别API允许开发者不仅可以检测人脸，也可以检测到面部的一些特殊属性，比如说微笑或眨眼。
+iOS的人脸识别从iOS 5(2011)就有了，不过一直没怎么被关注过。人脸识别API允许开发者不仅可以检测人脸，也可以检测到面部的一些特殊属性，比如说微笑或眨眼。
 
-首先，为了了解Core Image的人脸识别技术我们会创建一个app来识别照片中的人脸并用一个方框来标记它。在第二个例子中，让用户拍摄一张照片，检测其中的人脸并检索用户面部坐标。这样一来，就充分掌握了iOS中的人脸识别，并且学会如何利用这个强大却总被忽略的API。
+首先，为了了解Core Image的人脸识别技术我们会创建一个app来识别照片中的人脸并用一个方框来标记它。在第二个例子中，让用户拍摄一张照片，检测其中的人脸并检索人脸位置。这样一来，就充分掌握了iOS中的人脸识别，并且学会如何利用这个强大却总被忽略的API。
 
 开搞!
 
@@ -93,7 +93,7 @@ detect()
 ```swift
 Found bounds are (177.0, 415.0, 380.0, 380.0)
 ```
-当前的实现中一些没有解决的问题:
+当前的实现中没有解决的问题:
 
 * 人脸识别是在原始图像上进行的，由于原始图像的分辨率比image view要高，因此需要设置image view的content mode为aspect fit(保持纵横比的情况下缩放图片)。为了合适的绘制矩形框，需要计算image view中人脸的实际位置与尺寸
 * 还要注意的是，Core Image与UIView使用两种不同的坐标系统(看下表)，因此要实现一个CoreImage坐标到UIView坐标的转换。
@@ -248,23 +248,22 @@ func detect() {
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/08/faces-1024x862.png)
 
-CIFaceFeature has several properties and methods we have already expolored. For example, if you wanted to detect if the person was smiling, you can call .hasSmile which returns a boolean. Alternatively, you could call .hasLeftEyePosition to check if the left eye is present (let’s hope it is) or .hasRightEyePosition for the right eye, respectively.
+我们已经使用到了一些CIFaceFeature的属性与方法，比如，若想检测人物是否在笑，可以调用.hasSmile，它会返回一个布尔值。可以分别使用.hasLeftEyePosition与.hasRightEyePosition检测是否存在左右眼。
 
-We can also call hasMouthPosition to check if a mouth is present. If a mouth is present, we can access those coordinates with the mouthPosition property as seen below:
+同样，可以调用hasMouthPosition来检测是否存在嘴，若存在则可以访问到mouthPosition属性，如下所示:
 
 ```swift
 if (face.hasMouthPosition) {
      print("mouth detected")
 }
 ```
-As you can see, detecting facial features is incredibly simple using Core Image. In addition to detecting a mouth, smile, or eyePosition, we can also check if an eye is open or closed by calling leftEyeClosed for the left eye and rightEyeClosed to check for the right eye.
+
+如你所见，使用Core Image来检测面部特征是非常简单的。除了检测嘴、笑容、眼睛外，也可以调用leftEyeClosed与rightEyeClosed检测左右眼是否睁开。
 
 ## 总结
 
-In this tutorial, we explored Core Image’s Face Detection APIs and how to use this in a camera app. We setup a basic UIImagePicker to snap a photo and detect whether a person present in an image or not.
+在这篇教程中尝试了Core Image的人脸识别API与如何在一个相机app中应用它，构建了一个简单的UIImagePicker来选取照片并检测图像中是否存在人物。
 
-As you can see, Core Image’s face detection is a powerful API with many applications! I hope you found this tutorial useful and an informative guide to this less known iOS API!
-
-> NOTE: Stay tuned for our tutorial series on neural nets, the technology that powers facial detection!
+如你所见，Core Image的人脸识别是个强大的API！希望这篇教程能给你提供一些关于这个鲜为人知的iOS API有用的信息。
 
 在[这里](https://github.com/appcoda/FaceDetector)下载最终工程。
