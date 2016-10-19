@@ -15,39 +15,39 @@
 
 来创建围栏吧!
 
-
 当设备进入或离开你所设置的区域时地理围栏会提醒app。这可以让你做一些很cool的事：比如设置一个当你离开家时的通知，或者当附近有喜爱的商店时用最新与最棒的商品来迎接用户。在这篇地理围栏的教程中，会学到如何在iOS中使用Swift进行区域监测 - 使用Core Location中的Region Monitoring API。
 
 特别地，会创建一个名为Geotify的基于位置的提醒应用，让用户创建提示器并与真实世界的实际位置相关联。开始吧!
 
-## Getting Started
+## 入门
 
-Download the starter project. The project provides a simple user interface for adding/removing annotation items to/from a map view. Each annotation item represents a reminder with a location, or as I like to call it, a geotification. :]
-Build and run the project, and you’ll see an empty map view.
+下载[开始工程](https://koenig-media.raywenderlich.com/uploads/2016/09/Geotify-Starter-1.zip)。这个工程提供一个简单的功能：允许用户在地图上添加或删除标注点，每个标注点都表示一个位置提醒，或者可以叫它————地理通知(PS:geotification，作者自造词)。
+
+构建并运行，会看到如下这样一个空的map view。
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/06/GeoInitial-281x500.png)
 
-Tap on the + button on the navigation bar to add a new geotification. The app will present a separate view, allowing you to set up various properties for your geotification.
+点击导航栏的+按钮添加一个新的地理通知。app会出现一个独立的视图来设置地理通知的各种属性。
 
-For this tutorial, you will add a pin on Apple’s headquarters in Cupertino. If you don’t know where it is, open this google map in a separate tab and use it to hunt the right spot. Be sure to zoom in to make the pin nice and accurate!
+在这篇教程中需要在库比蒂诺的苹果总部添加一个大头针，如何你不知道在哪，打开google地图去找到这个点，记得活用缩放功能提高准确度！
 
-> To pinch to zoom on the simulator, hold down option, then hold shift temporarily to move the pinch center, then release shift and click-drag to pinch.
+> 注意：在模拟器中使用捏合手势进行缩放，按住option键的同时按下shift移动捏合中心，然后松开shift单击拖动进行捏合操作。
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/06/GeoLooking-Around-281x500.png)
 
-The radius represents the distance in meters from the specified location, at which iOS will trigger the notification. The note can be any message you wish to display during the notification. The app also lets the user specify whether it should trigger the reminder upon either entry or exit of the defined circular geofence, via the segmented control at the top.
+radius表示与指定位置间的距离，超过这个距离会触发iOS的通知，note表示显示在通知中的信息。app也允许用户使用顶部的分段控件来设置通知的触发时机是进入还是离开圆形的地理围栏时。
 
-Enter 1000 for the radius value and Say Hi to Tim! for the note, and leave it as Upon Entry for your first geotification.
+在radius中输入1000，note中输入Say Hi to Tim!顶部选择Upon Entry，这样，第一次地理通知就设置好了。
 
-Click Add once you’re satisfied with all the values. You’ll see your geotification appear as a new annotation pin on the map view, with a circle around it denoting the defined geofence:
+点击Add添加，会看到在map view中出现了一个新标记的大头针，就是你刚刚添加的地理通知，标记点附近有一个圆圈表示定义的地理围栏:
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/06/Geo-Say-Hi-281x500.png)
 
-Tap on the pin and you’ll reveal the geotification’s details, such as the reminder note and the event type you specified earlier. Don’t tap on the little cross unless you want to delete the geotification!
+点击大头针会显示地理通知的详细信息，比如提醒的内容与之前指定的事件类型。别点那个小叉号除非你想删掉它!
 
-Feel free to add or remove as many geotifications as you want. As the app uses NSUserDefaults as a persistence store, the list of geotifications will persist between relaunches.
+可以随意添加或删除任何地理通知。由于app使用NSUserDefaults存储持久化数据，因此重启app时会保留之前的地理通知列表。
 
-## Setting Up a Location Manager and Permissions
+## 设置位置管理与许可
 
 At this point, any geotifications you’ve added to the map view are only for visualization. You’ll fix this by taking each geotification and registering its associated geofence with Core Location for monitoring.
 Before any geofence monitoring can happen, though, you need to set up a Location Manager instance and request the appropriate permissions.
