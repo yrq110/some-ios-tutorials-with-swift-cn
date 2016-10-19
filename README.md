@@ -28,7 +28,7 @@
 19. [在iOS 10中使用Swift 3与UIViewPropertyAnimator设计动画](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Designing%20Animations%20with%20UIViewPropertyAnimator%20in%20iOS%2010%20and%20Swift%203.html)
 20. [Swift中的模式匹配](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Pattern%20Matching%20in%20Swift.html)
 21. [CloudKit指南:入门](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/CloudKit%20Tutorial:%20Getting%20Started.html)
-22. (进行中)[使用Core Image的iOS人脸识别(Face Detection in iOS Using Core Image)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Face%20Detection%20in%20iOS%20Using%20Core%20Image.html)
+22. [使用Core Image的iOS人脸识别](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Face%20Detection%20in%20iOS%20Using%20Core%20Image.html)
 23. (进行中)[macOS单元测试(一)(Unit Testing on macOS: Part 1)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Unit%20Testing%20on%20macOS:%20Part%201.html)
 24. (进行中)[macOS单元测试(二)(Unit Testing on macOS: Part 2)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Unit%20Testing%20on%20macOS:%20Part%202.html)
 25. (进行中)[Core Location的地理围栏开发指南(Geofencing Tutorial with Core Location)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Geofencing%20Tutorial%20with%20Core%20Location.html)
