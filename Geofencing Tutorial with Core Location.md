@@ -47,11 +47,13 @@ radius表示与指定位置间的距离，超过这个距离会触发iOS的通�
 
 可以随意添加或删除任何地理通知。由于app使用NSUserDefaults存储持久化数据，因此重启app时会保留之前的地理通知列表。
 
-## 设置位置管理与许可
+## 设置LocationManager与许可
 
-At this point, any geotifications you’ve added to the map view are only for visualization. You’ll fix this by taking each geotification and registering its associated geofence with Core Location for monitoring.
-Before any geofence monitoring can happen, though, you need to set up a Location Manager instance and request the appropriate permissions.
-Open GeotificationsViewController.swift and declare a constant instance of a CLLocationManager near the top of the class, as shown below:
+至此，你添加在map view上的任何地理通知都仅仅是显示了出来，并没有实际的检测效果。为了实现围栏检测的功能，需要在Core Location上注册每个与地理通知关联的围栏。
+
+在启用围栏检测前，需要设置一个LocationManager实例并且请求到一些许可。
+
+打开GeotificationsViewController.swift在类顶部声明一个CLLocationManager的常量实例，如下:
 
 ```swift
 class GeotificationsViewController: UIViewController {
@@ -65,7 +67,7 @@ class GeotificationsViewController: UIViewController {
 }
 ```
 
-Next, replace viewDidLoad() with the following code:
+接着使用如下代码替换viewDidLoad()方法:
 
 ```swift
 override func viewDidLoad() {
@@ -79,15 +81,15 @@ override func viewDidLoad() {
 }
 ```
 
-Let’s run through this method step by step:
+来一步步实现这个方法:
 
-1. You set the view controller as the delegate of the locationManager instance so that the view controller can receive the relevant delegate method calls.
-2. You make a call to requestAlwaysAuthorization(), which invokes a prompt to the user requesting for Always authorization to use location services. Apps with geofencing capabilities need Always authorization, due to the need to monitor geofences even when the app isn’t running. Info.plist has already been setup with a message to show the user when requesting the user’s location under the key NSLocationAlwaysUsageDescription.
-3. You call loadAllGeotifications(), which deserializes the list of geotifications previously saved to NSUserDefaults and loads them into a local geotifications array. The method also loads the geotifications as annotations on the map view.
+1. 将locationManager实例的委托设为当前视图控制器。
+2. 调用requestAlwaysAuthorization()方法，提示用户程序请求一个使用地理位置服务的授权。app的地理围栏功能需要Always authorization(前后台都能使用的授权), 这是因为围栏检测在app未在前台运行时也要进行检测。Info.plist中的NSLocationAlwaysUsageDescription键已经设置好了当请求用户位置时所显示的信息。
+3. 调用loadAllGeotifications(),反序列化之前在NSUserDefaults中保存的地理通知列表，并将其保存在本地的地理通知数组中。这个方法也会加载map view上标注的地理通知。
 
-When the app prompts the user for authorization, it will show NSLocationAlwaysUsageDescription, a user-friendly explanation of why the app requires access to the user’s location. This key is mandatory when you request authorization for location services. If it’s missing, the system will ignore the request and prevent location services from starting altogether.
+当app提示用户授权时，会显示NSLocationAlwaysUsageDescription中的值，友好的说明为何app需要访问用户的地理位置。这个键是请求位置服务授权时所必须要设置的，若没有这个键，则系统会忽略请求并拒绝提供位置服务。
 
-Build and run the project, and you’ll see a user prompt with the aforementioned description that’s been set:
+构建并运行，会看到一个用户提示，显示的信息为之前所设置的:
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/06/GeoLocationWhenNotUsing-281x500.png)
 
