@@ -120,3 +120,201 @@ Build and run the app. If you’re running it on a device, you’ll see the loca
 In addition, the zoom button on the navigation bar now works. :]
 
 ![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/06/GeoLocationZoomed-281x500.png)
+
+## Registering Your Geofences
+
+With the location manager properly configured, the next order of business is to allow your app to register user geofences for monitoring.
+In your app, the user geofence information is stored within your custom Geotification model. However, Core Location requires each geofence to be represented as a CLCircularRegion instance before it can be registered for monitoring. To handle this requirement, you’ll create a helper method that returns a CLCircularRegion from a given Geotification object.
+Open GeotificationsViewController.swift and add the following method to the main body:
+```swift
+func region(withGeotification geotification: Geotification) -> CLCircularRegion {
+  // 1
+  let region = CLCircularRegion(center: geotification.coordinate, radius: geotification.radius, identifier: geotification.identifier)
+  // 2
+  region.notifyOnEntry = (geotification.eventType == .onEntry)
+  region.notifyOnExit = !region.notifyOnEntry
+  return region
+}
+```
+Here’s what the above method does:
+
+You initialize a CLCircularRegion with the location of the geofence, the radius of the geofence and an identifier that allows iOS to distinguish between the registered geofences of a given app. The initialization is rather straightforward, as the Geotification model already contains the required properties.
+
+The CLCircularRegion instance also has two Boolean properties, notifyOnEntry and notifyOnExit. These flags specify whether geofence events will be triggered when the device enters and leaves the defined geofence, respectively. Since you’re designing your app to allow only one notification type per geofence, you set one of the flags to true while you set the other to false, based on the enum value stored in the Geotification object.
+
+Next, you need a method to start monitoring a given geotification whenever the user adds one.
+
+Add the following method to the body of GeotificationsViewController:
+```swift
+func startMonitoring(geotification: Geotification) {
+  // 1
+  if !CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) {
+    showAlert(withTitle:"Error", message: "Geofencing is not supported on this device!")
+    return
+  }
+  // 2
+  if CLLocationManager.authorizationStatus() != .authorizedAlways {
+    showAlert(withTitle:"Warning", message: "Your geotification is saved but will only be activated once you grant Geotify permission to access the device location.")
+  }
+  // 3
+  let region = self.region(withGeotification: geotification)
+  // 4
+  locationManager.startMonitoring(for: region)
+}
+```
+Let’s walk through the method step by step:
+isMonitoringAvailableForClass(_:) determines if the device has the required hardware to support the monitoring of geofences. If monitoring is unavailable, you bail out entirely and alert the user accordingly. showSimpleAlertWithTitle(_:message:viewController) is a helper function in Utilities.swift that takes in a title and message and displays an alert view.
+Next, you check the authorization status to ensure that the app has also been granted the required permission to use Location Services. If the app isn’t authorized, it won’t receive any geofence-related notifications.
+However, in this case, you’ll still allow the user to save the geotification, since Core Location lets you register geofences even when the app isn’t authorized. When the user subsequently grants authorization to the app, monitoring for those geofences will begin automatically.
+You create a CLCircularRegion instance from the given geotification using the helper method you defined earlier.
+Finally, you register the CLCircularRegion instance with Core Location for monitoring.
+With your start method done, you also need a method to stop monitoring a given geotification when the user removes it from the app.
+In GeotificationsViewController.swift, add the following method below startMonitoringGeotificiation(_:):
+```swift
+func stopMonitoring(geotification: Geotification) {
+  for region in locationManager.monitoredRegions {
+    guard let circularRegion = region as? CLCircularRegion, circularRegion.identifier == geotification.identifier else { continue }
+    locationManager.stopMonitoring(for: circularRegion)
+  }
+}
+```
+The method simply instructs the locationManager to stop monitoring the CLCircularRegion associated with the given geotification.
+Now that you have both the start and stop methods complete, you’ll use them whenever you add or remove a geotification. You’ll begin with the adding part.
+First, take a look at addGeotificationViewController(_:didAddCoordinate) in GeotificationsViewController.swift.
+The method is the delegate call invoked by the AddGeotificationViewController upon creating a geotification; it’s responsible for creating a new Geotification object using the values passed from AddGeotificationsViewController, and updating both the map view and the geotifications list accordingly. Then you call saveAllGeotifications(), which takes the newly-updated geotifications list and persists it via NSUserDefaults.
+Now, replace the method with the following code:
+```swift
+func addGeotificationViewController(controller: AddGeotificationViewController, didAddCoordinate coordinate: CLLocationCoordinate2D, radius: Double, identifier: String, note: String, eventType: EventType) {
+  controller.dismiss(animated: true, completion: nil)
+  // 1
+  let clampedRadius = min(radius, locationManager.maximumRegionMonitoringDistance)
+  let geotification = Geotification(coordinate: coordinate, radius: clampedRadius, identifier: identifier, note: note, eventType: eventType)
+  add(geotification: geotification)
+  // 2
+  startMonitoring(geotification: geotification)
+  saveAllGeotifications()
+}
+```
+You’ve made two key changes to the code:
+
+You ensure that the value of the radius is clamped to the maximumRegionMonitoringDistance property of locationManager, which is defined as the largest radius in meters that can be assigned to a geofence. This is important, as any value that exceeds this maximum will cause monitoring to fail.
+
+You add a call to startMonitoringGeotification(_:) to ensure that the geofence associated with the newly-added geotification is registered with Core Location for monitoring.
+
+At this point, the app is fully capable of registering new geofences for monitoring. There is, however, a limitation: As geofences are a shared system resource, Core Location restricts the number of registered geofences to a maximum of 20 per app.
+
+While there are workarounds to this limitation (See Where to Go From Here? for a short discussion), for the purposes of this tutorial, you’ll take the approach of limiting the number of geotifications the user can add.
+
+Add a line to updateGeotificationsCount(), as shown in the code below:
+```swift
+func updateGeotificationsCount() {
+  title = "Geotifications (\(geotifications.count))"
+  navigationItem.rightBarButtonItem?.isEnabled = (geotifications.count < 20)  // Add this line
+}
+```
+This line disables the Add button in the navigation bar whenever the app reaches the limit.
+
+Finally, let’s deal with the removal of geotifications. This functionality is handled in mapView(_:annotationView:calloutAccessoryControlTapped:), which is invoked whenever the user taps the “delete” accessory control on each annotation.
+
+Add a call to stopMonitoring(geotification:) to mapView(_:annotationView:calloutAccessoryControlTapped:), as shown below:
+```swift
+func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+  // Delete geotification
+  let geotification = view.annotation as! Geotification
+  stopMonitoring(geotification: geotification)   // Add this statement
+  removeGeotification(geotification)
+  saveAllGeotifications()
+}
+```
+The additional statement stops monitoring the geofence associated with the geotification, before removing it and saving the changes to NSUserDefaults.
+
+At this point, your app is fully capable of monitoring and un-monitoring user geofences. Hurray!
+
+Build and run the project. You won’t see any changes, but the app will now be able to register geofence regions for monitoring. However, it won’t be able to react to any geofence events just yet. Not to worry—that will be your next order of business!
+
+![](https://koenig-media.raywenderlich.com/uploads/2015/03/These_eyes.png)
+
+## Reacting to Geofence Events
+You’ll start by implementing some of the delegate methods to facilitate error handling – these are important to add in case anything goes wrong.
+
+In GeotificationsViewController.swift, add the following methods to the CLLocationManagerDelegate extension:
+```swift
+func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
+  print("Monitoring failed for region with identifier: \(region!.identifier)")
+}
+ 
+func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+  print("Location Manager failed with the following error: \(error)")
+}
+```
+These delegate methods simply log any errors that the location manager encounters to facilitate your debugging.
+
+> Note: You’ll definitely want to handle these errors more robustly in your production apps. For example, instead of failing silently, you could inform the user what went wrong.
+
+Next, open AppDelegate.swift; this is where you’ll add code to properly listen and react to geofence entry and exit events.
+Add the following line at the top of the file to import the CoreLocation framework:
+```swift
+import CoreLocation
+```
+Ensure that the AppDelegate has a CLLocationManager instance near the top of the class, as shown below:
+```swift
+class AppDelegate: UIResponder, UIApplicationDelegate {
+  var window: UIWindow?
+ 
+  let locationManager = CLLocationManager() // Add this statement
+  ...
+}
+```
+Replace application(_:didFinishLaunchingWithOptions:) with the following implementation:
+
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
+  locationManager.delegate = self
+  locationManager.requestAlwaysAuthorization()
+  return true
+}
+```
+You’ve set up your AppDelegate to receive geofence-related events. But you might wonder, “Why did I designate the AppDelegate to do this instead of the view controller?”
+
+Geofences registered by an app are monitored at all times, including when the app isn’t running. If the device triggers a geofence event while the app isn’t running, iOS automatically relaunches the app directly into the background. This makes the AppDelegate an ideal entry point to handle the event, as the view controller may not be loaded or ready.
+
+Now you might also wonder, “How will a newly-created CLLocationManager instance be able to know about the monitored geofences?”
+
+It turns out that all geofences registered by your app for monitoring are conveniently accessible by all location managers in your app, so it doesn’t matter where the location managers are initialized. Pretty nifty, right? :]
+
+Now all that’s left is to implement the relevant delegate methods to react to the geofence events. Before you do so, you’ll create a method to handle a geofence event.
+
+Add the following method to AppDelegate.swift:
+```swift
+func handleEvent(forRegion region: CLRegion!) {
+  print("Geofence triggered!")
+}
+```
+At this point, the method takes in a CLRegion and simply logs a statement. Not to worry—you’ll implement the event handling later.
+
+Next, add the following delegate methods in the CLLocationManagerDelegate extension of AppDelegate.swift, as well as a call to the handleRegionEvent(_:) function you just created, as shown in the code below:
+```swift
+extension AppDelegate: CLLocationManagerDelegate {
+ 
+  func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+    if region is CLCircularRegion {
+      handleEvent(forRegion: region)
+    }
+  }
+ 
+  func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+    if region is CLCircularRegion {
+      handleEvent(forRegion: region)
+    }
+  }
+}
+```
+As the method names aptly suggest, you fire locationManager(_:didEnterRegion:) when the device enters a CLRegion, while you fire locationManager(_:didExitRegion:) when the device exits a CLRegion.
+
+Both methods return the CLRegion in question, which you need to check to ensure it’s a CLCircularRegion, since it could be a 
+
+CLBeaconRegion if your app happens to be monitoring iBeacons, too. If the region is indeed a CLCircularRegion, you accordingly call handleRegionEvent(_:).
+
+> Note: A geofence event is triggered only when iOS detects a boundary crossing. If the user is already within a geofence at the point of registration, iOS won’t generate an event. If you need to query whether the device location falls within or outside a given geofence, Apple provides a method called requestStateForRegion(_:).
+```swift
+```
