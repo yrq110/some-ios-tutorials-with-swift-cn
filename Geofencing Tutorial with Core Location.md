@@ -93,13 +93,13 @@ override func viewDidLoad() {
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2016/06/GeoLocationWhenNotUsing-281x500.png)
 
-You’ve set up your app to request the required permission. Great! Click or tap Allow to ensure the location manager will receive delegate callbacks at the appropriate times.
+已完成了设置app请求许可的部分，干得好！点击Allow确保location manager在适当的时候能接收到委托方法的回调。
 
-Before you proceed to implement the geofencing, there’s a small issue you have to resolve: the user’s current location isn’t showing up on the map view! This feature is disabled, and as a result, the zoom button on the top-left of the navigation bar doesn’t work.
+在实现地理围栏之前，还有一个小问题需要解决：当前的用户位置还未显示在map view上！这个特性还未启用，导致导航栏左上的缩放按钮不起作用。
 
-Fortunately, the fix is not difficult — you’ll simply enable the current location only after the app is authorized.
+还好这个问题不是什么大事，需要在app获得授权后启用map view显示当前位置的功能。
 
-In GeotificationsViewController.swift, add the following delegate method to the CLLocationManagerDelegate extension:
+在GeotificationsViewController.swift文件中，向CLLocationManagerDelegate的扩展中添加如下委托方法，:
 
 ```swift
 extension GeotificationsViewController: CLLocationManagerDelegate {
