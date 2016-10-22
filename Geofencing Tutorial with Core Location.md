@@ -108,24 +108,25 @@ extension GeotificationsViewController: CLLocationManagerDelegate {
   }
 }
 ```
+当授权状态改变时，location manager就会调用locationManager(\_:didChangeAuthorizationStatus:)方法。若用户已经给予了app使用位置服务的许可，则这个方法会在初始化location manager并设置它的委托后被调用。
 
-The location manager calls locationManager(\_:didChangeAuthorizationStatus:) whenever the authorization status changes. If the user has already granted the app permission to use Location Services, this method will be called by the location manager after you’ve initialized the location manager and set its delegate.
+这个方法放在了合适的地方，用来检测app是否被授权，若被授权，则在map view中显示用户的当前位置。
 
-That makes this method an ideal place to check if the app is authorized. If it is, you enable the map view to show the user’s current location.
-
-Build and run the app. If you’re running it on a device, you’ll see the location marker appear on the main map view. If you’re running on the simulator, click Debug\Location\Apple in the menu to see the location marker:
+构建并运行app，若是在真机上运行的，则会看到主map view中会出现一个位置标记。若是在模拟器上运行的，点击菜单中的Debug\Location\Apple来显示位置标记:
 
 ![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/06/GeoLocationFar-281x500.png)
 
-In addition, the zoom button on the navigation bar now works. :]
+另外，导航栏上的缩放按钮现在起作用了。:]
 
 ![](https://cdn3.raywenderlich.com/wp-content/uploads/2016/06/GeoLocationZoomed-281x500.png)
 
-## Registering Your Geofences
+## 注册地理围栏
 
-With the location manager properly configured, the next order of business is to allow your app to register user geofences for monitoring.
-In your app, the user geofence information is stored within your custom Geotification model. However, Core Location requires each geofence to be represented as a CLCircularRegion instance before it can be registered for monitoring. To handle this requirement, you’ll create a helper method that returns a CLCircularRegion from a given Geotification object.
-Open GeotificationsViewController.swift and add the following method to the main body:
+在正常设置完location manager后，接下来需要做的工作是在app中注册用户的地理围栏。
+
+在app中，用户的地理围栏信息是使用自定义的地理通知模型存放的。However, Core Location requires each geofence to be represented as a CLCircularRegion instance before it can be registered for monitoring. 为了解决这个问题，需要创建一个帮助方法来将地理通知对象转换为CLCircularRegion。
+
+打开GeotificationsViewController.swift文件，添加如下方法:
 ```swift
 func region(withGeotification geotification: Geotification) -> CLCircularRegion {
   // 1
@@ -136,15 +137,15 @@ func region(withGeotification geotification: Geotification) -> CLCircularRegion 
   return region
 }
 ```
-Here’s what the above method does:
+上面的代码中做了哪些事情:
 
-You initialize a CLCircularRegion with the location of the geofence, the radius of the geofence and an identifier that allows iOS to distinguish between the registered geofences of a given app. The initialization is rather straightforward, as the Geotification model already contains the required properties.
+首先使用地理围栏的位置、半径与一个识别器(为了使iOS区分app中注册的围栏)初始化了一个CLCircularRegion。初始化是很简单的，Geotification模型已经包含了所需要的属性。
 
-The CLCircularRegion instance also has two Boolean properties, notifyOnEntry and notifyOnExit. These flags specify whether geofence events will be triggered when the device enters and leaves the defined geofence, respectively. Since you’re designing your app to allow only one notification type per geofence, you set one of the flags to true while you set the other to false, based on the enum value stored in the Geotification object.
+CLCircularRegion实例有2个布尔型属性：notifyOnEntry和notifyOnExit。这些标识指定了当设备进入或离开指定围栏时是否触发围栏事件。若app设计为对每个围栏仅允许一个通知，根据Geotification对象中保存的枚举值，将其中一个标识设为true另一个设为false即可。
 
-Next, you need a method to start monitoring a given geotification whenever the user adds one.
+接着，需要一个当用户添加地理通知时启动监测的方法。
 
-Add the following method to the body of GeotificationsViewController:
+在GeotificationsViewController中添加如下方法:
 ```swift
 func startMonitoring(geotification: Geotification) {
   // 1
@@ -162,14 +163,22 @@ func startMonitoring(geotification: Geotification) {
   locationManager.startMonitoring(for: region)
 }
 ```
-Let’s walk through the method step by step:
+来逐步分析下:
+
 isMonitoringAvailableForClass(_:) determines if the device has the required hardware to support the monitoring of geofences. If monitoring is unavailable, you bail out entirely and alert the user accordingly. showSimpleAlertWithTitle(_:message:viewController) is a helper function in Utilities.swift that takes in a title and message and displays an alert view.
+
 Next, you check the authorization status to ensure that the app has also been granted the required permission to use Location Services. If the app isn’t authorized, it won’t receive any geofence-related notifications.
+
 However, in this case, you’ll still allow the user to save the geotification, since Core Location lets you register geofences even when the app isn’t authorized. When the user subsequently grants authorization to the app, monitoring for those geofences will begin automatically.
+
 You create a CLCircularRegion instance from the given geotification using the helper method you defined earlier.
+
 Finally, you register the CLCircularRegion instance with Core Location for monitoring.
+
 With your start method done, you also need a method to stop monitoring a given geotification when the user removes it from the app.
+
 In GeotificationsViewController.swift, add the following method below startMonitoringGeotificiation(_:):
+
 ```swift
 func stopMonitoring(geotification: Geotification) {
   for region in locationManager.monitoredRegions {
@@ -178,10 +187,15 @@ func stopMonitoring(geotification: Geotification) {
   }
 }
 ```
+
 The method simply instructs the locationManager to stop monitoring the CLCircularRegion associated with the given geotification.
+
 Now that you have both the start and stop methods complete, you’ll use them whenever you add or remove a geotification. You’ll begin with the adding part.
+
 First, take a look at addGeotificationViewController(_:didAddCoordinate) in GeotificationsViewController.swift.
+
 The method is the delegate call invoked by the AddGeotificationViewController upon creating a geotification; it’s responsible for creating a new Geotification object using the values passed from AddGeotificationsViewController, and updating both the map view and the geotifications list accordingly. Then you call saveAllGeotifications(), which takes the newly-updated geotifications list and persists it via NSUserDefaults.
+
 Now, replace the method with the following code:
 ```swift
 func addGeotificationViewController(controller: AddGeotificationViewController, didAddCoordinate coordinate: CLLocationCoordinate2D, radius: Double, identifier: String, note: String, eventType: EventType) {
