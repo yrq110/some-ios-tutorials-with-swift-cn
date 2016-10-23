@@ -139,9 +139,8 @@ func region(withGeotification geotification: Geotification) -> CLCircularRegion 
 ```
 上面的代码中做了哪些事情:
 
-首先使用地理围栏的位置、半径与一个识别器(为了使iOS区分app中注册的围栏)初始化了一个CLCircularRegion。初始化是很简单的，Geotification模型已经包含了所需要的属性。
-
-CLCircularRegion实例有2个布尔型属性：notifyOnEntry和notifyOnExit。这些标识指定了当设备进入或离开指定围栏时是否触发围栏事件。若app设计为对每个围栏仅允许一个通知，根据Geotification对象中保存的枚举值，将其中一个标识设为true另一个设为false即可。
+1. 首先使用地理围栏的位置、半径与一个识别器(为了使iOS区分app中注册的围栏)初始化了一个CLCircularRegion。初始化是很简单的，Geotification模型已经包含了所需要的属性。
+2. CLCircularRegion实例有2个布尔型属性：notifyOnEntry和notifyOnExit。这些标识指定了当设备进入或离开指定围栏时是否触发围栏事件。若app设计为对每个围栏仅允许一个通知，根据Geotification对象中保存的枚举值，将其中一个标识设为true另一个设为false即可。
 
 接着，需要一个当用户添加地理通知时启动监测的方法。
 
@@ -165,19 +164,15 @@ func startMonitoring(geotification: Geotification) {
 ```
 来逐步分析下:
 
-isMonitoringAvailableForClass(_:) determines if the device has the required hardware to support the monitoring of geofences. If monitoring is unavailable, you bail out entirely and alert the user accordingly. showSimpleAlertWithTitle(_:message:viewController) is a helper function in Utilities.swift that takes in a title and message and displays an alert view.
+1. isMonitoringAvailableForClass(\_:)表示设备是否含有进行围栏检测所需的硬件。若监测功能不可用则显示一个合适的警告。showSimpleAlertWithTitle(\_:message:viewController)是一个Utilities.swift中的辅助函数，接收标题与消息数据，弹出一个警告视图。
+2. 接着，需要检查授权状态，确保app得到使用位置服务所需的许可。若app未被授权，则无法接受到任何围栏相关的通知。
+   不过，即使在app未被授权的情况下，也要允许用户保存地理通知，Core Location是允许你注册围栏的。在用户在之后给app授权时，自动启用这些围栏的监测功能。
+3. 使用输入的地理通知与之前定义的帮助方法创建一个CLCircularRegion实例。
+4. 最后，使用Core Location注册CLCircularRegion实例进行监测。
 
-Next, you check the authorization status to ensure that the app has also been granted the required permission to use Location Services. If the app isn’t authorized, it won’t receive any geofence-related notifications.
+在启用监测的方法搞定后，也需要一个当用户移除地理通知时停止监测的方法。
 
-However, in this case, you’ll still allow the user to save the geotification, since Core Location lets you register geofences even when the app isn’t authorized. When the user subsequently grants authorization to the app, monitoring for those geofences will begin automatically.
-
-You create a CLCircularRegion instance from the given geotification using the helper method you defined earlier.
-
-Finally, you register the CLCircularRegion instance with Core Location for monitoring.
-
-With your start method done, you also need a method to stop monitoring a given geotification when the user removes it from the app.
-
-In GeotificationsViewController.swift, add the following method below startMonitoringGeotificiation(_:):
+在GeotificationsViewController.swift文件中，在startMonitoringGeotificiation(\_:)下面添加如下方法:
 
 ```swift
 func stopMonitoring(geotification: Geotification) {
@@ -187,8 +182,7 @@ func stopMonitoring(geotification: Geotification) {
   }
 }
 ```
-
-The method simply instructs the locationManager to stop monitoring the CLCircularRegion associated with the given geotification.
+这个方法命令locationManager停止监测与输入的地理通知关联的CLCircularRegion。
 
 Now that you have both the start and stop methods complete, you’ll use them whenever you add or remove a geotification. You’ll begin with the adding part.
 
@@ -213,7 +207,7 @@ You’ve made two key changes to the code:
 
 You ensure that the value of the radius is clamped to the maximumRegionMonitoringDistance property of locationManager, which is defined as the largest radius in meters that can be assigned to a geofence. This is important, as any value that exceeds this maximum will cause monitoring to fail.
 
-You add a call to startMonitoringGeotification(_:) to ensure that the geofence associated with the newly-added geotification is registered with Core Location for monitoring.
+You add a call to startMonitoringGeotification(\_:) to ensure that the geofence associated with the newly-added geotification is registered with Core Location for monitoring.
 
 At this point, the app is fully capable of registering new geofences for monitoring. There is, however, a limitation: As geofences are a shared system resource, Core Location restricts the number of registered geofences to a maximum of 20 per app.
 
@@ -230,7 +224,7 @@ This line disables the Add button in the navigation bar whenever the app reaches
 
 Finally, let’s deal with the removal of geotifications. This functionality is handled in mapView(_:annotationView:calloutAccessoryControlTapped:), which is invoked whenever the user taps the “delete” accessory control on each annotation.
 
-Add a call to stopMonitoring(geotification:) to mapView(_:annotationView:calloutAccessoryControlTapped:), as shown below:
+Add a call to stopMonitoring(geotification:) to mapView(\_:annotationView:calloutAccessoryControlTapped:), as shown below:
 ```swift
 func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
   // Delete geotification
