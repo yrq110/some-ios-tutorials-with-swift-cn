@@ -21,7 +21,7 @@
 
 ## 入门
 
-下载[开始工程](https://koenig-media.raywenderlich.com/uploads/2016/09/Geotify-Starter-1.zip)。这个工程提供一个简单的功能：允许用户在地图上添加或删除标注点，每个标注点都表示一个位置提醒，或者可以叫它————地理通知(PS:geotification，作者自造词)。
+下载[开始工程](https://koenig-media.raywenderlich.com/uploads/2016/09/Geotify-Starter-1.zip)。这个工程提供一个简单的功能：允许用户在地图上添加或删除标注点，每个标注点都表示一个位置提醒，或者可以叫它——地理通知(PS:geotification，自造词)。
 
 构建并运行，会看到如下这样一个空的map view。
 
@@ -184,13 +184,13 @@ func stopMonitoring(geotification: Geotification) {
 ```
 这个方法命令locationManager停止监测与输入的地理通知关联的CLCircularRegion。
 
-Now that you have both the start and stop methods complete, you’ll use them whenever you add or remove a geotification. You’ll begin with the adding part.
+好了，现在完成启动和停止的方法了，会在添加或移除地理通知时使用这些方法，是时候进行添加通知部分的开发了。
 
-First, take a look at addGeotificationViewController(_:didAddCoordinate) in GeotificationsViewController.swift.
+首先，看看GeotificationsViewController.swift文件中的addGeotificationViewController(\_:didAddCoordinate)方法。
 
-The method is the delegate call invoked by the AddGeotificationViewController upon creating a geotification; it’s responsible for creating a new Geotification object using the values passed from AddGeotificationsViewController, and updating both the map view and the geotifications list accordingly. Then you call saveAllGeotifications(), which takes the newly-updated geotifications list and persists it via NSUserDefaults.
+这个方法是由AddGeotificationViewController调用的委托方法来创建地理通知，这个方法负责使用来自AddGeotificationsViewController的值创建一个新的Geotification对象，并且更新对应的map view与地理通知列表。接着调用saveAllGeotifications()，更新地理通知列表，并保存到NSUserDefaults。
 
-Now, replace the method with the following code:
+使用如下代码替换这个方法:
 ```swift
 func addGeotificationViewController(controller: AddGeotificationViewController, didAddCoordinate coordinate: CLLocationCoordinate2D, radius: Double, identifier: String, note: String, eventType: EventType) {
   controller.dismiss(animated: true, completion: nil)
@@ -203,11 +203,10 @@ func addGeotificationViewController(controller: AddGeotificationViewController, 
   saveAllGeotifications()
 }
 ```
-You’ve made two key changes to the code:
+代码中的两个关键点:
 
-You ensure that the value of the radius is clamped to the maximumRegionMonitoringDistance property of locationManager, which is defined as the largest radius in meters that can be assigned to a geofence. This is important, as any value that exceeds this maximum will cause monitoring to fail.
-
-You add a call to startMonitoringGeotification(\_:) to ensure that the geofence associated with the newly-added geotification is registered with Core Location for monitoring.
+1. 确保半径值与locationManager的maximumRegionMonitoringDistance属性一致，这个属性被定义为地理围栏的最大半径。这很重要，任何超过这个最大值的值都会使监测失败。
+2. 调用startMonitoringGeotification(\_:)，使用Core Location注册与新添加的地理通知相关联的监测围栏。
 
 At this point, the app is fully capable of registering new geofences for monitoring. There is, however, a limitation: As geofences are a shared system resource, Core Location restricts the number of registered geofences to a maximum of 20 per app.
 
