@@ -208,36 +208,36 @@ func addGeotificationViewController(controller: AddGeotificationViewController, 
 1. 确保半径值与locationManager的maximumRegionMonitoringDistance属性一致，这个属性被定义为地理围栏的最大半径。这很重要，任何超过这个最大值的值都会使监测失败。
 2. 调用startMonitoringGeotification(\_:)，使用Core Location注册与新添加的地理通知相关联的监测围栏。
 
-At this point, the app is fully capable of registering new geofences for monitoring. There is, however, a limitation: As geofences are a shared system resource, Core Location restricts the number of registered geofences to a maximum of 20 per app.
+现在，在app中已经可以注册新的监测围栏了，不过有一个限制：地理围栏是一个共享的系统资源，Core Location对于每个app限制注册的围栏数量最多为20个。
 
-While there are workarounds to this limitation (See Where to Go From Here? for a short discussion), for the purposes of this tutorial, you’ll take the approach of limiting the number of geotifications the user can add.
+虽然对于这个限制有可变通的方法，对于本教程来说，限制一下用户添加的地理通知数量即可。
 
-Add a line to updateGeotificationsCount(), as shown in the code below:
+如下，在updateGeotificationsCount()方法中添加一行代码:
 ```swift
 func updateGeotificationsCount() {
   title = "Geotifications (\(geotifications.count))"
-  navigationItem.rightBarButtonItem?.isEnabled = (geotifications.count < 20)  // Add this line
+  navigationItem.rightBarButtonItem?.isEnabled = (geotifications.count < 20)  // 添加这一行
 }
 ```
-This line disables the Add button in the navigation bar whenever the app reaches the limit.
+当app的通知数量达到临界值时禁用导航栏上的添加按钮。
 
-Finally, let’s deal with the removal of geotifications. This functionality is handled in mapView(_:annotationView:calloutAccessoryControlTapped:), which is invoked whenever the user taps the “delete” accessory control on each annotation.
+最后，来处理一下地理通知的移除操作，这个操作在mapView(\_:annotationView:calloutAccessoryControlTapped:)方法中进行，当用户点击每个标注点附带的delete按钮时会调用这个方法。
 
-Add a call to stopMonitoring(geotification:) to mapView(\_:annotationView:calloutAccessoryControlTapped:), as shown below:
+在mapView(\_:annotationView:calloutAccessoryControlTapped:)方法中添加调用stopMonitoring(geotification:)的代码:
 ```swift
 func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
-  // Delete geotification
+  // 删除地理通知
   let geotification = view.annotation as! Geotification
-  stopMonitoring(geotification: geotification)   // Add this statement
+  stopMonitoring(geotification: geotification)   // 添加的语句
   removeGeotification(geotification)
   saveAllGeotifications()
 }
 ```
-The additional statement stops monitoring the geofence associated with the geotification, before removing it and saving the changes to NSUserDefaults.
+添加的语句会停止与地理通知相关围栏的监测工作，接着移除通知并将改动保存到NSUserDefaults中。
 
-At this point, your app is fully capable of monitoring and un-monitoring user geofences. Hurray!
+好了，现在app支持监测与取消监测用户的地理围栏，加油！
 
-Build and run the project. You won’t see any changes, but the app will now be able to register geofence regions for monitoring. However, it won’t be able to react to any geofence events just yet. Not to worry—that will be your next order of business!
+构建并运行工程，虽然看不到明显的变化不过app现在可以注册可监测的地理围栏了。然而还不能响应任何围栏事件，不用担心，这是接下来的任务！
 
 ![](https://koenig-media.raywenderlich.com/uploads/2015/03/These_eyes.png)
 
