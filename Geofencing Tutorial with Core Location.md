@@ -15,7 +15,7 @@
 
 来创建围栏吧!
 
-当设备进入或离开你所设置的区域时地理围栏会提醒app。这可以让你做一些很cool的事：比如设置一个当你离开家时的通知，或者当附近有喜爱的商店时用最新与最棒的商品来迎接用户。在这篇地理围栏的教程中，会学到如何在iOS中使用Swift进行区域监测 - 使用Core Location中的Region Monitoring API。
+当设备进入或离开你所设置的区域时地理围栏会提醒app。这可以让你做一些很cool的事：比如设置一个当你离开家时的通知，或者当附近有用户喜爱的商店时用最新与最棒的商品来迎接用户。在这篇地理围栏的教程中，会学到如何在iOS中使用Swift进行区域监测 - 使用Core Location中的Region Monitoring API。
 
 特别地，会创建一个名为Geotify的基于位置的提醒应用，让用户创建提示器并与真实世界的实际位置相关联。开始吧!
 
@@ -241,10 +241,12 @@ func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, callou
 
 ![](https://koenig-media.raywenderlich.com/uploads/2015/03/These_eyes.png)
 
-## Reacting to Geofence Events
-You’ll start by implementing some of the delegate methods to facilitate error handling – these are important to add in case anything goes wrong.
+## 添加地理围栏响应事件
 
-In GeotificationsViewController.swift, add the following methods to the CLLocationManagerDelegate extension:
+首先来实现一些处理错误的委托方法--这很重要，以免发生一些问题后不知何因。
+
+进入GeotificationsViewController.swift文件, 在CLLocationManagerDelegate的扩展中添加如下方法:
+
 ```swift
 func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
   print("Monitoring failed for region with identifier: \(region!.identifier)")
@@ -254,16 +256,17 @@ func locationManager(_ manager: CLLocationManager, didFailWithError error: Error
   print("Location Manager failed with the following error: \(error)")
 }
 ```
-These delegate methods simply log any errors that the location manager encounters to facilitate your debugging.
+这几个委托方法仅仅以日志形式输出了location manager遇到的错误，方便调试。
 
-> Note: You’ll definitely want to handle these errors more robustly in your production apps. For example, instead of failing silently, you could inform the user what went wrong.
+> 注意: 你肯定会想在生产环境中的app更有效的处理这些错误，而不是使其悄无声息的出错，比如可以提示用户哪里出了问题。
 
-Next, open AppDelegate.swift; this is where you’ll add code to properly listen and react to geofence entry and exit events.
-Add the following line at the top of the file to import the CoreLocation framework:
+接着，打开AppDelegate.swift，在这里添加监听与响应地理围栏的进入与离开事件的代码。
+
+在文件头部引入CoreLocation框架，添加如下代码:
 ```swift
 import CoreLocation
 ```
-Ensure that the AppDelegate has a CLLocationManager instance near the top of the class, as shown below:
+确保AppDelegate中包含一个CLLocationManager实例:
 ```swift
 class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
@@ -272,8 +275,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   ...
 }
 ```
-Replace application(_:didFinishLaunchingWithOptions:) with the following implementation:
-
+使用如下代码替换application(\_:didFinishLaunchingWithOptions:):
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
   locationManager.delegate = self
@@ -299,7 +301,7 @@ func handleEvent(forRegion region: CLRegion!) {
 ```
 At this point, the method takes in a CLRegion and simply logs a statement. Not to worry—you’ll implement the event handling later.
 
-Next, add the following delegate methods in the CLLocationManagerDelegate extension of AppDelegate.swift, as well as a call to the handleRegionEvent(_:) function you just created, as shown in the code below:
+Next, add the following delegate methods in the CLLocationManagerDelegate extension of AppDelegate.swift, as well as a call to the handleRegionEvent(\_:) function you just created, as shown in the code below:
 ```swift
 extension AppDelegate: CLLocationManagerDelegate {
  
@@ -316,12 +318,12 @@ extension AppDelegate: CLLocationManagerDelegate {
   }
 }
 ```
-As the method names aptly suggest, you fire locationManager(_:didEnterRegion:) when the device enters a CLRegion, while you fire locationManager(_:didExitRegion:) when the device exits a CLRegion.
+As the method names aptly suggest, you fire locationManager(\_:didEnterRegion:) when the device enters a CLRegion, while you fire locationManager(\_:didExitRegion:) when the device exits a CLRegion.
 
 Both methods return the CLRegion in question, which you need to check to ensure it’s a CLCircularRegion, since it could be a 
 
-CLBeaconRegion if your app happens to be monitoring iBeacons, too. If the region is indeed a CLCircularRegion, you accordingly call handleRegionEvent(_:).
+CLBeaconRegion if your app happens to be monitoring iBeacons, too. If the region is indeed a CLCircularRegion, you accordingly call handleRegionEvent(\_:).
 
-> Note: A geofence event is triggered only when iOS detects a boundary crossing. If the user is already within a geofence at the point of registration, iOS won’t generate an event. If you need to query whether the device location falls within or outside a given geofence, Apple provides a method called requestStateForRegion(_:).
+> Note: A geofence event is triggered only when iOS detects a boundary crossing. If the user is already within a geofence at the point of registration, iOS won’t generate an event. If you need to query whether the device location falls within or outside a given geofence, Apple provides a method called requestStateForRegion(\_:).
 ```swift
 ```
