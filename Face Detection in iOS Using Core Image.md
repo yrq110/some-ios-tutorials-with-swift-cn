@@ -9,7 +9,7 @@
 
 ***
 
-Core Image是Cocoa Touch中一个强大的API，是iOS SDK中的关键部分，不过它经常被忽视。在这篇教程中，会验证Core Image的人脸识别特性并在你的iOS app中应用这项技术!
+Core Image是Cocoa Touch中一个强大的API，也是iOS SDK中的关键部分，然而它经常被人们忽视。在这篇教程中会讲解一些Core Image的人脸识别特性，并在你的iOS app中应用这项技术!
 
 > 注意: 这是一篇中高级的iOS教程，假定你已经使用过UIImagePicker, Core Image等技术。若你不太熟悉这些技术，可以先看看我们的[系列教程](http://www.appcoda.com/ios-programming-course)，准备好了再回来。
 
@@ -31,7 +31,7 @@ iOS的人脸识别从iOS 5(2011)就有了，不过一直没怎么被关注过。
 
 ## 使用Core Image识别人脸
 
-在开始工程中，故事板中的imageView组件与代码中的IBOutlet已关联，接下来要实现人脸识别的代码部分。在swift文件中插入如下代码，之后进行讲解:
+在开始工程中，故事板中的imageView组件与代码中的IBOutlet已关联，接下来要编写实现人脸识别的代码部分。在swift文件中插入如下代码，之后进行讲解:
 
 ```swift
 func detect() {
@@ -244,13 +244,13 @@ func detect() {
     }
 ```
 
-这个detect()函数与之前实现的detect函数非常像，不过这次只用它来获取图像不做变换。当识别到人脸后显示一个警告信息“检测到了人脸！”，否则显示“未检测到”。运行app测试一下
+这个detect()函数与之前实现的detect函数非常像，不过这次只用它来获取图像不做变换。当识别到人脸后显示一个警告信息“检测到了人脸！”，否则显示“未检测到人脸”。运行app测试一下
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/08/faces-1024x862.png)
 
-我们已经使用到了一些CIFaceFeature的属性与方法，比如，若想检测人物是否在笑，可以调用.hasSmile，它会返回一个布尔值。可以分别使用.hasLeftEyePosition与.hasRightEyePosition检测是否存在左右眼。
+我们已经使用到了一些CIFaceFeature的属性与方法，比如，若想检测人物是否微笑，可以调用.hasSmile，它会返回一个布尔值。可以分别使用.hasLeftEyePosition与.hasRightEyePosition检测是否存在左右眼。
 
-同样，可以调用hasMouthPosition来检测是否存在嘴，若存在则可以访问到mouthPosition属性，如下所示:
+同样，可以调用hasMouthPosition来检测是否存在嘴，若存在则可以使用mouthPosition属性，如下所示:
 
 ```swift
 if (face.hasMouthPosition) {
