@@ -283,7 +283,7 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
   return true
 }
 ```
-You’ve set up your AppDelegate to receive geofence-related events. But you might wonder, “Why did I designate the AppDelegate to do this instead of the view controller?”
+这样就设置了在AppDelegate中接收与围栏相关的事件，不过你也许会想“为何我不让view controller而是AppDelegate来做这件事？”
 
 Geofences registered by an app are monitored at all times, including when the app isn’t running. If the device triggers a geofence event while the app isn’t running, iOS automatically relaunches the app directly into the background. This makes the AppDelegate an ideal entry point to handle the event, as the view controller may not be loaded or ready.
 
