@@ -325,5 +325,23 @@ Both methods return the CLRegion in question, which you need to check to ensure 
 CLBeaconRegion if your app happens to be monitoring iBeacons, too. If the region is indeed a CLCircularRegion, you accordingly call handleRegionEvent(\_:).
 
 > Note: A geofence event is triggered only when iOS detects a boundary crossing. If the user is already within a geofence at the point of registration, iOS won’t generate an event. If you need to query whether the device location falls within or outside a given geofence, Apple provides a method called requestStateForRegion(\_:).
+
+Now that your app is able to receive geofence events, you’re ready to give it a proper test run. If that doesn’t excite you, it really ought to, because for the first time in this tutorial, you’re going to see some results. :]
+
+The most accurate way to test your app is to deploy it on your device, add some geotifications and take the app for a walk or a drive. 
+
+However, it wouldn’t be wise to do so right now, as you wouldn’t be able to verify the print logs emitted by the geofence events with the device unplugged. Besides, it would be nice to get assurance that the app works before you commit to taking it for a spin.
+
+Fortunately, there’s an easy way do this without leaving the comfort of your home. Xcode lets you include a hardcoded waypoint GPX file in your project that you can use to simulate test locations. Lucky for you, the starter project includes one for your convenience. :]
+Open up TestLocations.gpx, which you can find in the Supporting Files group, and inspect its contents. You’ll see the following:
 ```swift
+<?xml version="1.0"?>
+<gpx version="1.1" creator="Xcode">
+  <wpt lat="37.422" lon="-122.084058">
+    <name>Google</name>
+  </wpt>
+  <wpt lat="37.3270145" lon="-122.0310273">
+    <name>Apple</name>
+  </wpt>
+</gpx>
 ```
