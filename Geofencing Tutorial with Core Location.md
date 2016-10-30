@@ -99,7 +99,7 @@ override func viewDidLoad() {
 
 还好这个问题不是什么大事，需要在app获得授权后启用map view显示当前位置的功能。
 
-在GeotificationsViewController.swift文件中，向CLLocationManagerDelegate的扩展中添加如下委托方法，:
+进入GeotificationsViewController.swift文件，在CLLocationManagerDelegate扩展中添加如下委托方法，:
 
 ```swift
 extension GeotificationsViewController: CLLocationManagerDelegate {
@@ -285,23 +285,26 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 ```
 这样就设置了在AppDelegate中接收与围栏相关的事件，不过你也许会想“为何我不让view controller而是AppDelegate来做这件事？”
 
-Geofences registered by an app are monitored at all times, including when the app isn’t running. If the device triggers a geofence event while the app isn’t running, iOS automatically relaunches the app directly into the background. This makes the AppDelegate an ideal entry point to handle the event, as the view controller may not be loaded or ready.
+app中注册的围栏一直处于被监测的状态，即使在app未运行时。若设备在app未运行的情况下触发了一个围栏事件，则iOS会自动从后台重启app。这使得AppDelegate是一个用来处理事件的理想入口，因为此时的view controller有可能还未加载或未准备好。
 
-Now you might also wonder, “How will a newly-created CLLocationManager instance be able to know about the monitored geofences?”
+你也许还会想“一个新建的CLLocationManager实例是如何获知所监测的围栏的？”
 
-It turns out that all geofences registered by your app for monitoring are conveniently accessible by all location managers in your app, so it doesn’t matter where the location managers are initialized. Pretty nifty, right? :]
+实际上所有app中所注册的监测用围栏可以轻松地被所有location managers访问，因此location managers的初始化位置就无所谓了。挺棒的，不是吗？:]
 
-Now all that’s left is to implement the relevant delegate methods to react to the geofence events. Before you do so, you’ll create a method to handle a geofence event.
+现在剩下的就是实现响应围栏事件的相关委托方法了。在这么做之前，需要添加一个处理围栏事件的函数。
 
-Add the following method to AppDelegate.swift:
+在AppDelegate.swift中添加如下方法:
+
 ```swift
 func handleEvent(forRegion region: CLRegion!) {
   print("Geofence triggered!")
 }
 ```
-At this point, the method takes in a CLRegion and simply logs a statement. Not to worry—you’ll implement the event handling later.
 
-Next, add the following delegate methods in the CLLocationManagerDelegate extension of AppDelegate.swift, as well as a call to the handleRegionEvent(\_:) function you just created, as shown in the code below:
+这个方法接收一个CLRegion对象并简单的输出一条文本信息。别担心-之后会实现具体的细节。
+
+接下来，在AppDelegate.swift中的CLLocationManagerDelegate扩展下添加如下委托方法，并添加一个刚刚创建的handleRegionEvent(\_:) 函数的调用:
+
 ```swift
 extension AppDelegate: CLLocationManagerDelegate {
  
@@ -318,22 +321,23 @@ extension AppDelegate: CLLocationManagerDelegate {
   }
 }
 ```
-As the method names aptly suggest, you fire locationManager(\_:didEnterRegion:) when the device enters a CLRegion, while you fire locationManager(\_:didExitRegion:) when the device exits a CLRegion.
 
-Both methods return the CLRegion in question, which you need to check to ensure it’s a CLCircularRegion, since it could be a 
+建议使用合适的名称来给方法起名，当设备进入一个CLRegion区域时启动locationManager(\_:didEnterRegion:)，离开CLRegion区域时启动locationManager(\_:didExitRegion:)。
 
-CLBeaconRegion if your app happens to be monitoring iBeacons, too. If the region is indeed a CLCircularRegion, you accordingly call handleRegionEvent(\_:).
+这些方法都会返回CLRegion，需要检查并确保是否为CLCircularRegion对象，因为有可能是一个CLBeaconRegion对象若app监测的是iBeacon区域的话。若确实是一个CLCircularRegion对象，则调用handleRegionEvent(\_:)。
 
-> Note: A geofence event is triggered only when iOS detects a boundary crossing. If the user is already within a geofence at the point of registration, iOS won’t generate an event. If you need to query whether the device location falls within or outside a given geofence, Apple provides a method called requestStateForRegion(\_:).
+> 注意: 围栏事件仅会在iOS设备跨越边界时才会被触发。若用户已经在注册的围栏中，则iOS不会产生事件。苹果提供了一个requestStateForRegion(\_:)方法用来查询设备位置是在所给围栏的里面还是外面。
 
-Now that your app is able to receive geofence events, you’re ready to give it a proper test run. If that doesn’t excite you, it really ought to, because for the first time in this tutorial, you’re going to see some results. :]
+现在app可以接收到围栏事件了，是时候来测试一下了。:]
 
-The most accurate way to test your app is to deploy it on your device, add some geotifications and take the app for a walk or a drive. 
+测试app时最准确的方法是将程序部署到你的设备上，添加一些地理通知，然后去行走或驾车测试。
 
-However, it wouldn’t be wise to do so right now, as you wouldn’t be able to verify the print logs emitted by the geofence events with the device unplugged. Besides, it would be nice to get assurance that the app works before you commit to taking it for a spin.
+不过现在最好不要那样做，现在还不能确认触发生产环境中的设备围栏事件时输出的日志信息，除此之外，在实际测试前保证app能正常工作也是极好的。
 
-Fortunately, there’s an easy way do this without leaving the comfort of your home. Xcode lets you include a hardcoded waypoint GPX file in your project that you can use to simulate test locations. Lucky for you, the starter project includes one for your convenience. :]
-Open up TestLocations.gpx, which you can find in the Supporting Files group, and inspect its contents. You’ll see the following:
+幸运的是，有一个不用离开舒适的家里就可以搞定的简单方法，Xcode允许在工程中使用一个硬编码的GPX文件来模拟测试位置。为了方便起见在开始工程中就已经包含这个文件了。:]
+
+在Supporting Files文件夹中找到并打开TestLocations.gpx, 选择inspect它的内容，会看到如下所示的代码:
+
 ```swift
 <?xml version="1.0"?>
 <gpx version="1.1" creator="Xcode">
@@ -345,3 +349,83 @@ Open up TestLocations.gpx, which you can find in the Supporting Files group, and
   </wpt>
 </gpx>
 ```
+The GPX file is essentially an XML file that contains two waypoints: Google’s Googleplex in Mountain View and Apple’s Headquarters in Cupertino.
+
+To begin simulating the locations in the GPX file, build and run the project. When the app launches the main view controller, go back to Xcode, select the Location icon in the Debug bar and choose TestLocations:
+
+![](https://koenig-media.raywenderlich.com/uploads/2015/03/Screen-Shot-2015-02-02-at-9.04.37-pm.png)
+
+Back in the app, use the Zoom button on the top-left of the navigation bar to zoom to the current location. Once you get close to the area, you’ll see the location marker moving repeatedly from the Googleplex to Apple, Inc. and back.
+Test the app by adding a few geotifications along the path defined by the two waypoints. If you added any geotifications earlier in the tutorial before you enabled geofence registration, those geotifications will obviously not work, so you might want to clear them out and start afresh.
+For the test locations, it’s a good idea to place a geotification roughly at each waypoint. Here’s a possible test scenario:
+
+* Google: Radius: 1000m, Message: “Say Bye to Google!”, Notify on Exit
+* Apple: Radius: 1000m, Message: “Say Hi to Apple!”, Notify on Entry
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/06/Geo2Fences-281x500.png)
+
+Once you’ve added your geotifications, you’ll see a log in the console each time the location marker enters or leaves a geofence. If you activate the home button or lock the screen to send the app to the background, you’ll also see the logs each time the device crosses a geofence, though you obviously won’t be able to verify that behavior visually.
+
+![](https://koenig-media.raywenderlich.com/uploads/2015/03/GeofenceTriggered.png)
+
+> Note: Location simulation works both in iOS Simulator and on a real device. However, the iOS Simulator can be quite inaccurate in this case; the timings of the triggered events do not coincide very well with the visual movement of the simulated location in and out of each geofence. You would do better to simulate locations on your device, or better still, take the app for a walk!
+
+## Notifying the User of Geofence Events
+
+You’ve made a lot of progress with the app. At this point, it simply remains for you to notify the user whenever the device crosses the geofence of a geotification—so prepare yourself to do just that.
+
+To obtain the note associated with a triggering CLCircularRegion returned by the delegate calls, you need to retrieve the corresponding geotification that was persisted in NSUserDefaults. This turns out to be trivial, as you can use the unique identifier you assigned to the CLCircularRegion during registration to find the right geotification.
+
+In AppDelegate.swift, add the following helper method at the bottom of the class:
+
+```swift
+func note(fromRegionIdentifier identifier: String) -> String? {
+  let savedItems = UserDefaults.standard.array(forKey: PreferencesKeys.savedItems) as? [NSData]
+  let geotifications = savedItems?.map { NSKeyedUnarchiver.unarchiveObject(with: $0 as Data) as? Geotification }
+  let index = geotifications?.index { $0?.identifier == identifier }
+  return index != nil ? geotifications?[index!]?.note : nil
+}
+```
+
+This helper method retrieves the geotification note from the persistent store, based on its identifier, and returns the note for that geotification.
+
+Now that you’re able to retrieve the note associated with a geofence, you’ll write code to trigger a notification whenever a geofence event is fired, using the note as the message.
+
+Add the following statements to the end of application(_:didFinishLaunchingWithOptions:), just before the method returns:
+
+```swift
+application.registerUserNotificationSettings(UIUserNotificationSettings(types: [.sound, .alert, .badge], categories: nil))
+UIApplication.shared.cancelAllLocalNotifications()
+```
+
+The code you’ve added prompts the user for permission to enable notifications for this app. In addition, it does some housekeeping by clearing out all existing notifications.
+
+Next, replace the contents of handleRegionEvent(_:) with the following:
+
+```swift
+func handleEvent(forRegion region: CLRegion!) {
+  // Show an alert if application is active
+  if UIApplication.shared.applicationState == .active {
+    guard let message = note(fromRegionIdentifier: region.identifier) else { return }
+    window?.rootViewController?.showAlert(withTitle: nil, message: message)
+  } else {
+    // Otherwise present a local notification
+    let notification = UILocalNotification()
+    notification.alertBody = note(fromRegionIdentifier: region.identifier)
+    notification.soundName = "Default"
+    UIApplication.shared.presentLocalNotificationNow(notification)
+  }
+}
+```
+
+If the app is active, the code above simply shows an alert controller with the note as the message. Otherwise, it presents a location notification with the same message.
+
+Build and run the project, and run through the test procedure covered in the previous section. Whenever your test triggers a geofence event, you’ll see an alert controller displaying the reminder note:
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/06/GeoSayByeToGoogle-281x500.png)
+
+Send the app to the background by activating the Home button or locking the device while the test is running. You’ll continue to receive notifications periodically that signal geofence events:
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/09/IMG_2239-281x500.png)
+
+And with that, you have a fully functional, location-based reminder app in your hands. And yes, get out there and take that app for a spin!
