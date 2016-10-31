@@ -349,26 +349,27 @@ extension AppDelegate: CLLocationManagerDelegate {
   </wpt>
 </gpx>
 ```
-The GPX file is essentially an XML file that contains two waypoints: Google’s Googleplex in Mountain View and Apple’s Headquarters in Cupertino.
+GPX文件实际上是一个包含下面两个基准点的XML文件：山景城的Google总部与库比蒂诺的苹果总部。
 
-To begin simulating the locations in the GPX file, build and run the project. When the app launches the main view controller, go back to Xcode, select the Location icon in the Debug bar and choose TestLocations:
+构建并运行工程，开始模拟GPX文件中的位置。当app启动主view controller后，回到Xcode中，选择Debug工具栏的Location图标，然后选择TestLocations:
 
 ![](https://koenig-media.raywenderlich.com/uploads/2015/03/Screen-Shot-2015-02-02-at-9.04.37-pm.png)
 
-Back in the app, use the Zoom button on the top-left of the navigation bar to zoom to the current location. Once you get close to the area, you’ll see the location marker moving repeatedly from the Googleplex to Apple, Inc. and back.
-Test the app by adding a few geotifications along the path defined by the two waypoints. If you added any geotifications earlier in the tutorial before you enabled geofence registration, those geotifications will obviously not work, so you might want to clear them out and start afresh.
-For the test locations, it’s a good idea to place a geotification roughly at each waypoint. Here’s a possible test scenario:
+回到app, 使用导航栏左上的缩放按钮找到当前位置。接近这个区域时，会看到一个位置标记在Google与苹果总部间不断移动。
 
-* Google: Radius: 1000m, Message: “Say Bye to Google!”, Notify on Exit
-* Apple: Radius: 1000m, Message: “Say Hi to Apple!”, Notify on Entry
+通过添加一些基准点路径上的地理通知来测试app。若在实现注册地理通知之前添加过一些通知，则这些通知是不起作用的，需要清除一下并重启。
+
+对于测试的位置，一个好的点子是将地理通知放置在每个基准点上，可以使用下面的测试方案:
+
+* Google: 半径: 1000m, 信息: “Say Bye to Google!”, 离开时通知
+* Apple: 半径: 1000m, 信息: “Say Hi to Apple!”, 进入时通知
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/06/Geo2Fences-281x500.png)
 
-Once you’ve added your geotifications, you’ll see a log in the console each time the location marker enters or leaves a geofence. If you activate the home button or lock the screen to send the app to the background, you’ll also see the logs each time the device crosses a geofence, though you obviously won’t be able to verify that behavior visually.
-
+在添加通知后，每次当位置标记进入或离开一个围栏时都会在控制台输出一条日志。若按了home键或锁屏将app放置在了后台，当设备每次穿过围栏时同样能看到日志信息，虽然不能在屏幕中看到并确认移动的动作。
 ![](https://koenig-media.raywenderlich.com/uploads/2015/03/GeofenceTriggered.png)
 
-> Note: Location simulation works both in iOS Simulator and on a real device. However, the iOS Simulator can be quite inaccurate in this case; the timings of the triggered events do not coincide very well with the visual movement of the simulated location in and out of each geofence. You would do better to simulate locations on your device, or better still, take the app for a walk!
+> 注意: 位置模拟可以在iOS模拟器中使用也可以在真机中使用。不过，在iOS模拟器中的精度较低，触发事件的时机与看到的模拟位置进出围栏的时刻不是很吻合。最好用自己的真机来进行位置模拟，或者直接出门走走试试！
 
 ## Notifying the User of Geofence Events
 
