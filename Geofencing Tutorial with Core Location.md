@@ -15,9 +15,9 @@
 
 来创建围栏吧!
 
-当设备进入或离开你所设置的区域时地理围栏会提醒app。这可以让你做一些很cool的事：比如设置一个当你离开家时的通知，或者当附近有用户喜爱的商店时用最新与最棒的商品来迎接用户。在这篇地理围栏的教程中，会学到如何在iOS中使用Swift进行区域监测 - 使用Core Location中的Region Monitoring API。
+当设备进入或离开你所设置的区域时，地理围栏会给app发送一条通知提醒你。这可以让你做一些很cool的事：比如设置一个当你离开家时的通知，或者当附近有用户喜爱的商店时用最新与最棒的商品来迎接用户。在这篇地理围栏的教程中，会学到如何在iOS中使用Swift进行区域监测 - 使用Core Location中的Region Monitoring API。
 
-特别地，会创建一个名为Geotify的基于位置的提醒应用，让用户创建提示器并与真实世界的实际位置相关联。开始吧!
+在这篇教程中会创建一个名为Geotify的位置提醒应用，让用户创建提示器并与真实世界的实际位置相关联。开始吧!
 
 ## 入门
 
@@ -51,7 +51,7 @@ radius表示与指定位置间的距离，超过这个距离会触发iOS的通�
 
 至此，你添加在map view上的任何地理通知都仅仅是显示了出来，并没有实际的检测效果。为了实现围栏检测的功能，需要在Core Location上注册每个与地理通知关联的围栏。
 
-在启用围栏检测前，需要设置一个LocationManager实例并且请求到一些许可。
+在启用围栏监测前，需要设置一个LocationManager实例并且请求到一些许可。
 
 打开GeotificationsViewController.swift在类顶部声明一个CLLocationManager的常量实例，如下:
 
@@ -124,7 +124,7 @@ extension GeotificationsViewController: CLLocationManagerDelegate {
 
 在正常设置完location manager后，接下来需要做的工作是在app中注册用户的地理围栏。
 
-在app中，用户的地理围栏信息是使用自定义的地理通知模型存放的。However, Core Location requires each geofence to be represented as a CLCircularRegion instance before it can be registered for monitoring. 为了解决这个问题，需要创建一个帮助方法来将地理通知对象转换为CLCircularRegion。
+在app中，用户的地理围栏信息是使用自定义的地理通知模型存放的。不过，Core Location要求每个地理围栏在注册前都必须是一个CLCircularRegion实例。为了解决这个问题，需要创建一个帮助方法来将地理通知对象转换为CLCircularRegion。
 
 打开GeotificationsViewController.swift文件，添加如下方法:
 ```swift
@@ -188,7 +188,7 @@ func stopMonitoring(geotification: Geotification) {
 
 首先，看看GeotificationsViewController.swift文件中的addGeotificationViewController(\_:didAddCoordinate)方法。
 
-这个方法是由AddGeotificationViewController调用的委托方法来创建地理通知，这个方法负责使用来自AddGeotificationsViewController的值创建一个新的Geotification对象，并且更新对应的map view与地理通知列表。接着调用saveAllGeotifications()，更新地理通知列表，并保存到NSUserDefaults。
+这个方法是由AddGeotificationViewController调用的委托方法来创建地理通知，这个方法负责使用来自AddGeotificationsViewController的值创建一个新的Geotification对象，并且更新对应的map view与地理通知列表。接着调用saveAllGeotifications()，更新地理通知列表，并保存到NSUserDefaults中。
 
 使用如下代码替换这个方法:
 ```swift
@@ -371,13 +371,13 @@ GPX文件实际上是一个包含下面两个基准点的XML文件：山景城�
 
 > 注意: 位置模拟可以在iOS模拟器中使用也可以在真机中使用。不过，在iOS模拟器中的精度较低，触发事件的时机与看到的模拟位置进出围栏的时刻不是很吻合。最好用自己的真机来进行位置模拟，或者直接出门走走试试！
 
-## Notifying the User of Geofence Events
+## 添加围栏事件的通知
 
-You’ve made a lot of progress with the app. At this point, it simply remains for you to notify the user whenever the device crosses the geofence of a geotification—so prepare yourself to do just that.
+已经完成了app中的大部分内容了，现在剩下的工作就是实现当设备穿过一个地理通知的围栏时提醒用户的功能了。
 
-To obtain the note associated with a triggering CLCircularRegion returned by the delegate calls, you need to retrieve the corresponding geotification that was persisted in NSUserDefaults. This turns out to be trivial, as you can use the unique identifier you assigned to the CLCircularRegion during registration to find the right geotification.
+为了获取与触发的CLCircularRegion关联的记录，需要检索NSUserDefaults中对应的地理通知。这不难，只要使用在注册时分配给CLCircularRegion的identifier就可以找到正确的地理通知。
 
-In AppDelegate.swift, add the following helper method at the bottom of the class:
+进入AppDelegate.swift,在类的底部添加如下辅助方法:
 
 ```swift
 func note(fromRegionIdentifier identifier: String) -> String? {
@@ -388,29 +388,29 @@ func note(fromRegionIdentifier identifier: String) -> String? {
 }
 ```
 
-This helper method retrieves the geotification note from the persistent store, based on its identifier, and returns the note for that geotification.
+这个辅助方法会根据identifier从持久化数据中检索并返回地理通知。
 
-Now that you’re able to retrieve the note associated with a geofence, you’ll write code to trigger a notification whenever a geofence event is fired, using the note as the message.
+现在可以检索到与围栏相关联的记录了，需要再编写一段代码，用于当围栏事件启动时发送一个通知，将记录作为显示的信息。
 
-Add the following statements to the end of application(_:didFinishLaunchingWithOptions:), just before the method returns:
+在application(\_:didFinishLaunchingWithOptions:)方法的底部，return语句之前添加如下代码:
 
 ```swift
 application.registerUserNotificationSettings(UIUserNotificationSettings(types: [.sound, .alert, .badge], categories: nil))
 UIApplication.shared.cancelAllLocalNotifications()
 ```
 
-The code you’ve added prompts the user for permission to enable notifications for this app. In addition, it does some housekeeping by clearing out all existing notifications.
+添加的代码用于使用户给予app发送通知的许可，并做了一下扫除-清楚已存在的通知。
 
-Next, replace the contents of handleRegionEvent(_:) with the following:
+接着，使用如下代码替换handleRegionEvent(\_:):
 
 ```swift
 func handleEvent(forRegion region: CLRegion!) {
-  // Show an alert if application is active
+  // 若app正在运行则显示一个警告框
   if UIApplication.shared.applicationState == .active {
     guard let message = note(fromRegionIdentifier: region.identifier) else { return }
     window?.rootViewController?.showAlert(withTitle: nil, message: message)
   } else {
-    // Otherwise present a local notification
+    // 否则显示一个本地通知
     let notification = UILocalNotification()
     notification.alertBody = note(fromRegionIdentifier: region.identifier)
     notification.soundName = "Default"
@@ -419,14 +419,14 @@ func handleEvent(forRegion region: CLRegion!) {
 }
 ```
 
-If the app is active, the code above simply shows an alert controller with the note as the message. Otherwise, it presents a location notification with the same message.
+若app正在运行，则会显示一个包含记录信息的警告视图，否则发送包含相同信息的本地通知。
 
-Build and run the project, and run through the test procedure covered in the previous section. Whenever your test triggers a geofence event, you’ll see an alert controller displaying the reminder note:
+构建并运行工程，在测试中触发围栏事件时，会看到一个警告视图，显示提醒信息:
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/06/GeoSayByeToGoogle-281x500.png)
 
-Send the app to the background by activating the Home button or locking the device while the test is running. You’ll continue to receive notifications periodically that signal geofence events:
+在测试过程中按下Home键或锁屏将app置于后台，依然可以周期性的收到围栏事件的通知:
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/09/IMG_2239-281x500.png)
 
-And with that, you have a fully functional, location-based reminder app in your hands. And yes, get out there and take that app for a spin!
+至此，已经亲手完成了一个功能全面的位置提醒app了。好了，出门试试app吧！
