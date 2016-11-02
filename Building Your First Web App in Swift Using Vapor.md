@@ -5,35 +5,35 @@
 
 >* 原文链接 : [Building Your First Web App in Swift Using Vapor](http://www.appcoda.com/server-side-swift-vapor/)
 * 原文作者 : [SAHAND EDRISIAN](http://www.appcoda.com/author/sahandedrisian/)
-* 译者 : []()
+* 译者 : [yrq110](https://github.com/yrq110)
 
 ***
 
-In WWDC 2015, Apple announced that Swift would be open source. Shortly after that, in December 2015, Swift’s codebase was public on [GitHub](https://github.com/apple/swift).
+在WWDC 2015上苹果宣布swift将会开源，很快，在2015年的12月Swift的代码库就在[GitHub](https://github.com/apple/swift)上公开了。
 
-Open sourcing the Swift codebase introduces developers to a multitude of opportunities and expand the use of Swift worldwide.
+Swift的开源给了开发者更多的机会与可能性，扩展Swift生态圈的应用。
 
-As expected, developers swiftly explored the various new applications of Swift (no pun intended). One such application is using swift code to power a web app which we will explore in this tutorial.
+如所期待的那样，开发者们很快就探索出了Swift的很多其他方面的应用。这篇教程中所介绍的web app就是其中的一种应用。
 
-## Why Should I Care?
+## 为何关注?
 
-There are many benefits to having a strictly typed language on the server. If you are creating a backend for your iOS app, it’s easier to stay consistent by sticking to one language and style.
+在服务端使用一种强类型的语言是有很多益处的。若要为你的iOS app开发后端功能的话，使用同一种语言与风格比较容易保持一致性。
 
-There are three excellent server-side Swift services out there: Perfect, Kitura, and Vapor. In this tutorial, I will explore the interesting world of Swift on the server with Vapor.
+这里有三种很不错的Swift服务端：Perfect, Kitura与Vapor。这篇教程中会使用Vapor来探索在Swift服务端上的神奇Swift世界。
 
-I will teach you how to install Vapor and Swift 3, learn the basics of Server-Side Swift, and deploy your website/backend on Heroku.
+我会指导你如何安装Vapor与Swift3，学习服务端Swift的基础知识，然后在Heroku上部署网站/后端。
 
-## Prerequisites
+## 前提
 
-In this tutorial, we will be using a lot of bash commands, so it is important to have a basic knowledge of bash and the Terminal. Vapor runs on Swift 3, thus Xcode 8 is required.
+这篇教程中会使用很多bash命令，因此需要掌握一些基本的bash与终端知识是很重要的。Vapor是基于Swift3的，因此也需要Xcode8。
 
-Vapor and any Swift (Swift Package Manager) project needs to run on Swift 3, so I recommend you to learn more about the changes in Swift 3 in this AppCoda article.
+Vapor与其他Swift工程(Swift包管理器)都是基于Swift3的，建议你通过这篇[文章](https://github.com/yrq110/Some_IOS_Tutorials_With_Swift/blob/master/What%E2%80%99s%20New%20in%20Swift%203.md)了解下Swift3中的一些变化。
 
-Towards the end of the tutorial, I will explain how to host your Vapor server on Heroku, a popular cloud hosting provider, so it is recommended to have some experience using it.
+在教程的最后，会教你如何在Heroku上部署Vapor服务端，Heroku是个很火的云服务供应商，推荐尝试下。
 
-Now let’s get started!
+开搞吧!
 
-## Installing Vapor
+## 安装Vapor
 
 Vapor requires Swift 3, and the latest version of Xcode 8 beta. You can download the new Xcode GM here.
 
