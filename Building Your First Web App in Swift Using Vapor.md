@@ -35,17 +35,82 @@ Vapor与其他Swift工程(Swift包管理器)都是基于Swift3的，建议你通
 
 ## 安装Vapor
 
-Vapor requires Swift 3, and the latest version of Xcode 8 beta. You can download the new Xcode GM here.
+Vapor需要Swift 3与Xcode8，可以在[这里](https://developer.apple.com/download/)下载GM版Xcode。 and the latest version of Xcode 8 beta. You can download the new Xcode GM here.
 
-First, you have to choose the latest command line tools. Open you Xcode preferences.
+首先需要选择最新的命令行工具，打开Xcode的preferences(偏好设置)。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s1.png)
 
-Next, navigate to Locations.
+接着导航栏中的Locations。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s3-1024x653.png)
 
-Lastly, choose the latest Xcode 8 command line toolset.
+最后，选择最新的Xcode8命令行工具集。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s4-1024x666.png)
 
+## Installing Swiftenv
+
+Now it’s time to install Swift 3. First, install Swiftenv. Swiftenv allows you to easily install and switch between multiple versions of Swift. To install Swiftenv, clone the respective repository from Github by running the following code on your terminal:
+
+```bash
+git clone https://github.com/kylef/swiftenv.git ~/.swiftenv
+```
+
+Then, initialize Swiftenv in your bash profile. The bash profile is where your bash properties and settings reside. Open your bash profile by running the following command in terminal:
+
+```bash
+open ~/.bash_profile
+```
+
+The open command will open your bash profile in TextEdit. If you don’t have a bash profile, create it with the following command:
+
+```bash
+touch ~/.bash_profile
+```
+
+When you see your bash profile, paste the following commands. These commands initialize Swiftenv.
+
+```bash
+export SWIFTENV_ROOT="$HOME/.swiftenv"
+export PATH="$SWIFTENV_ROOT/bin:$PATH"
+eval "$(swiftenv init -)"
+```
+
+Your bash profile (opened in TextEdit) should now contain these commands. Note that in some cases your bash profile might contain other commands. Do not remove the previously placed commands, just append the new ones at the end of the file.
+
+![](http://www.appcoda.com/wp-content/uploads/2016/09/s6-1024x682.png)
+
+Save the bash profile, and restart terminal. After terminal restarts, type in the following command to verify that Swiftenv was installed successfully:
+
+```bash
+swiftenv --version
+```
+
+You should see the following result in your terminal:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/09/s7-1024x643.png)
+
+## Downloading the Swift 3 Snapshot
+
+Now that Swiftenv has been installed, you must download the newest Swift 3 Snapshot. A Swift Snapshot is the Swift language in a package ready to be installed. Run the following command:
+
+```bash
+swiftenv install 3.0-GM-CANDIDATE
+```
+
+> Update: If 3.0-GM-CANDIDATE doesn’t work for you, please use DEVELOPMENT-SNAPSHOT-2016-09-06-a instead.
+
+It will take a while to download the snapshot. Once the download is complete, set the snapshot as the main Swift version on the terminal. This will make this particular version global. Run the following command:
+
+```bash
+swiftenv global 3.0-GM-CANDIDATE
+```
+
+Check to see that 3.0-GM-CANDIDATE is being used by running the following command:
+
+```bash
+swiftenv versions
+```
+
+You should see an asterisk next to 3.0-GM-CANDIDATE.
