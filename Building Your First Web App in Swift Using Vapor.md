@@ -114,3 +114,39 @@ swiftenv versions
 ```
 
 You should see an asterisk next to 3.0-GM-CANDIDATE.
+
+## Compatibility Checking
+
+Vapor needs to have the suitable Swift version to be able to run correctly. Vapor offers a shell script to check that for you. Run the following command to verify that everything is ok:
+
+```bash
+curl -sL check.vapor.sh | bash
+```
+
+If you get the green checkmark emoji, that means that you are set to install Vapor!
+
+![](http://www.appcoda.com/wp-content/uploads/2016/09/s10-1024x598.png)
+
+## Installing the Vapor Toolbox
+
+Let’s download and install Vapor by running the following command:
+
+```bash
+curl -sL toolbox.vapor.sh | bash
+```
+
+Ok, this might take a while. You might encounter an error, e.g.: "Install failed, trying sudo". As long as you finally get the "Vapor Toolbox v0.10.4 Installed" message, you are all set up.
+
+![](http://www.appcoda.com/wp-content/uploads/2016/09/s11-1024x601.png)
+
+To verify that Vapor is working, simply enter the following in your terminal:
+
+```bash
+vapor
+```
+
+You should encounter a list of commands like the following:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/09/s12-1024x588.png)
+
+If you get this result, congratulations! You have completed the most challenging part of this tutorial.
