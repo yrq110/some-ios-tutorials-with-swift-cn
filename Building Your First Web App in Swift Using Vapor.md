@@ -150,3 +150,44 @@ You should encounter a list of commands like the following:
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s12-1024x588.png)
 
 If you get this result, congratulations! You have completed the most challenging part of this tutorial.
+
+
+# Starting a new Vapor Project
+
+Every Swift project uses the Swift Package Manager (SPM). Every SPM project requires a Package.json, a main.swift file, etc. The Swift Package Manager will look for the Package.swift file in your Swift project to download the necessary dependencies. SPM is similar to NPM (Node Package Manager). Vapor creates the Swift project, and adds the required dependencies to the Package.swift file.
+
+To create a new project, you must provide Vapor with a project name. First, navigate to a directory where you would want to create the new project, then run the following command:
+
+```bash
+vapor new HelloWorld
+```
+
+![](http://www.appcoda.com/wp-content/uploads/2016/09/s13-1024x666.png)
+
+Vapor will create a project called HelloWorld in your current directory. Navigate to your new project directory, which is the same as the name of the project. In this case, run the following:
+
+```bash
+cd HelloWorld
+```
+
+You should see a directory similar to the following:
+
+```bash
+├── Package.swift
+├── App
+│   ├── main.swift
+│   ├── Controllers
+│   ├── Middleware
+│   └── Models
+├── Resources
+ |    └── Views
+├── Config
+├── Localization
+└── Public
+```
+
+Vapor follows and enforces the MVC (Model, View, Controller) pattern. It creates the folders where Models, Views, and Controllers are located in. If you are not familiar with the MVC design pattern, click here to learn more.
+
+First, Vapor creates the Package.swift file. There is no need to modify it. Then there is the App folder, which contains the Models, Controllers, Middleware, and the main.swift file. The main.swift file is our main app file, and where we initialize our server. Vapor will run this file first.
+
+The Resources folder contains the Views folder, where our HTML files and templates are stored. The Public folder is where our images and styles must go. We won’t be working with the rest of the folders for now.
