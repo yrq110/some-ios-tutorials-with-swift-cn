@@ -49,27 +49,27 @@ Vapor需要Swift 3与Xcode8，可以在[这里](https://developer.apple.com/down
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s4-1024x666.png)
 
-## Installing Swiftenv
+## 安装Swiftenv
 
-Now it’s time to install Swift 3. First, install Swiftenv. Swiftenv allows you to easily install and switch between multiple versions of Swift. To install Swiftenv, clone the respective repository from Github by running the following code on your terminal:
+是时候安装Swift 3了。首先先来安Swiftenv。Swiftenv使Swift的安装变得很轻松，并且可以在多个版本间切换。通过clone Github上的仓库来安装Swiftenv，在终端里运行如下代码:
 
 ```bash
 git clone https://github.com/kylef/swiftenv.git ~/.swiftenv
 ```
 
-Then, initialize Swiftenv in your bash profile. The bash profile is where your bash properties and settings reside. Open your bash profile by running the following command in terminal:
+然后在bash文件中初始化Swiftenv，bash文件就是设置bash属性与设置的地方。在终端里使用如下指令打开bash文件:
 
 ```bash
 open ~/.bash_profile
 ```
 
-The open command will open your bash profile in TextEdit. If you don’t have a bash profile, create it with the following command:
+open指令会使用TextEdit打开你的bash文件，若没有bash文件，使用如下指令创建它:
 
 ```bash
 touch ~/.bash_profile
 ```
 
-When you see your bash profile, paste the following commands. These commands initialize Swiftenv.
+打开bash文件后，复制如下指令，用来初始化Swiftenv。
 
 ```bash
 export SWIFTENV_ROOT="$HOME/.swiftenv"
@@ -77,17 +77,17 @@ export PATH="$SWIFTENV_ROOT/bin:$PATH"
 eval "$(swiftenv init -)"
 ```
 
-Your bash profile (opened in TextEdit) should now contain these commands. Note that in some cases your bash profile might contain other commands. Do not remove the previously placed commands, just append the new ones at the end of the file.
+你的bash文件(在TextEdit中打开)中现在应该包含了这些指令。注意有些情况下bash文件可能包含其他指令。不要删掉之前的指令，在文件末端添加新的即可。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s6-1024x682.png)
 
-Save the bash profile, and restart terminal. After terminal restarts, type in the following command to verify that Swiftenv was installed successfully:
+保存bash文件并重启终端。终端重启后，输入下面这个指令确保Swiftenv已经成功安装了:
 
 ```bash
 swiftenv --version
 ```
 
-You should see the following result in your terminal:
+在终端中应如下所示:
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s7-1024x643.png)
 
