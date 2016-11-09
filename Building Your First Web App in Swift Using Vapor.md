@@ -1,5 +1,5 @@
 # Building Your First Web App in Swift Using Vapor
-## 使用Vapor构建你的第一个Web应用
+## 使用Vapor构建你的第一个Swift Web应用
 
 ***
 
@@ -91,65 +91,65 @@ swiftenv --version
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s7-1024x643.png)
 
-## Downloading the Swift 3 Snapshot
+## 下载Swift 3快照
 
-Now that Swiftenv has been installed, you must download the newest Swift 3 Snapshot. A Swift Snapshot is the Swift language in a package ready to be installed. Run the following command:
+安好Swiftenv了，接着来下载最新的Swift 3快照(Snapshot)，Swift快照就是个打包好用于安装的Swift。执行如下命令:
 
 ```bash
 swiftenv install 3.0-GM-CANDIDATE
 ```
 
-> Update: If 3.0-GM-CANDIDATE doesn’t work for you, please use DEVELOPMENT-SNAPSHOT-2016-09-06-a instead.
+> 更新: 若3.0-GM-CANDIDATE不好使，请使用DEVELOPMENT-SNAPSHOT-2016-09-06-a。
 
-It will take a while to download the snapshot. Once the download is complete, set the snapshot as the main Swift version on the terminal. This will make this particular version global. Run the following command:
+会花点时间下载，下载完成后在终端里将快照版本设置为主Swift版本，这将会是全局的版本，执行如下命令:
 
 ```bash
 swiftenv global 3.0-GM-CANDIDATE
 ```
 
-Check to see that 3.0-GM-CANDIDATE is being used by running the following command:
+检查下版本是否是3.0-GM-CANDIDATE:
 
 ```bash
 swiftenv versions
 ```
 
-You should see an asterisk next to 3.0-GM-CANDIDATE.
+应该会看到3.0-GM-CANDIDATE后面有个星号。
 
-## Compatibility Checking
+## 完整性检验
 
-Vapor needs to have the suitable Swift version to be able to run correctly. Vapor offers a shell script to check that for you. Run the following command to verify that everything is ok:
+Vapor需要合适的Swift版本才能正常启动，Vapor提供了一个shell脚本来用于检验完整性，执行如下命令来确保万事俱备:
 
 ```bash
 curl -sL check.vapor.sh | bash
 ```
 
-If you get the green checkmark emoji, that means that you are set to install Vapor!
+若显示出绿色箭头的emoji表情，就表示准备好安装Vapor了!
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s10-1024x598.png)
 
-## Installing the Vapor Toolbox
+## 安装Vapor Toolbox
 
-Let’s download and install Vapor by running the following command:
+使用如下命令下载并安装Vapor:
 
 ```bash
 curl -sL toolbox.vapor.sh | bash
 ```
 
-Ok, this might take a while. You might encounter an error, e.g.: "Install failed, trying sudo". As long as you finally get the "Vapor Toolbox v0.10.4 Installed" message, you are all set up.
+好吧，这会花点时间，也许会出错，比如"Install failed, trying sudo"。当看到"Vapor Toolbox v0.10.4 Installed"信息时就说明安装成功了。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s11-1024x601.png)
 
-To verify that Vapor is working, simply enter the following in your terminal:
+在终端里试试如下命令，来验证下Vapor是否准备就绪:
 
 ```bash
 vapor
 ```
 
-You should encounter a list of commands like the following:
+会看到如下一个命令列表:
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s12-1024x588.png)
 
-If you get this result, congratulations! You have completed the most challenging part of this tutorial.
+恭喜! 你完成了教程中最具挑战的部分(PS:???)。
 
 
 # Starting a new Vapor Project
