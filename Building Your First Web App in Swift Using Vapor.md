@@ -191,3 +191,61 @@ Vapor follows and enforces the MVC (Model, View, Controller) pattern. It creates
 First, Vapor creates the Package.swift file. There is no need to modify it. Then there is the App folder, which contains the Models, Controllers, Middleware, and the main.swift file. The main.swift file is our main app file, and where we initialize our server. Vapor will run this file first.
 
 The Resources folder contains the Views folder, where our HTML files and templates are stored. The Public folder is where our images and styles must go. We won’t be working with the rest of the folders for now.
+
+# The Droplet
+
+Vapor automatically creates an example project for us. It will create a Controller, Model, Middleware, and main.swift file. Open the main.swift file (under /Sources/App), and remove all the code inside it.
+
+A Droplet is the heart of a Vapor server. It contains a plethora of functions that will be the backbone of our server. First, import Vapor in our main.swift file:
+
+```swift
+import Vapor
+```
+Then, let’s create a Droplet:
+```swift
+let drop = Droplet()
+```
+A Droplet has a lot of customizable properties. It accepts a ton of arguments, all cited in the Vapor Docs. For this instance we don’t need to customize our Droplet.
+Now let’s try to handle the main '/' or index request to our web page:
+```swift
+drop.get("/") { request in
+    return "Hello World!"
+}
+```
+Finally, you need to call the serve() function. The serve function runs the server.
+```swift
+drop.run()
+```
+Now save the main.swift file. Vapor can build and run the server for you. Run the following commands:
+```swift
+vapor build
+vapor run
+```
+Vapor doesn’t have a ‘special’ build or execution. Running the vapor build command simply does a swift build . Entering the vapor run command will run the builds created in the .build/debug/ directory.
+
+This operation might take a while for the first time. After a successful build and execution, you should see something like this:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/09/s14-1024x616.png)
+
+Vapor initially runs the server on the 8080 port. If you would like to change the port, you must change the configuration by modifying the servers.json file here:
+
+```
+├── Package.swift
+├── App
+├── Resources
+├── Config
+  |    └── servers.json  <--
+├── Localization
+└── Public
+```
+Assuming you haven’t changed the port from 8080, navigate to this link to where the server is running:
+```swift
+0.0.0.0:8080
+```
+or
+```swift
+localhost:8080
+```
+You should see your incredible “Hello World” String!
+
+> Note: Every time you make a change, it is necessary first to build, then run the project. If you only run the project, the previous build will be executed.
