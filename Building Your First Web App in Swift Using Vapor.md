@@ -9,7 +9,7 @@
 
 ***
 
-在WWDC 2015上苹果宣布swift将会开源，很快，在2015年的12月Swift的代码库就在[GitHub](https://github.com/apple/swift)上公开了。
+苹果在WWDC 2015上宣布swift将会开源，很快，在2015年的12月Swift的源码就在[GitHub](https://github.com/apple/swift)上公开了。
 
 Swift的开源给了开发者更多的机会与可能性，扩展Swift生态圈的应用。
 
@@ -152,11 +152,11 @@ vapor
 恭喜! 你完成了教程中最具挑战的部分(PS:???)。
 
 
-# Starting a new Vapor Project
+# 开始一个新的Vapor工程
 
-Every Swift project uses the Swift Package Manager (SPM). Every SPM project requires a Package.json, a main.swift file, etc. The Swift Package Manager will look for the Package.swift file in your Swift project to download the necessary dependencies. SPM is similar to NPM (Node Package Manager). Vapor creates the Swift project, and adds the required dependencies to the Package.swift file.
+所有Swift项目都使用了Swift包管理器(SPM)，每个SPM项目都需要一个Package.json文件与一个main.swift文件等等。SPM会查找项目中的Package.swift文件并下载必要的依赖库，SPM有点像NPM(Node包管理器)。Vapor会创建Swift工程并将所需的依赖添加到Package.swift文件中。
 
-To create a new project, you must provide Vapor with a project name. First, navigate to a directory where you would want to create the new project, then run the following command:
+在创建工程时需要给Vapor提供一个项目名称，首先进入一个想要保存新工程的目录下，执行如下命令:
 
 ```bash
 vapor new HelloWorld
@@ -164,13 +164,13 @@ vapor new HelloWorld
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s13-1024x666.png)
 
-Vapor will create a project called HelloWorld in your current directory. Navigate to your new project directory, which is the same as the name of the project. In this case, run the following:
+Vapor会在当前的目录下创建一个名为HelloWorld的工程，使用如下命令进入新工程的目录下，目录名称与工程名称是相同的:
 
 ```bash
 cd HelloWorld
 ```
 
-You should see a directory similar to the following:
+会看到一个如下的目录:
 
 ```bash
 ├── Package.swift
@@ -186,11 +186,11 @@ You should see a directory similar to the following:
 └── Public
 ```
 
-Vapor follows and enforces the MVC (Model, View, Controller) pattern. It creates the folders where Models, Views, and Controllers are located in. If you are not familiar with the MVC design pattern, click here to learn more.
+Vapor是遵循MVC(模型-视图-控制器)模式的，因此它会创建对应的文件夹来存放模型，视图与控制器，若你不太熟悉MVC设计模式，点击[这里](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)学习一下。
 
-First, Vapor creates the Package.swift file. There is no need to modify it. Then there is the App folder, which contains the Models, Controllers, Middleware, and the main.swift file. The main.swift file is our main app file, and where we initialize our server. Vapor will run this file first.
+首先，Vapor创建好了Package.swift文件，不需要管它。然后是App文件夹，它包含了模型、控制器、中间件与main.swift文件，main.swift文件是我们app的main文件，在这里会初始化服务端，Vapor会首先运行这个文件。
 
-The Resources folder contains the Views folder, where our HTML files and templates are stored. The Public folder is where our images and styles must go. We won’t be working with the rest of the folders for now.
+Resources文件夹包含Views，用来存放HTML文件与模板。Public文件夹中存放image与style文件。其他部分现在还用不上暂且不用管。
 
 # The Droplet
 
@@ -249,3 +249,36 @@ localhost:8080
 You should see your incredible “Hello World” String!
 
 > Note: Every time you make a change, it is necessary first to build, then run the project. If you only run the project, the previous build will be executed.
+
+
+## Handling HTTP Requests
+
+Handling an HTTP request is similar to other frameworks such as Express, Flask, etc. We will cover GET in this tutorial.
+
+For instance if you want to output the string "Hello John!" when you open "localhost:8080/name/John". Let’s look at this piece of code:
+
+```swift
+drop.get("/name",":name") { request in
+    if let name = request.parameters["name"]?.string {
+        return "Hello \(name)!"
+    }
+    return "Error retrieving parameters."
+}
+```
+Our Droplet has a GET handler function called get(). The get() function can take multiple arguments. The first argument will be the name of the GET request parameter. The argument that follows will be the key of the that parameter. E.g. :
+```swift
+drop.get("route", ":key", "route2", ":key2")
+```
+This way you could access the value of that parameter by supplying the key to a dictionary. The key, or the second argument, must start with a colon, which indicates that the name is the key of the parameter.
+
+The get() function provides us a request object. This object contains everything related to our GET request. To access the parameter which was submitted, use the parameters dictionary of our request object:
+```swift
+request.parameters["key"]
+```
+We ensure that the parameter has a value by using the if let statement:
+```swift
+if let name = request.parameters["name"].string {
+    // Do something
+}
+```
+The HTTP request needs a response from the server. The response can be returned by just returning the function. In this case, we will return the name string, which was taken from our parameters dictionary.
