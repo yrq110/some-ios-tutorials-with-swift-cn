@@ -192,31 +192,32 @@ Vapor是遵循MVC(模型-视图-控制器)模式的，因此它会创建对应�
 
 Resources文件夹包含Views，用来存放HTML文件与模板。Public文件夹中存放image与style文件。其他部分现在还用不上暂且不用管。
 
-# The Droplet
+# Droplet
 
-Vapor automatically creates an example project for us. It will create a Controller, Model, Middleware, and main.swift file. Open the main.swift file (under /Sources/App), and remove all the code inside it.
+Vapor会自动创建一个示例工程，包含控制器，模型，中间件与main.swift文件。打开main.swift文件(在/Sources/App目录下)，清空里面的代码。
 
-A Droplet is the heart of a Vapor server. It contains a plethora of functions that will be the backbone of our server. First, import Vapor in our main.swift file:
+Droplet是Vapor服务器的心脏，它包含了大量后端服务器所使用的函数。首先，在main.swift文件中导入Vapor:
 
 ```swift
 import Vapor
 ```
-Then, let’s create a Droplet:
+接着来创建一个Droplet:
 ```swift
 let drop = Droplet()
 ```
-A Droplet has a lot of customizable properties. It accepts a ton of arguments, all cited in the Vapor Docs. For this instance we don’t need to customize our Droplet.
-Now let’s try to handle the main '/' or index request to our web page:
+Droplet中有很多自定义的属性，可以接受很多指令，在[Vapor的文档](https://vapor.github.io/documentation/guide/droplet.html)中都可以查到。目前阶段我们不需要自定义Droplet。
+
+现在来处理一下对网页的'/'或index请求:
 ```swift
 drop.get("/") { request in
     return "Hello World!"
 }
 ```
-Finally, you need to call the serve() function. The serve function runs the server.
+最后，需要调用serve()函数来启动服务器。
 ```swift
 drop.run()
 ```
-Now save the main.swift file. Vapor can build and run the server for you. Run the following commands:
+保存main.swift文件，现在Vapor可以构建并运行服务器了，执行如下命令:
 ```swift
 vapor build
 vapor run
