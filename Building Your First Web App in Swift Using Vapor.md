@@ -222,13 +222,13 @@ drop.run()
 vapor build
 vapor run
 ```
-Vapor doesn’t have a ‘special’ build or execution. Running the vapor build command simply does a swift build . Entering the vapor run command will run the builds created in the .build/debug/ directory.
+Vapor没有"特殊"的构建或执行参数，简单的启动`vapor build`命令即可，输入`vapor run`命令会在`.build/debug/`目录下进行构建。
 
-This operation might take a while for the first time. After a successful build and execution, you should see something like this:
+这个操作第一次进行时可能会花点时间，构建执行成功后会看到如下界面:
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s14-1024x616.png)
 
-Vapor initially runs the server on the 8080 port. If you would like to change the port, you must change the configuration by modifying the servers.json file here:
+Vapor一开始会启动服务器的8080端口，若你想修改端口号，必须在servers.json文件中修改设置:
 
 ```
 ├── Package.swift
@@ -239,24 +239,23 @@ Vapor initially runs the server on the 8080 port. If you would like to change th
 ├── Localization
 └── Public
 ```
-Assuming you haven’t changed the port from 8080, navigate to this link to where the server is running:
+假定你没有修改8080端口, 可以访问下面的链接来访问服务器:
 ```swift
 0.0.0.0:8080
 ```
-or
+或
 ```swift
 localhost:8080
 ```
-You should see your incredible “Hello World” String!
+应该会看到 “Hello World” 字样!
 
-> Note: Every time you make a change, it is necessary first to build, then run the project. If you only run the project, the previous build will be executed.
+> 注意: 每次改动后都需要build与run一下，如果仅仅执行了run命令则会执行之前构建好的工程。
 
+## 处理HTTP请求
 
-## Handling HTTP Requests
+处理HTTP请求的方法跟其他比如Express，Flask等框架的做法挺像的，这篇教程中会演示GET方法的处理。
 
-Handling an HTTP request is similar to other frameworks such as Express, Flask, etc. We will cover GET in this tutorial.
-
-For instance if you want to output the string "Hello John!" when you open "localhost:8080/name/John". Let’s look at this piece of code:
+假设，现在想要在打开"localhost:8080/name/John"地址时输出字符串"Hello John!":
 
 ```swift
 drop.get("/name",":name") { request in
@@ -266,20 +265,39 @@ drop.get("/name",":name") { request in
     return "Error retrieving parameters."
 }
 ```
-Our Droplet has a GET handler function called get(). The get() function can take multiple arguments. The first argument will be the name of the GET request parameter. The argument that follows will be the key of the that parameter. E.g. :
+Droplet中用于处理GET的函数get()，get()函数可以接受多个参数，第一个参数是GET请求的参数名称，后面的参数是请求中参数的key值，比如:
 ```swift
 drop.get("route", ":key", "route2", ":key2")
 ```
-This way you could access the value of that parameter by supplying the key to a dictionary. The key, or the second argument, must start with a colon, which indicates that the name is the key of the parameter.
+使用这种方法可以通过提供字典中的key值来访问参数中对应的具体指。输入key时必须在前面加上冒号，表示这是个参数的key值。
 
-The get() function provides us a request object. This object contains everything related to our GET request. To access the parameter which was submitted, use the parameters dictionary of our request object:
+get()函数提供了一个request对象，这个对象包含与GET请求相关的所有信息。使用request对象的parameters字典来访问提交的参数:
 ```swift
 request.parameters["key"]
 ```
-We ensure that the parameter has a value by using the if let statement:
+使用if let语句来确保参数中的值存在:
 ```swift
 if let name = request.parameters["name"].string {
     // Do something
 }
 ```
-The HTTP request needs a response from the server. The response can be returned by just returning the function. In this case, we will return the name string, which was taken from our parameters dictionary.
+HTTP请求需要一个来自服务端的响应。在这里，我们返回来自参数字典的`name`字符串。
+
+构建并运行工程，使用如下地址来测试一个GET请求:
+
+```
+http://localhost:8080/name/John
+```
+应该会显示 “Hello John!”
+
+注意，这里的路由规则与其它框架的规则(比如Express)是不同的，在Vapor中，你不能使用URI格式来访问参数:
+```swift
+http://localhost:8080/name?name=John&age=18
+```
+每个参数前都必须使用斜杠:
+```swift
+http://localhost:8080/name/John/age/18
+```
+不过若你想用URI格式的话，可以使用request对象的uri属性。想了解更多请看request对象的[文档](https://vapor.github.io/documentation/http/request.html)。
+
+## Returning a View
