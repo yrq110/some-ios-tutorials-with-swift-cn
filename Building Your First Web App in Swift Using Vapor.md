@@ -300,4 +300,38 @@ http://localhost:8080/name/John/age/18
 ```
 不过若你想用URI格式的话，可以使用request对象的uri属性。想了解更多请看request对象的[文档](https://vapor.github.io/documentation/http/request.html)。
 
-## Returning a View
+## 返回视图
+
+Droplet可以给客户端返回一个视图，视图就是保存在/Resources/Views文件夹下的HTML文件。从这里下载一个示例view.html文件，这是个很简单的渲染网页的HTML文件，下载后将它移动到/HelloWorld/Resources/Views中:
+
+```
+├── Package.swift
+├── App
+├── Resources
+ |    └── Views     <--
+├── Config
+├── Localization
+└── Public
+```
+
+上面这个目录就是Droplet查询视图文件的地方，现在来实现具体代码吧，打开main.swift文件，处理一下/view路径:
+
+```swift
+drop.get("/view") { request in
+    return try drop.view("view.html")
+}
+```
+Droplet中有一个接受字符串参数的view()函数，参数就是HTML文件的文件名。
+
+view()函数可能会抛出一个异常，因此使用try关键字标记是很必要的。若视图不存在，则函数会抛出一个异常，可使用catch关键字来捕捉异常，不过在这里没有必要这样因为我们知道文件是存在的。
+
+构建并运行一下:
+```bash
+vapor build
+vapor run
+```
+访问这个地址:
+```
+http://localhost:8080/view
+```
+应该会看到显示“Hello World”的HTML文件。访问视图的[文档](https://vapor.github.io/documentation/guide/views.html)来学习更多有关模板与渲染的内容。
