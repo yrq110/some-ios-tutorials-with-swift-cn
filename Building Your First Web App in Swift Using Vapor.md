@@ -334,4 +334,61 @@ vapor run
 ```
 http://localhost:8080/view
 ```
-应该会看到显示“Hello World”的HTML文件。访问视图的[文档](https://vapor.github.io/documentation/guide/views.html)来学习更多有关模板与渲染的内容。
+应该会看到包含“Hello World”字样的视图。访问Views的[文档](https://vapor.github.io/documentation/guide/views.html)来学习更多有关模板与渲染的内容。
+
+## 部署到Heorku
+
+Heroku可以构建并运行 Heroku can build and host Swift projects. This is the best, and easiest way to deploy your Vapor project. This tutorial expects you to have some basic knowledge in regards to Heroku. You can use the Heroku toolbelt in order to deploy this project, but in this tutorial, we will push the project to Github and link the two.
+
+首先，创建一个Github仓库，我给仓库起名为VaporExample，到Vapor工程的目录下初始化git:
+```bash
+git init
+```
+接着设置remote origin:
+```bash
+git remote set origin < 这里是你的Github仓库 >
+```
+添加文件, 提交修改, 然后将仓库push到Github:
+```bash
+git add .
+git commit -m "Init"
+git push -u origin master
+```
+哦了，现在完成将仓库push到Github上的工作了。前往Heroku控制台，创建一个新的app，随意起名。首先来到settings选项卡中。
+
+![](http://www.appcoda.com/wp-content/uploads/2016/09/h2-1024x640.png)
+
+接着，向下滚动到“Buildpacks”选项。
+
+添加一个Buildpack: https://github.com/kylef/heroku-buildpack-swift 。Buildpack构建你的Swift工程并且告诉Heroku工程所使用的语言。
+
+下面前往Deploy区域。
+
+![](http://www.appcoda.com/wp-content/uploads/2016/09/h4-1024x640.png)
+
+将deployment method改为GitHub，并添加Github的仓库名，将你的仓库与Heroku连接起来。向下滚动到Manual Deploy部分，点击Deploy Branch，构建过程可能会花点时间。
+
+![](http://www.appcoda.com/wp-content/uploads/2016/09/h5-1024x640.png)
+
+构建完成后，访问Heroku提供的地址来查看你的站点!
+
+![](http://www.appcoda.com/wp-content/uploads/2016/09/h7-1024x640.png)
+
+## 总结
+
+In this tutorial we covered how to install Vapor, create a Swift server, and deploy it on Heroku. First, we had to install Xcode 8. Then, we installed Swiftenv to easily download and install Swift 3. Next, we downloaded the Vapor toolbox. After that, I showed you the basics of routing and handling HTTP requests, and returning views. Finally, I taught you how to deploy your Vapor server to Heroku.
+
+I love Vapor. Comparing it to the other Swift-On-The-Servers out there, I think Vapor is the most useful and hassle-free service. IBM’s Kitura is a single dependency, meaning it forces you to work with other Swift dependencies out there that aren’t updated by the their own team, causing major problems. Perfect, on the other hand, is very large and bulky. Vapor relies on nothing but itself and maintains it’s ease of use.
+
+Vapor has many different features. I have only taught you the basics. The next steps should be to visit the Vapor documentations. The documentations include information on features such as:
+
+* Templating: Similar to handlebars or angular.
+* Database-agnostic models: SQL, noSQL, Mongo, you name it, Vapor covers it.
+* Sockets: Vapor uses web sockets to make real-time connections.
+* JSON Serialization: Similar to SwiftyJSON.
+* MVC Pattern: Ability to create Controllers and Models.
+* Middlewares: To add any parameters to HTTP requests. This is useful for APIs.
+* Hashing: Vapor can hash almost anything for you.
+* And much more…
+
+I hope you enjoyed learning the basics of Vapor! For your reference, you can download the full project on GitHub. There are many example projects made by the creators of Vapor, you can view them over here.
