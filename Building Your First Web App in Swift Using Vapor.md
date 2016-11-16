@@ -145,11 +145,11 @@ curl -sL toolbox.vapor.sh | bash
 vapor
 ```
 
-会看到如下一个命令列表:
+会看到如下这样的一个命令列表:
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s12-1024x588.png)
 
-恭喜! 你完成了教程中最具挑战的部分(PS:???)。
+恭喜! 你完成了教程中最具挑战的部分。
 
 
 # 开始一个新的Vapor工程
@@ -376,19 +376,4 @@ git push -u origin master
 
 ## 总结
 
-In this tutorial we covered how to install Vapor, create a Swift server, and deploy it on Heroku. First, we had to install Xcode 8. Then, we installed Swiftenv to easily download and install Swift 3. Next, we downloaded the Vapor toolbox. After that, I showed you the basics of routing and handling HTTP requests, and returning views. Finally, I taught you how to deploy your Vapor server to Heroku.
-
-I love Vapor. Comparing it to the other Swift-On-The-Servers out there, I think Vapor is the most useful and hassle-free service. IBM’s Kitura is a single dependency, meaning it forces you to work with other Swift dependencies out there that aren’t updated by the their own team, causing major problems. Perfect, on the other hand, is very large and bulky. Vapor relies on nothing but itself and maintains it’s ease of use.
-
-Vapor has many different features. I have only taught you the basics. The next steps should be to visit the Vapor documentations. The documentations include information on features such as:
-
-* Templating: Similar to handlebars or angular.
-* Database-agnostic models: SQL, noSQL, Mongo, you name it, Vapor covers it.
-* Sockets: Vapor uses web sockets to make real-time connections.
-* JSON Serialization: Similar to SwiftyJSON.
-* MVC Pattern: Ability to create Controllers and Models.
-* Middlewares: To add any parameters to HTTP requests. This is useful for APIs.
-* Hashing: Vapor can hash almost anything for you.
-* And much more…
-
-I hope you enjoyed learning the basics of Vapor! For your reference, you can download the full project on GitHub. There are many example projects made by the creators of Vapor, you can view them over here.
+希望你可以享受学习Vapor的过程！可以在[Github](https://github.com/SahandTheGreat/VaporExample)上下载到完整工程，同时[这里](https://github.com/vapor/vapor/blob/master/Documents/PROJECTS.md)也有一些Vapor作者所写的示例项目。
