@@ -41,7 +41,7 @@ Vapor需要Swift 3与Xcode8，可以在[这里](https://developer.apple.com/down
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s1.png)
 
-接着导航栏中的Locations。
+接着来到导航栏的Locations设置。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s3-1024x653.png)
 
