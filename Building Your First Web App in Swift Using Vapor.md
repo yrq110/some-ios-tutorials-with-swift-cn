@@ -338,8 +338,6 @@ http://localhost:8080/view
 
 ## 部署到Heorku
 
-Heroku可以构建并运行 Heroku can build and host Swift projects. This is the best, and easiest way to deploy your Vapor project. This tutorial expects you to have some basic knowledge in regards to Heroku. You can use the Heroku toolbelt in order to deploy this project, but in this tutorial, we will push the project to Github and link the two.
-
 首先，创建一个Github仓库，我给仓库起名为VaporExample，到Vapor工程的目录下初始化git:
 ```bash
 git init
