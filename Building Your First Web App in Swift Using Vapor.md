@@ -13,29 +13,29 @@
 
 Swift的开源给了开发者更多的机会与可能性，扩展Swift生态圈的应用。
 
-如所期待的那样，开发者们很快就探索出了Swift的很多其他方面的应用。这篇教程中所介绍的web app就是其中的一种应用。
+如所期待的那样，开发者们很快就探索出了Swift的很多其他方面的应用，这篇教程中所介绍的web app就是其中的一种应用。
 
 ## 为何关注?
 
-在服务端使用一种强类型的语言是有很多益处的。若要为你的iOS app开发后端功能的话，使用同一种语言与风格比较容易保持一致性。
+在服务端使用一种强类型的语言是有很多益处的。如果想给你的iOS app开发后端功能的话，使用同一种语言与风格比较容易保持一致性。
 
-这里有三种很不错的Swift服务端：Perfect, Kitura与Vapor。这篇教程中会使用Vapor来探索在Swift服务端上的神奇Swift世界。
+这里有三种很不错的Swift服务端：Perfect, Kitura与Vapor。这篇教程中会使用Vapor探索在Swift服务端上的神奇Swift世界。
 
 我会指导你如何安装Vapor与Swift3，学习服务端Swift的基础知识，然后在Heroku上部署网站/后端。
 
 ## 前提
 
-这篇教程中会使用很多bash命令，因此需要掌握一些基本的bash与终端知识是很重要的。Vapor是基于Swift3的，因此也需要Xcode8。
+这篇教程中会使用很多bash命令，因此需要掌握一些基本的bash与终端知识。Vapor是基于Swift3的，因此也需要Xcode8。
 
-Vapor与其他Swift工程(Swift包管理器)都是基于Swift3的，建议你通过这篇[文章](https://github.com/yrq110/Some_IOS_Tutorials_With_Swift/blob/master/What%E2%80%99s%20New%20in%20Swift%203.md)了解下Swift3中的一些变化。
+Vapor与其他Swift工程(比如Swift包管理器)都是基于Swift3的，建议你通过这篇[文章](https://github.com/yrq110/Some_IOS_Tutorials_With_Swift/blob/master/What%E2%80%99s%20New%20in%20Swift%203.md)了解下Swift3中的一些变化。
 
-在教程的最后，会教你如何在Heroku上部署Vapor服务端，Heroku是个很火的云服务供应商，推荐尝试下。
+在教程的最后，会教你如何在Heroku上部署Vapor服务端，Heroku是个很火的云服务供应商，推荐你尝试下。
 
 开搞吧!
 
 ## 安装Vapor
 
-Vapor需要Swift 3与Xcode8，可以在[这里](https://developer.apple.com/download/)下载GM版Xcode。 and the latest version of Xcode 8 beta. You can download the new Xcode GM here.
+Vapor需要Swift 3与Xcode8，可以在[这里](https://developer.apple.com/download/)下载GM版Xcode。
 
 首先需要选择最新的命令行工具，打开Xcode的preferences(偏好设置)。
 
@@ -51,13 +51,13 @@ Vapor需要Swift 3与Xcode8，可以在[这里](https://developer.apple.com/down
 
 ## 安装Swiftenv
 
-是时候安装Swift 3了。首先先来安Swiftenv。Swiftenv使Swift的安装变得很轻松，并且可以在多个版本间切换。通过clone Github上的仓库来安装Swiftenv，在终端里运行如下代码:
+是时候安装Swift 3了。首先安装Swiftenv，使用Swiftenv可以很轻松的安装Swift，并且可以在多个版本间切换。通过clone Github上的仓库来安装Swiftenv，在终端里运行如下代码:
 
 ```bash
 git clone https://github.com/kylef/swiftenv.git ~/.swiftenv
 ```
 
-然后在bash文件中初始化Swiftenv，bash文件就是设置bash属性与设置的地方。在终端里使用如下指令打开bash文件:
+然后在bash文件中初始化Swiftenv，bash文件就是存放bash属性与一些设置的地方。在终端里使用如下命令打开bash文件:
 
 ```bash
 open ~/.bash_profile
@@ -69,7 +69,7 @@ open指令会使用TextEdit打开你的bash文件，若没有bash文件，使用
 touch ~/.bash_profile
 ```
 
-打开bash文件后，复制如下指令，用来初始化Swiftenv。
+打开bash文件后，复制如下命令，用来初始化Swiftenv。
 
 ```bash
 export SWIFTENV_ROOT="$HOME/.swiftenv"
@@ -77,11 +77,11 @@ export PATH="$SWIFTENV_ROOT/bin:$PATH"
 eval "$(swiftenv init -)"
 ```
 
-你的bash文件(在TextEdit中打开)中现在应该包含了这些指令。注意有些情况下bash文件可能包含其他指令。不要删掉之前的指令，在文件末端添加新的即可。
+你的bash文件(在TextEdit中打开)中现在应该包含了这些命令。注意有些情况下bash文件可能包含其他命令。不要删掉之前的命令，在文件末端添加新的即可。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/09/s6-1024x682.png)
 
-保存bash文件并重启终端。终端重启后，输入下面这个指令确保Swiftenv已经成功安装了:
+保存bash文件并重启终端。终端重启后，输入下面这个命令确保Swiftenv已经成功安装了:
 
 ```bash
 swiftenv --version
@@ -186,7 +186,7 @@ cd HelloWorld
 └── Public
 ```
 
-Vapor是遵循MVC(模型-视图-控制器)模式的，因此它会创建对应的文件夹来存放模型，视图与控制器，若你不太熟悉MVC设计模式，点击[这里](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)学习一下。
+Vapor是遵循MVC(模型-视图-控制器)模式的框架，因此它会创建对应的文件夹来存放模型，视图与控制器，若你不太熟悉MVC设计模式，点击[这里](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller)学习一下。
 
 首先，Vapor创建好了Package.swift文件，不需要管它。然后是App文件夹，它包含了模型、控制器、中间件与main.swift文件，main.swift文件是我们app的main文件，在这里会初始化服务端，Vapor会首先运行这个文件。
 
@@ -205,7 +205,7 @@ import Vapor
 ```swift
 let drop = Droplet()
 ```
-Droplet中有很多自定义的属性，可以接受很多指令，在[Vapor的文档](https://vapor.github.io/documentation/guide/droplet.html)中都可以查到。目前阶段我们不需要自定义Droplet。
+Droplet中有很多自定义的属性，初始化时可接受多个命令，在[Vapor的文档](https://vapor.github.io/documentation/guide/droplet.html)中都可以查到。目前阶段我们不需要自定义Droplet。
 
 现在来处理一下对网页的'/'或index请求:
 ```swift
