@@ -24,11 +24,11 @@ ARC是"自动"的，因此你不需要直接参与对象引用的计数过程，
 * 一个循环引用的实例，如何使用新版Xcode的可视化工具来检测
 * 如何处理混合值与引用类型
 
-## Getting Started
+## 入门
 
-Open Xcode and click File\New\Playground…. Select the iOS Platform, name it MemoryManagement and then click Next. Save it wherever you wish and then remove the boilerplate code and save the playground.
+打开Xcode新建一个新额playground，点击File\New\Playground…，选择iOS平台，命名为MemoryManagement，保存在你想要的地方，删掉模板代码后保存一下。
 
-Next, add the following code to your playground:
+接着在playground中添加如下代码:
 
 ```swift
 class User {
@@ -47,28 +47,28 @@ class User {
 let user1 = User(name: "John")
 ```
 
-This defines a class called User and creates an instance of it. The class User has one property, name, an init method (called just after memory allocation) and a deinit method (called just prior to deallocation). The print statements let you see what is happening.
+这里定义了一个User类并且创建了一个实例，User类具有name属性、init方法(在分配内存后调用)和deinit方法(释放前调用)。print语句用来帮助你了解发生了什么。
 
-You will notice that the playground shows "User John is initialized\n" in the sidebar, on the print statement within init. However, you will notice that the print statement within deinit is never called. This means that the object is never deinitialized, which means it’s never deallocated. That’s because the scope in which it was initialized is never closed — the playground itself never goes out of scope — so the object is not removed from memory.
+你会发现在playground的侧边栏会显示"User John is initialized\n"，对应init方法中的print语句。不过，你也会发现deinit方法中的print语句没被调用过。这意味着对象没有被反初始化，即未被释放。这是因为它所初始化的区域一直未关闭，并且playground自身未超出这个域，因此对象没有从内存中移除。
 
-Change the let user1 initialization by wrapping it in a do like so:
+将user1的初始化语句放到do的代码块中:
 
 ```swift
 do {
   let user1 = User(name: "John")
 }
 ```
-This creates a scope around the initialization of the user1 object. At the end of the scope, we would expect user1 to be deallocated.
+这里创建一个包含user1对象初始化部分的域，在域的最后我们希望user1被释放掉。
 
-Now you see both print statements that correspond to initialization and deinitialization in the sidebar. This shows the object is being deinitialized at the end of the scope, just before it’s removed from memory.
+现在就能在侧边栏看到初始化和反初始化所对应的print语句输出了，这表示对象在从内存中移除之前，在域的最后被反初始化了。
 
-The lifetime of a Swift object consists of five stages:
+Swift对象的生命周期由5个阶段组成:
 
-1. Allocation (memory taken from stack or heap)
-2. Initialization (init code runs)
-3. Usage (the object is used)
-4. Deinitialization (deinit code runs)
-5. Deallocation (memory returned to stack or heap)
+1. 分配内存 (从堆栈中取得内存空间)
+2. 初始化 (运行初始化代码)
+3. 使用 (对象被使用)
+4. 反初始化 (运行反初始化代码)
+5. 释放内存 (把内存返回给堆栈)
 
 While there are no direct hooks into allocation and deallocation, you can use print statements in init and deinit as a proxy for monitoring those processes. Sometimes “deallocate” and “deinit” are used interchangeably, but they are actually two distinct stages in an object’s lifetime.
 
