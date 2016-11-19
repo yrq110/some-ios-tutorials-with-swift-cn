@@ -26,7 +26,7 @@ ARC是"自动"的，因此你不需要直接参与对象引用的计数过程，
 
 ## 入门
 
-打开Xcode新建一个新额playground，点击File\New\Playground…，选择iOS平台，命名为MemoryManagement，保存在你想要的地方，删掉模板代码后保存一下。
+打开Xcode新建一个playground，点击File\New\Playground…，选择iOS平台，命名为MemoryManagement，保存在你想要的地方，删掉模板代码后保存一下。
 
 接着在playground中添加如下代码:
 
@@ -70,12 +70,12 @@ Swift对象的生命周期由5个阶段组成:
 4. 反初始化 (运行反初始化代码)
 5. 释放内存 (把内存返回给堆栈)
 
-While there are no direct hooks into allocation and deallocation, you can use print statements in init and deinit as a proxy for monitoring those processes. Sometimes “deallocate” and “deinit” are used interchangeably, but they are actually two distinct stages in an object’s lifetime.
+在分配和释放时中没有钩子的情况下，可以在初始化和反初始化时使用print语句作为一个代理来监视进程。有时“deallocate(释放)”与“deinit(反初始化)”会交替使用，不过它们实际上是一个对象生命周期中两个不同的阶段。
 
-Reference counting is the mechanism by which an object is deallocated when it is no longer required. The question here is “when can you be sure an object won’t be needed in the future?” Reference counting manages this by keeping a usage count, also known as the reference count, inside each object instance.
+引用计数(reference counting)根据的是当一个对象不再被需要时会被释放的原理，那么这里有个问题“你怎么能确定一个对象在未来不被需要?”，引用计数中通过使用一个count(计数)来管理，就是所说的引用计数，存在于每个对象实例中。
 
-This count indicates how many “things” reference the object. When the reference count of an objects hits zero no clients of the object remain, so the object deinitializes and deallocates.
+这个计数表示有多少“东西”引用了对象。当一个对象的引用计数变为0时，没有一个“用户”保留对象，则这个对象会被反初始化和释放。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/Scheme1-480x120.png)
 
-When you initialize the User object, it starts with a reference count of 1 since the constant user1 references that object. At the end of the do block, user1 goes out of scope, the count decrements, and the reference count decrements to zero. As a result, user1 deinitializes and subsequently deallocates.
+当初始化User对象时，在user1引用该对象后它的引用计数会从1开始计算。在do块的最后，由于use1超出了这个域，则计数减一，引用计数减到了0，那么use1会被反初始化，紧接着被释放。
