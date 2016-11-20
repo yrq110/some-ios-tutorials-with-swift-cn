@@ -79,3 +79,52 @@ Swift对象的生命周期由5个阶段组成:
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/Scheme1-480x120.png)
 
 当初始化User对象时，在user1引用该对象后它的引用计数会从1开始计算。在do块的最后，由于use1超出了这个域，则计数减一，引用计数减到了0，那么use1会被反初始化，紧接着被释放。
+
+## 循环引用
+
+多数情况下ARC是很有效的，作为一个开发者，无需总是担心内存泄漏的问题——无用对象一直占用着内存的现象。
+
+不过这并不会一帆风顺，可能会发生泄露的！
+
+那么泄露是如何发生的呢? 想象一下这样一个情况：有两个不再需要的对象，其中每个都引用了另一个，由于两者都有一个非零的引用计数，那么这两个对象永远不会被释放。
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/05/ReferenceCycle-480x153.png)
+
+这被称作强循环引用，它骗过了ARC并且拒绝被清理。如你所见，在结尾时的引用计数并不是零，因此object1与object2将永远不会被释放，即使已经不需要它们了。
+
+来实际操作一下看看，在User类之后，do代码块之前添加如下代码:
+
+```swift
+class Phone {
+  let model: String
+  var owner: User?
+ 
+  init(model: String) {
+    self.model = model
+    print("Phone \(model) is initialized")
+  }
+ 
+  deinit {
+    print("Phone \(model) is being deallocated")
+  }
+}
+```
+然后把do中的语句改成下面这样:
+```swift
+do { 
+  let user1 = User(name: "John")
+  let iPhone = Phone(model: "iPhone 6s Plus")
+}
+```
+这里添加了一个新类Phone并创建了这个新类的实例。
+
+这个新类很简单：包含两个属性：model和owner，两个方法：init和deinit方法。owner属性是可选的，因为一个Phone是可以脱离User存在的。
+
+接下来，在User类中添加如下代码:
+```swift
+private(set) var phones: [Phone] = []
+func add(phone: Phone) {
+  phones.append(phone)
+  phone.owner = self
+}
+```
