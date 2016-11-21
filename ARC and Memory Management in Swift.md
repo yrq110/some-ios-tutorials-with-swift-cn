@@ -128,3 +128,77 @@ func add(phone: Phone) {
   phone.owner = self
 }
 ```
+这里添加了一个phone数组来保存一个用户拥有的全部phone，将setter设为private，强制用户使用add(phone:)方法来添加phone而不是操作这个数组。这个方法确保当添加phone时有正确的用户。
+
+现在在侧边栏中可以看到，Phone和User对象都如期被释放了。
+
+把do代码块改成下面这样:
+```swift
+do {
+  let user1 = User(name: "John")
+  let iPhone = Phone(model: "iPhone 6s Plus")
+  user1.add(phone: iPhone)
+}
+```
+这里将iPhone添加到user1中，自动将iPhone的owner属性设为user1。两个对象间的强循环引用会欺骗ARC使其不会被释放，如此一来，use1和iPhone将永远不会释放。
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/05/UserIphoneCycle-480x202.png)
+
+## 弱引用
+
+为了消除强循环引用，你可以将对象间的关系指定为弱引用，若不指明的话所有引用都是抢引用，与强引用相比，弱引用不会增加对象的强引用计数。
+
+换句话说，弱引用不会参与对象的生命周期管理，并且弱引用是被声明为可选类型来使用的，这就意味着当引用计数变为0时，引用会自动设置为空。
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/05/WeakReference-480x206.png)
+
+In the image above, the dashed arrow represents a weak reference. Notice how the reference count of object1 is 1 because variable1 refers to it. The reference count of object2 is 2, because both variable2 and object1 refer to it. While object2 references object1, it does so weakly, meaning it doesn’t affect the strong reference count of object1.
+
+When both variable1 and variable2 go away, object1 will be left with a reference count of zero and deinit will be called. This removes the strong reference to object2 which then subsequently deinitializes.
+
+Back in your playground, break the User–Phone reference cycle by making the owner reference weak as shown below:
+
+```swift
+class Phone {
+  weak var owner: User?
+  // other code...
+}
+```
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/05/UserIphoneCycleWeaked-480x202.png)
+
+Now user1 and iPhone deallocate properly at the end of the do block as you can see in the results sidebar.
+
+## Unowned References
+
+There is another reference modifier you can use that doesn’t increase the reference count: unowned.
+
+What’s the difference between unowned and weak? A weak reference is always optional and automatically becomes nil when the referenced object deinitializes. That’s why you must define weak properties as optional var types for your code to compile (because the variable needs to change).
+
+Unowned references, by contrast, are never optional types. If you try to access an unowned property that refers to a deinitialized object, you will trigger a runtime error comparable to force unwrapping a nil optional type.
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/05/Table-480x227.png)
+
+Time to get some practice using unowned. Add a new class CarrierSubscription before the do block as shown:
+
+```swift
+class CarrierSubscription {
+  let name: String
+  let countryCode: String
+  let number: String
+  let user: User
+ 
+  init(name: String, countryCode: String, number: String, user: User) {
+    self.name = name
+    self.countryCode = countryCode
+    self.number = number
+    self.user = user
+ 
+    print("CarrierSubscription \(name) is initialized")
+  }
+ 
+  deinit {
+    print("CarrierSubscription \(name) is being deallocated")
+  }
+}
+```
