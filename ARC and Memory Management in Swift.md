@@ -90,7 +90,7 @@ Swift对象的生命周期由5个阶段组成:
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/ReferenceCycle-480x153.png)
 
-这被称作强循环引用，它骗过了ARC并且拒绝被清理。如你所见，在结尾时的引用计数并不是零，因此object1与object2将永远不会被释放，即使已经不需要它们了。
+这被称作循环强引用，它骗过了ARC并且拒绝被清理。如你所见，在结尾时的引用计数并不是零，因此object1与object2将永远不会被释放，即使已经不需要它们了。
 
 来实际操作一下看看，在User类之后，do代码块之前添加如下代码:
 
@@ -140,46 +140,44 @@ do {
   user1.add(phone: iPhone)
 }
 ```
-这里将iPhone添加到user1中，自动将iPhone的owner属性设为user1。两个对象间的强循环引用会欺骗ARC使其不会被释放，如此一来，use1和iPhone将永远不会释放。
+这里将iPhone添加到user1中，自动将iPhone的owner属性设为user1。两个对象间的循环强引用会欺骗ARC使其不会被释放，如此一来，use1和iPhone将永远不会释放。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/UserIphoneCycle-480x202.png)
 
-## 弱引用
+## 弱引用(weak)
 
-为了消除强循环引用，你可以将对象间的关系指定为弱引用，若不指明的话所有引用都是抢引用，与强引用相比，弱引用不会增加对象的强引用计数。
+为了消除循环强引用，你可以将对象间的关系指定为弱引用，若不指明的话所有引用都是抢引用，与强引用相比，弱引用不会增加对象的强引用计数。
 
 换句话说，弱引用不会参与对象的生命周期管理，并且弱引用是被声明为可选类型来使用的，这就意味着当引用计数变为0时，引用会自动设置为空。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/WeakReference-480x206.png)
 
-In the image above, the dashed arrow represents a weak reference. Notice how the reference count of object1 is 1 because variable1 refers to it. The reference count of object2 is 2, because both variable2 and object1 refer to it. While object2 references object1, it does so weakly, meaning it doesn’t affect the strong reference count of object1.
+在上图中，虚线箭头表示弱引用，注意object1的引用计数为1是因为variable1引用了它。object2的引用计数是2，是因为variable2与object1都引用了它。在object2引用object1时使用的是弱引用，这意味着不会影响object1的强引用计数。
 
-When both variable1 and variable2 go away, object1 will be left with a reference count of zero and deinit will be called. This removes the strong reference to object2 which then subsequently deinitializes.
+在variable1和variable2都被移除时，object1的引用计数变为0并将调用deinit方法，这样会移除object2上的强引用，则object2接下来也会被反初始化。
 
-Back in your playground, break the User–Phone reference cycle by making the owner reference weak as shown below:
-
+回到playground中，使用如下方法弱化owner的引用来中断User–Phone之间的循环引用:
 ```swift
 class Phone {
   weak var owner: User?
-  // other code...
+  // 其它代码...
 }
 ```
-
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/UserIphoneCycleWeaked-480x202.png)
 
-Now user1 and iPhone deallocate properly at the end of the do block as you can see in the results sidebar.
+可以在侧边栏看到结果，在do代码块的最后user1和iPhone被正常的释放掉了。
 
-## Unowned References
+## 无主引用(unowned)
 
-There is another reference modifier you can use that doesn’t increase the reference count: unowned.
+这里有另一个可以使用并且不会增加引用计数的引用修饰符：unowned。
 
-What’s the difference between unowned and weak? A weak reference is always optional and automatically becomes nil when the referenced object deinitializes. That’s why you must define weak properties as optional var types for your code to compile (because the variable needs to change).
+无主引用于弱引用有什么不同吗? 弱引用是可选类型的，当引用对象反初始化时会变为nil，这就是为何必须将weak属性定义为可选的var类型。
 
-Unowned references, by contrast, are never optional types. If you try to access an unowned property that refers to a deinitialized object, you will trigger a runtime error comparable to force unwrapping a nil optional type.
+相比之下，无主引用并不是可选类型，若尝试去访问一个反初始化后对象的unowned属性的话会触发一个运行时错误。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/Table-480x227.png)
 
-Time to get some practice using unowned. Add a new class CarrierSubscription before the do block as shown:
+来练习一下unowned.，在do代码块的前面添加一个新的类CarrierSubscription:
 
 ```swift
 class CarrierSubscription {
@@ -201,4 +199,68 @@ class CarrierSubscription {
     print("CarrierSubscription \(name) is being deallocated")
   }
 }
+```
+CarrierSubscription类有四个属性: name, countryCode, number, 和一个引用的User对象。
+
+接着在User类中添加如下代码:
+```swift
+var subscriptions: [CarrierSubscription] = []
+```
+这里添加了subscriptions属性，使用一个数组来保存CarrierSubscrition对象。
+
+在Phone类的顶部，owner属性后面添加如下代码:
+```swift
+var carrierSubscription: CarrierSubscription?
+ 
+func provision(carrierSubscription: CarrierSubscription) {
+  self.carrierSubscription = carrierSubscription
+}
+ 
+func decommission() {
+  self.carrierSubscription = nil
+}
+```
+This adds an optional CarrierSubscription property and two new functions to provision and decommission a carrier subscription on the phone.
+
+Next, add the following to init inside CarrierSubscription, just before the print statement:
+```swift
+user.subscriptions.append(self)
+```
+This ensures that this CarrierSubscription is added to the user’s array of subscriptions.
+
+Finally, change the do block to look like this:
+```swift
+do { 
+  let user1 = User(name: "John")
+  let iPhone = Phone(model: "iPhone 6s Plus")
+  user1.add(phone: iPhone)
+  let subscription1 = CarrierSubscription(name: "TelBel", countryCode: "0032", number: "31415926", user: user1)
+  iPhone.provision(carrierSubscription: subscription1)
+}
+```
+Notice what is printed in the results sidebar. Again you see a reference cycle: neither user1, iPhone or subscription1 are deallocated at the end. Can you find where the issue is now?
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/05/UserIphoneSubCycle-480x175.png)
+
+Either the reference from user1 to subscription1 or the reference from subscription1 to user1 should be unowned to break the cycle. The question is which of the two to choose. This is where a little bit of knowledge of your domain helps.
+
+A user owns a carrier subscription, and (contrary to what carriers may think!), the carrier subscription does not own the user. Moreover, it doesn’t make sense for a CarrierSubscription to exist without an owning User. This is why you declared it as an immutable let property in the first place.
+
+Since a User with no CarrierSubscription can exist, but no CarrierSubscription can exist without a User, the user reference should be unowned.
+
+Add unowned to the user property of CarrierSubscription like so:
+```swift
+class CarrierSubscription {
+  let name: String
+  let countryCode: String
+  let number: String
+  unowned let user: User
+  // Other code...
+}
+```
+This breaks the reference cycle and lets every object deallocate.
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/05/UserIphoneCycleSubSolve-480x175.png)
+```swift
+
 ```
