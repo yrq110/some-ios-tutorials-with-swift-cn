@@ -37,8 +37,13 @@
 28. (未开始)[Xcode 8中的Auto Layout新手指南(A Beginner’s Guide to Auto Layout with Xcode 8)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/A%20Beginner%E2%80%99s%20Guide%20to%20Auto%20Layout%20with%20Xcode%208.html)
 29. (未开始)[iOS10中的User Notifications Framework介绍(Introduction to User Notifications Framework in iOS 10)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Introduction%20to%20User%20Notifications%20Framework%20in%20iOS%2010.html)
 30. (未开始)[在Xcode 8中使用Swift 3构建一个条形码与二维码扫描器(Building a Barcode and QR Code Reader in Swift 3 and Xcode 8)]()
+31. (未开始)[Core Plot指南:入门](https://www.raywenderlich.com/131985/core-plot-tutorial-getting-started)
+32. (未开始)[奇幻的Swift错误处理](https://www.raywenderlich.com/130197/magical-error-handling-swift)
+33. (未开始)[UIPresentationController指南:入门](https://www.raywenderlich.com/139277/uipresentationcontroller-tutorial-getting-started)
+34. (未开始)[RxSwift与RxCocoa入门](https://www.raywenderlich.com/138547/getting-started-with-rxswift-and-rxcocoa)
+35. (未开始)[iOS Accessibility指南:入门](https://www.raywenderlich.com/142058/ios-accessibility-tutorial)
 
-### 原文
+### 来源
 * [Ray Wenderlich](https://www.raywenderlich.com/)
 * [AppCoda](http://www.appcoda.com/)
 * [iOS-Blog](http://www.ios-blog.co.uk/)
