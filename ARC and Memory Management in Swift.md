@@ -220,15 +220,15 @@ func decommission() {
   self.carrierSubscription = nil
 }
 ```
-This adds an optional CarrierSubscription property and two new functions to provision and decommission a carrier subscription on the phone.
+添加了一个可选CarrierSubscription属性和两个新函数-provision与decommission，用来添加和移除phone上的运营商描述。
 
 Next, add the following to init inside CarrierSubscription, just before the print statement:
 ```swift
 user.subscriptions.append(self)
 ```
-This ensures that this CarrierSubscription is added to the user’s array of subscriptions.
+将CarrierSubscription放进了用户的描述数组中。
 
-Finally, change the do block to look like this:
+最后，将do代码块中的内容改成如下所示:
 ```swift
 do { 
   let user1 = User(name: "John")
@@ -238,7 +238,7 @@ do {
   iPhone.provision(carrierSubscription: subscription1)
 }
 ```
-Notice what is printed in the results sidebar. Again you see a reference cycle: neither user1, iPhone or subscription1 are deallocated at the end. Can you find where the issue is now?
+看看侧边栏输出了什么结果，再次看到了循环引用：不管是user、iphone还是subscription1，最后都没有被释放。现在你可以发现问题出在哪吗?
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/UserIphoneSubCycle-480x175.png)
 
