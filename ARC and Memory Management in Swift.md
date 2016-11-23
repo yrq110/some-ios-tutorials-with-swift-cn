@@ -222,11 +222,11 @@ func decommission() {
 ```
 添加了一个可选CarrierSubscription属性和两个新函数-provision与decommission，用来添加和移除phone上的运营商描述。
 
-Next, add the following to init inside CarrierSubscription, just before the print statement:
+接在在print语句之前添加如下代码，初始化内部的CarrierSubscription:
 ```swift
 user.subscriptions.append(self)
 ```
-将CarrierSubscription放进了用户的描述数组中。
+将CarrierSubscription添加到用户的描述数组中。
 
 最后，将do代码块中的内容改成如下所示:
 ```swift
@@ -238,17 +238,17 @@ do {
   iPhone.provision(carrierSubscription: subscription1)
 }
 ```
-看看侧边栏输出了什么结果，再次看到了循环引用：不管是user、iphone还是subscription1，最后都没有被释放。现在你可以发现问题出在哪吗?
+看看侧边栏输出了什么结果。再次看到了循环引用：不管是user、iphone还是subscription1，最后都没有被释放。现在你可以发现问题出在哪吗?
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/UserIphoneSubCycle-480x175.png)
 
-Either the reference from user1 to subscription1 or the reference from subscription1 to user1 should be unowned to break the cycle. The question is which of the two to choose. This is where a little bit of knowledge of your domain helps.
+将从use1到subscription1的引用或从subscription1到user1的引用变成unowned即可中断循环，问题是选择哪一个引用？
 
-A user owns a carrier subscription, and (contrary to what carriers may think!), the carrier subscription does not own the user. Moreover, it doesn’t make sense for a CarrierSubscription to exist without an owning User. This is why you declared it as an immutable let property in the first place.
+user拥有运行商描述，而运营商描述不可拥有user。还有，不存在一个没有用户的CarrierSubscription，这就是为何在一开始将其声明为一个不可变的let属性。
 
-Since a User with no CarrierSubscription can exist, but no CarrierSubscription can exist without a User, the user reference should be unowned.
+因为可以存在一个不包含CarrierSubscription的User，不可存在一个不包含User的CarrierSubscription，所以应该用unowned来修饰user引用。
 
-Add unowned to the user property of CarrierSubscription like so:
+给CarrierSubscription的user属性添加unowned修饰符:
 ```swift
 class CarrierSubscription {
   let name: String
@@ -258,9 +258,53 @@ class CarrierSubscription {
   // Other code...
 }
 ```
-This breaks the reference cycle and lets every object deallocate.
+这样就中断了循环引用，使每个对象都被释放掉。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/UserIphoneCycleSubSolve-480x175.png)
-```swift
 
+## Reference Cycles with Closures
+
+Reference cycles for objects occur when properties reference each other. Like objects, closures are also reference types and can cause cycles. Closures capture (or close over) the objects that they operate on.
+
+For example, if a closure is assigned to the property of a class, and that closure uses instance properties of that same class, you have a reference cycle. In other words, the object holds a reference to the closure via a stored property; the closure holds a reference to the object via the captured value of self.
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/06/Closure-Referene-1-480x202.png)
+
+Add the following to CarrierSubscription, just after the user property:
+
+```swift
+lazy var completePhoneNumber: () -> String = {
+  self.countryCode + " " + self.number
+}
+```
+
+This closure computes and returns a complete phone number. The property is declared with lazy, meaning that it will not be assigned until it’s used the first time. This is required because it’s using self.countryCode and self.number, which aren’t available until after the initializer runs.
+
+Add the following line at the end of the do block:
+
+```swift
+print(subscription1.completePhoneNumber())
+```
+
+You will notice that user1 and iPhone deallocate, but not CarrierSubscription due to the strong reference cycle between the object and the closure.
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/05/ClosureCylce-480x232.png)
+
+Swift has a simple, elegant way to break strong reference cycles in closures. You declare a capture list in which you define the relationships between the closure and the objects it captures.
+
+To illustrate how the capture list works, consider the following code:
+
+```swift
+var x = 5
+var y = 5
+ 
+let someClosure = { [x] in
+  print("\(x), \(y)")
+}
+ 
+x = 6
+y = 6
+ 
+someClosure()        // Prints 5, 6
+print("\(x), \(y)")  // Prints 6, 6
 ```
