@@ -308,3 +308,81 @@ y = 6
 someClosure()        // Prints 5, 6
 print("\(x), \(y)")  // Prints 6, 6
 ```
+The variable x is in the capture list, so a copy of x is made at the point the closure is defined. It is said to be captured by value. On the other hand, y is not in the capture list, and is instead captured by reference. This means that when the closure runs, y will be whatever it is at that point, rather than at the point of capture.
+
+Capture lists come in handy for defining a weak or unowned relationship between objects used in a closure. In this case, unowned is a good fit since the closure could not exist while the instance of CarrierSubscription has gone away.
+
+Change the completePhoneNumber closure in CarrierSubscription to look like this:
+```swift
+lazy var completePhoneNumber: () -> String = {
+  [unowned self] in
+  return self.countryCode + " " + self.number
+}
+```
+This adds [unowned self] to the capture list for the closure. It means that self is captured as an unowned reference instead of a strong reference.
+
+This solves the reference cycle. Hooray!
+
+The syntax used here is actually a shorthand for a longer capture syntax, which introduces a new identifier. Consider the longer form:
+```swift
+var closure = {
+  [unowned newID = self] in
+  // Use unowned newID here...
+}
+```
+Here, newID is an unowned copy of self. Outside the closure’s scope, self keeps its original meaning. In the short form, which you used above, a new self variable is created which shadows the existing self variable just for the closure’s scope.
+
+In your code, the relationship between self and the completePhoneNumber closure is unowned. If you are sure that a referenced object from a closure will never deallocate, you can use unowned. If it does deallocate, you are in trouble.
+
+Add the following code to the end of the playground:
+```swift
+// A class that generates WWDC Hello greetings.  See http://wwdcwall.com
+class WWDCGreeting {
+  let who: String
+ 
+  init(who: String) {
+    self.who = who
+  }
+ 
+  lazy var greetingMaker: () -> String = {
+    [unowned self] in
+    return "Hello \(self.who)."
+  }
+}
+ 
+let greetingMaker: () -> String
+ 
+do {
+  let mermaid = WWDCGreeting(who: "caffinated mermaid")
+  greetingMaker = mermaid.greetingMaker
+}
+ 
+greetingMaker() // TRAP!
+```
+The playground hits a runtime exception because the closure expects self.who to still be valid, but it was deallocated when mermaid went out of scope. This example may seem contrived, but it can easily happen in real life such as when you use closures to run something much later, such as after an asynchronous network call has finished.
+
+Change the greetingMaker variable in WWDCGreeting to look like this:
+```swift
+lazy var greetingMaker: () -> String = {
+  [weak self] in
+  return "Hello \(self?.who)."
+}
+```
+There are two changes you made to the original greetingMaker closure. First, you replaced unowned with weak. Second, since self became weak, you needed to access the who property with self?.who.
+
+The playground no longer crashes, but you get a curious result in the sidebar: "Hello, nil.". Perhaps this is acceptable, but more often you want to do something completely different if the object is gone. Swift’s guard let makes this easy.
+
+Re-write the closure one last time, to look like this:
+```swift
+lazy var greetingMaker: () -> String = {
+  [weak self] in
+  guard let strongSelf = self else {
+    return "No greeting available."
+  }
+  return "Hello \(strongSelf.who)."
+}
+```
+The guard statement binds a new variable strongSelf from weak self. If self is nil, the closure returns "No greeting available.". On the other hand, if self is not nil, strongSelf makes a strong reference, so the object is guaranteed to live until the end of the closure.
+
+This idiom, sometimes referred to as the strong-weak dance, is part of the Ray Wenderlich Swift Style Guide since it’s a robust pattern for handling this behavior in closures.
+![](https://koenig-media.raywenderlich.com/uploads/2016/07/testskillz-650x241.png)
