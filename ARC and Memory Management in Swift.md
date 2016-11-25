@@ -262,15 +262,15 @@ class CarrierSubscription {
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/UserIphoneCycleSubSolve-480x175.png)
 
-## Reference Cycles with Closures
+## 闭包的循环引用
 
-Reference cycles for objects occur when properties reference each other. Like objects, closures are also reference types and can cause cycles. Closures capture (or close over) the objects that they operate on.
+当对象的属性相互引用时会发生循环引用。同样，闭包也是可引用的类型，也会发生循环引用的问题，闭包在这里捕捉到了所操作的对象。
 
-For example, if a closure is assigned to the property of a class, and that closure uses instance properties of that same class, you have a reference cycle. In other words, the object holds a reference to the closure via a stored property; the closure holds a reference to the object via the captured value of self.
+举个栗子，若有一个闭包被分配给一个类的属性，并且这个闭包使用了相同类下的属性，这就发生了循环引用。换言之，对象通过一个存储属性引用了闭包，闭包通过捕捉的self值引用了对象。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/06/Closure-Referene-1-480x202.png)
 
-Add the following to CarrierSubscription, just after the user property:
+在CarrierSubscription的user属性后添加如下代码:
 
 ```swift
 lazy var completePhoneNumber: () -> String = {
@@ -278,21 +278,21 @@ lazy var completePhoneNumber: () -> String = {
 }
 ```
 
-This closure computes and returns a complete phone number. The property is declared with lazy, meaning that it will not be assigned until it’s used the first time. This is required because it’s using self.countryCode and self.number, which aren’t available until after the initializer runs.
+这个闭包计算并返回一个完整的电话号码。使用lazy声明这个属性，意味着直到第一次使用时才会分配属性。需要这个修饰符是因为这个属性是依赖self.countryCode和self.number的，它们在初始化后才可用。
 
-Add the following line at the end of the do block:
+在do代码块的最后添加如下代码:
 
 ```swift
 print(subscription1.completePhoneNumber())
 ```
 
-You will notice that user1 and iPhone deallocate, but not CarrierSubscription due to the strong reference cycle between the object and the closure.
+你会注意到use1和iPhone都会释放了，不过因为存在的对象与闭包之间的循环强引用，CarrierSubscription并没有被释放。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/ClosureCylce-480x232.png)
 
 Swift has a simple, elegant way to break strong reference cycles in closures. You declare a capture list in which you define the relationships between the closure and the objects it captures.
 
-To illustrate how the capture list works, consider the following code:
+为了形象的描述捕捉列表是如何工作的，试试如下代码:
 
 ```swift
 var x = 5
