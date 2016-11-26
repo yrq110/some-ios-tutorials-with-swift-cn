@@ -244,7 +244,7 @@ do {
 
 将从use1到subscription1的引用或从subscription1到user1的引用变成unowned即可中断循环，问题是选择哪一个引用？
 
-user拥有运行商描述，而运营商描述不可拥有user。还有，不存在一个没有用户的CarrierSubscription，这就是为何在一开始将其声明为一个不可变的let属性。
+user拥有运行商描述，而运营商描述不可拥有user，并且不存在一个没有用户的CarrierSubscription，这就是为何在一开始将其声明为一个不可变的let属性。
 
 因为可以存在一个不包含CarrierSubscription的User，不可存在一个不包含User的CarrierSubscription，所以应该用unowned来修饰user引用。
 
@@ -290,7 +290,7 @@ print(subscription1.completePhoneNumber())
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/ClosureCylce-480x232.png)
 
-Swift has a simple, elegant way to break strong reference cycles in closures. You declare a capture list in which you define the relationships between the closure and the objects it captures.
+Swift有一个简便、优雅的方式去中断闭包的循环强引用：在定义闭包与所捕捉的对象间的联系时声明一个捕捉列表。
 
 为了形象的描述捕捉列表是如何工作的，试试如下代码:
 
@@ -308,33 +308,33 @@ y = 6
 someClosure()        // Prints 5, 6
 print("\(x), \(y)")  // Prints 6, 6
 ```
-The variable x is in the capture list, so a copy of x is made at the point the closure is defined. It is said to be captured by value. On the other hand, y is not in the capture list, and is instead captured by reference. This means that when the closure runs, y will be whatever it is at that point, rather than at the point of capture.
+变量x在捕捉列表中，因此在定义闭包时会创建一个x的副本，通过它的值来捕捉。另外，y不在捕捉列表中，通过它的引用来捕捉。这意味着当闭包运行的时候，y会变为那个时刻的y值，而不是捕捉时的y值。
 
-Capture lists come in handy for defining a weak or unowned relationship between objects used in a closure. In this case, unowned is a good fit since the closure could not exist while the instance of CarrierSubscription has gone away.
+捕捉列表在使用weak或unowned定义闭包中的所用对象时会派上用场。当CarrierSubscription实例释放时闭包就不存在了，在这种情况下使用unowned比较好。
 
-Change the completePhoneNumber closure in CarrierSubscription to look like this:
+把CarrierSubscription中的completePhoneNumber闭包改成如下这样:
 ```swift
 lazy var completePhoneNumber: () -> String = {
   [unowned self] in
   return self.countryCode + " " + self.number
 }
 ```
-This adds [unowned self] to the capture list for the closure. It means that self is captured as an unowned reference instead of a strong reference.
+在闭包的捕捉列表中加入了[unowned self]，这意味着self对象会作为一个unowned引用被捕捉，而不是一个强引用类型。
 
-This solves the reference cycle. Hooray!
+这样就解决循环引用的问题了，万岁!
 
-The syntax used here is actually a shorthand for a longer capture syntax, which introduces a new identifier. Consider the longer form:
+实际上这里的语句是捕捉语句的精简版，看看加长版的格式:
 ```swift
 var closure = {
   [unowned newID = self] in
   // Use unowned newID here...
 }
 ```
-Here, newID is an unowned copy of self. Outside the closure’s scope, self keeps its original meaning. In the short form, which you used above, a new self variable is created which shadows the existing self variable just for the closure’s scope.
+这里的newID是一个self的unowned副本。在闭包域外面的self是对象本身的含义，而在上面使用的精简版格式中则创建了一个新的self变量替代了已存在的self变量。
 
-In your code, the relationship between self and the completePhoneNumber closure is unowned. If you are sure that a referenced object from a closure will never deallocate, you can use unowned. If it does deallocate, you are in trouble.
+在代码中，self与completePhoneNumber闭包之间的关联是unowned类型的。若你能确保闭包中引用的对象永远不会被释放，可以使用unowned，如果它会被释放，那你就摊上事儿了。
 
-Add the following code to the end of the playground:
+在playground的最后添加如下代码:
 ```swift
 // A class that generates WWDC Hello greetings.  See http://wwdcwall.com
 class WWDCGreeting {
@@ -359,20 +359,20 @@ do {
  
 greetingMaker() // TRAP!
 ```
-The playground hits a runtime exception because the closure expects self.who to still be valid, but it was deallocated when mermaid went out of scope. This example may seem contrived, but it can easily happen in real life such as when you use closures to run something much later, such as after an asynchronous network call has finished.
+playground会引起一个运行时异常，因为闭包期望self.who是可用的属性，不过当美人鱼(mermaid)游到域外它就被释放了。虽然这个例子有点牵强，不过在真实环境中是很容易发生的，比如使用闭包运行一些域外的事物。This example may seem contrived, but it can easily happen in real life such as when you use closures to run something much later, such as after an asynchronous network call has finished.
 
-Change the greetingMaker variable in WWDCGreeting to look like this:
+把WWDCGreeting中的greetingMaker变量改成如下所示:
 ```swift
 lazy var greetingMaker: () -> String = {
   [weak self] in
   return "Hello \(self?.who)."
 }
 ```
-There are two changes you made to the original greetingMaker closure. First, you replaced unowned with weak. Second, since self became weak, you needed to access the who property with self?.who.
+这里对原本的greetingMaker闭包做了两项改动，首先使用weak替换了unowned，其次，由于self变成了weak，因此需要使用self?.who来访问who属性。
 
-The playground no longer crashes, but you get a curious result in the sidebar: "Hello, nil.". Perhaps this is acceptable, but more often you want to do something completely different if the object is gone. Swift’s guard let makes this easy.
+这样playground就不会崩溃了，不过在侧边栏得到了一个令人好奇的结果: "Hello, nil."也许这个也可以接受，不过若你想在对象释放时搞一些完全不同的事情的话，Swift的guard let修饰符可以帮助你。
 
-Re-write the closure one last time, to look like this:
+最后一次修改这个闭包，如下所示:
 ```swift
 lazy var greetingMaker: () -> String = {
   [weak self] in
@@ -382,7 +382,9 @@ lazy var greetingMaker: () -> String = {
   return "Hello \(strongSelf.who)."
 }
 ```
-The guard statement binds a new variable strongSelf from weak self. If self is nil, the closure returns "No greeting available.". On the other hand, if self is not nil, strongSelf makes a strong reference, so the object is guaranteed to live until the end of the closure.
+guard语句绑定了一个新的strongSelf变量。若self为空，则闭包返回 "No greeting available."。另一方面，若self非空，则strongSelf创建一个强引用，这样对象就会被保留直到闭包结束。
 
-This idiom, sometimes referred to as the strong-weak dance, is part of the Ray Wenderlich Swift Style Guide since it’s a robust pattern for handling this behavior in closures.
 ![](https://koenig-media.raywenderlich.com/uploads/2016/07/testskillz-650x241.png)
+
+
+## Finding Reference Cycles in Xcode 8
