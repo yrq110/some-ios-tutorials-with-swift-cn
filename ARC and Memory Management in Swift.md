@@ -308,7 +308,7 @@ y = 6
 someClosure()        // Prints 5, 6
 print("\(x), \(y)")  // Prints 6, 6
 ```
-变量x在捕捉列表中，因此在定义闭包时会创建一个x的副本，通过它的值来捕捉。另外，y不在捕捉列表中，通过它的引用来捕捉。这意味着当闭包运行的时候，y会变为那个时刻的y值，而不是捕捉时的y值。
+变量x在捕捉列表中，因此在定义闭包时会创建一个x的副本，通过它的值进行捕捉。另外，y不在捕捉列表中，通过它的引用进行捕捉。这意味着当闭包运行的时候，y会变为那个时刻的y值，而不是捕捉时的y值。
 
 捕捉列表在使用weak或unowned定义闭包中的所用对象时会派上用场。当CarrierSubscription实例释放时闭包就不存在了，在这种情况下使用unowned比较好。
 
@@ -359,7 +359,7 @@ do {
  
 greetingMaker() // TRAP!
 ```
-playground会引起一个运行时异常，因为闭包期望self.who是可用的属性，不过当美人鱼(mermaid)游到域外它就被释放了。虽然这个例子有点牵强，不过在真实环境中是很容易发生的，比如使用闭包运行一些域外的事物。This example may seem contrived, but it can easily happen in real life such as when you use closures to run something much later, such as after an asynchronous network call has finished.
+playground会引起一个运行时异常，因为闭包期望self.who是可用的属性，不过当美人鱼(mermaid)游到域外它就被释放了。虽然这个例子有点牵强，不过在真实环境中是很容易发生的，比如使用闭包运行一些域外的事物，或者在一个异步网络调用完成之后。
 
 把WWDCGreeting中的greetingMaker变量改成如下所示:
 ```swift
@@ -387,4 +387,63 @@ guard语句绑定了一个新的strongSelf变量。若self为空，则闭包返�
 ![](https://koenig-media.raywenderlich.com/uploads/2016/07/testskillz-650x241.png)
 
 
-## Finding Reference Cycles in Xcode 8
+## 在Xcode 8中发现循环引用
+
+现在你已经理解了ARC的原理，了解了循环引用与中断它们的方法，是时候用一个真实的例子上手了。
+
+[下载这个开始工程](https://koenig-media.raywenderlich.com/uploads/2016/08/ContactsStarterProject-1.zip) 并用Xcode 8打开它。需要Xcode 8是因为要使用一些Xcode 8中新增的有趣特性。
+
+构建并运行工程，会看到这样一个界面:
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/07/ss5-180x320.png)
+
+这是一个简单的通讯录app，试着随意点击一个联系人获取更多信息或者点击右上角的加号添加联系人。
+
+梳理一下代码:
+* ContactsTableViewController: 显示数据库中的所有Contact对象。
+* DetailViewController: 显示一个选择Contact对象的详细信息。
+* NewContactViewController<: 允许用户添加新联系人。
+* ContactTableViewCell: 显示联系人对象详细信息的自定义tableview cell。
+* Contact: 数据库中联系人的model。
+* Number: 电话号码的model。
+
+不巧的是，工程中出现了一些严重的错误：被循环引用毁了。你的用户短时间内不会发现这些问题，因为泄露的对象都非常小，并且小到难以被trace。幸运的是，Xcode 8有一个新的内置工具，可以帮助你找到这些很细微的泄露。
+
+再次构建并运行工程，向左滑动点击delete删除三四个联系人，的确完全消失了，对吗?
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/07/ss1-180x320.png)
+
+在app运行的时候到Xcode的底部，点击Debug Memory Graph按钮。
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/07/ss2-480x35.png)
+
+观察Xcode 8中新一类issue：Runtime Issue，图标是一个紫色方块中包含一个白色的感叹号，如在下图选择的这项这样:
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/07/ss3-243x320.png)
+
+在Navigator中选择一个有问题的Contact对象。可以清楚的看到循环：Contact与Number对象通过引用对方使双方一直存在。
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/07/4-325x320.png)
+
+These type of graphs are a sign for you to look into your code. Consider that a Contact can exist without a Number, but a Number should not exist without a Contact. How would you solve the cycle? Should the reference from Contact to Number or the one from Number to Contact be weak or unowned?
+
+There are two possible solutions: you can either make the relationship from Contact to Number weak, or the relationship from Number to Contact unowned to solve the cycle.
+[Apple’s Documentation](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/MemoryMgmt/Articles/mmPractical.html) recommends that a parent object should have a strong hold on a child object by convention — not the other way around. This means that giving Contact a strong hold on a Number, and Number an unowned reference to a Contact, is the most convenient solution:
+
+```swift
+class Number {
+  unowned var contact: Contact
+  // Other code...
+}
+```
+
+```swift
+class Contact {
+  var number: Number?
+  // Other code...
+}
+```
+
+Run and debug again; the issue has been resolved!
+
+## Cycles with Value Types and Reference Types
