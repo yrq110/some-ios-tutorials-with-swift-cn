@@ -35,3 +35,33 @@ As you know, the iPhone devices have different screen dimensions:
 * For iPhone 6/6s, the screen consists of 375 points (or 750 pixels) horizontally and 667 points (or 1334 pixels) vertically.
 * For iPhone 6/6s Plus, the screen consists of 414 points (or 1242 pixels) horizontally and 736 points (or 2208 pixels) vertically.
 * For iPhone 4s, the screen consists of 320 points (or 640 pixels) and 480 points (or 960 pixels).
+
+> ## Why Points instead of Pixels?
+Back in 2007, Apple introduced the original iPhone with a 3.5-inch display with a resolution of 320×480. That is 320 pixels horizontally and 480 pixels vertically. Apple retained this screen resolution with the succeeding iPhone 3G and iPhone 3GS. Obviously, if you were building an app at that time, one point corresponds to one pixel. Later, Apple introduced iPhone 4 with retina display. The screen resolution was doubled to 640×960 pixels. So one point corresponds to two pixels for retina display.
+
+> The point system makes our developers’ lives easier. No matter how the screen resolution is changed (say, the resolution is doubled again to 1280×1920 pixels), we still deal with with points and the base resolution (i.e. 320×480 for iPhone 4/4s or 320×568 for iPhone 5/5s). The translation between points and pixels is handled by iOS.
+
+Without using auto layout, the position of the button we lay out in the storyboard is fixed. In other words, we “hard-code” the frame origin of the button. In our example, the “Hello World” button’s frame origin is set to (147, 318). Therefore, whether you’re using a 3.5-inch or 4-inch or 5.5-inch simulator, iOS draws the button in the specified position. Below figure illustrates the frame origin on different devices. This explains why the “Hello World” button can only be centered on iPhone 6/6s, and it is shifted away from the screen center on other iOS devices, as well as, in landscape orientation.
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-2.png?12321214124)
+
+Obviously, we want the app to look good on all iPhone models, and in both portrait & landscape orientation. This is why we have to learn auto layout. It’s the answer to the layout issues, that we have just talked about.
+
+## Auto Layout is All About Constraints
+
+As mentioned before, auto layout is a constraint-based layout system. It allows developers to create an adaptive UI that responds appropriately to changes in screen size and device orientation. Okay, it sounds good. But what does the term “constraint-based layout” mean? Let me put it in a more descriptive way. Consider the “Hello World” button again, how do you describe its position if you want to place the button at the center of the view? You would probably describe it like this:
+
+The button should be centered both horizontally and vertically, regardless of the screen resolution and orientation.
+
+Here you actually define two constraints:
+
+* center horizontally
+* center vertically
+
+These constraints express rules for the layout of the button in the interface.
+
+Auto layout is all about constraints. While we describe the constraints in words, the constraints in auto layout are expressed in mathematical form. For example, if you’re defining the position of a button, you might want to say “the left edge should be 30 points from the left edge of its containing view.” This translates to button.left = (container.left + 30).
+
+Fortunately, we do not need to deal with the formulas. All you need to know is how to express the constraints descriptively and use Interface Builder to create them.
+
+Okay, that’s quite enough for the auto layout theory. Now let’s see how to define layout constraints in Interface Builder to center the “Hello World” button.
