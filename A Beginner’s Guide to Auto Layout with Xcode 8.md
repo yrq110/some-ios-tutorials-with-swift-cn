@@ -9,15 +9,15 @@
 
 ***
 
-Auto layout is a constraint-based layout system. It allows developers to create an adaptive UI that responds appropriately to changes in screen size and device orientation. Some beginners find it hard to learn and avoid using it. Some developers even avoid using it. But believe me, you won’t be able to live without it when developing an app today.
+Auto layout是一个基于constraint的布局系统，允许开发者做出可以响应屏幕尺寸与设备方向的UI组件。一些新人开发者因为它的难度而敬而远之，有些开发者则不去用它。不过相信我，今天来用它开发一个app后你会爱不释手的。
 
-With the release of iPhone 6/6s and 6/6s Plus, Apple’s iPhones are available in different screen sizes including 3.5-inch, 4-inch, 4.7-inch and 5.5-inch displays. Without using auto layout, it would be very hard for you to create an app that supports all screen resolutions. And, starting from Xcode 6, it is inevitable to use auto layout to design the user interface. This is why I want to teach you auto layout at the very beginning of this book, rather than jumping right into coding a real app.
+随着iPhone 6/6s、6/6s Plus的发布，苹果手机的屏幕尺寸包含了3.5英寸, 4英寸, 4.7英寸和5.5英寸这几种。若不用auto layout的话很难创建一个适配所有屏幕尺寸的app，并且从Xcode 6开始必然会使用auto layout去设计用户界面。
 
-In this tutorial, I want to help you build a solid foundation on designing an adaptive user interface using auto layout.
+在这篇教程中，会帮你通过使用auto layout建立一个设计响应式UI的坚实基础。
 
-Auto layout is not as difficult as some developers thought. Once you understand the basics, you will be able to use auto layout to create complex user interfaces for all types of iOS devices.
+Auto layout并不像人们想象中的那么难。理解它的基础概念与使用方法后，就可以使用auto layout为所有iOS设备做出复杂的用户界面。
 
-## Why Auto Layout?
+## 为何使用Auto Layout?
 
 Let me give you an example, and you’ll have a better idea why auto layout is needed. Download and open the starter project. Instead of running the app on iPhone 6/6s simulator, run it using the iPhone 6 Plus or iPhone 5 simulator. You’ll end up with the results illustrated in figure below. It turns out that the button isn’t centered when running on other iPhone devices, except iPhone 6/6s.
 
