@@ -19,33 +19,33 @@ Auto layout并不像人们想象中的那么难。理解它的基础概念与使
 
 ## 为何使用Auto Layout?
 
-Let me give you an example, and you’ll have a better idea why auto layout is needed. Download and open the starter project. Instead of running the app on iPhone 6/6s simulator, run it using the iPhone 6 Plus or iPhone 5 simulator. You’ll end up with the results illustrated in figure below. It turns out that the button isn’t centered when running on other iPhone devices, except iPhone 6/6s.
+来看个例子，下载并运行[开始工程](http://www.appcoda.com/resources/swift3/HelloWorld.zip)。不要使用iPhone 6/6s模拟器，使用iPhone 6 Plus或iPhone 5模拟器运行，会得到下图的结果，按钮在除了iPhone 6/6s外的其他iPhone设备上都不在屏幕中心。
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-1.png?12321214124)
 
-Let’s try one more thing.
+来再试一下。
 
-Click the Stop button and run the app using the iPhone 6/6s simulator. After the simulator launches, go up to the menu and select Hardware > Rotate Left (or Rotate Right) from the menu. This rotates the device to landscape mode. Alternatively, you can press command+left arrow/right arrow to rotate the device sideway. Again, the Hello World button is not centered.
+点击Stop按钮，使用iPhone 6/6s模拟器运行，模拟器启动后，在菜单中选择 Hardware > Rotate Left (or Rotate Right)，这会使设备旋转到水平模式。也可以按下command+左箭头/右箭头来旋转设备方向。这一次，Hello World按钮也没有在中间。
 
-Why? What’s wrong with it?
+这是为何? 出啥幺蛾子了?
 
-As you know, the iPhone devices have different screen dimensions:
+如你所知，iPhone设备有不同的屏幕尺寸:
 
-* For iPhone 5/5s, the screen in portrait mode consists of 320 points (or 640 pixels) horizontally and 568 points (or 1136 pixels) vertically.
-* For iPhone 6/6s, the screen consists of 375 points (or 750 pixels) horizontally and 667 points (or 1334 pixels) vertically.
-* For iPhone 6/6s Plus, the screen consists of 414 points (or 1242 pixels) horizontally and 736 points (or 2208 pixels) vertically.
-* For iPhone 4s, the screen consists of 320 points (or 640 pixels) and 480 points (or 960 pixels).
+* 对于iPhone 5/5s, 竖屏模式下水平方向为320 pt(640 px)，竖直方向为667 pt(1334 px)。
+* 对于iPhone 6/6s, 水平方向为375 pt(750 px)，竖直方向为568 pt(1136 px)。
+* 对于iPhone 6/6s Plus, 水平方向为414 pt(1242 px)，竖直方向为736 pt(2208 px)。
+* 对于iPhone 4s, 水平方向为320 pt(640 px)，竖直方向为480 pt(960 px)。
 
-> ## Why Points instead of Pixels?
-Back in 2007, Apple introduced the original iPhone with a 3.5-inch display with a resolution of 320×480. That is 320 pixels horizontally and 480 pixels vertically. Apple retained this screen resolution with the succeeding iPhone 3G and iPhone 3GS. Obviously, if you were building an app at that time, one point corresponds to one pixel. Later, Apple introduced iPhone 4 with retina display. The screen resolution was doubled to 640×960 pixels. So one point corresponds to two pixels for retina display.
+> ## 为何使用点(Point pt)而不是像素(Pixel px)?
+苹果在2007年发布的初代iPhone是3.5英寸的屏幕，分辨率为320×480。横向是320px，纵向是480px。苹果在iPhone 3G与3GS上也使用的这个屏幕分辨率。显然，那时构建的app是一个点对应一个像素。接着苹果就发布了使用retina显示技术的iPhone 4，屏幕分辨率是640×960的两倍，由于使用了retina显示技术，一个点对应着两个像素。
 
-> The point system makes our developers’ lives easier. No matter how the screen resolution is changed (say, the resolution is doubled again to 1280×1920 pixels), we still deal with with points and the base resolution (i.e. 320×480 for iPhone 4/4s or 320×568 for iPhone 5/5s). The translation between points and pixels is handled by iOS.
+> 点系统更加方便开发者的使用。不管屏幕分辨率如何变化，使用数值为基础分辨率的点(iPhone 4/4s是320×480，iPhone 5/5s是320×568)来处理即可，把点和像素的转换工作交给iOS处理。
 
-Without using auto layout, the position of the button we lay out in the storyboard is fixed. In other words, we “hard-code” the frame origin of the button. In our example, the “Hello World” button’s frame origin is set to (147, 318). Therefore, whether you’re using a 3.5-inch or 4-inch or 5.5-inch simulator, iOS draws the button in the specified position. Below figure illustrates the frame origin on different devices. This explains why the “Hello World” button can only be centered on iPhone 6/6s, and it is shifted away from the screen center on other iOS devices, as well as, in landscape orientation.
+没有auto layout的话，我们在故事版中放置的按钮就是固定位置的。换句话说，“硬编码”了按钮的起始点。在我们的例子中，把“Hello World”按钮的起始点设为了(147, 318)。因此，不管你使用的是3.5英寸、4英寸，还是5.5英寸的模拟器，iOS都会把按钮画在指定的位置。下图中画出了在不同设备中的按钮，解释了为何“Hello World”按钮仅仅在iPhone 6/6s上是中间位置，其它设备上都偏离了中心，水平朝向上也同样偏离了。
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-2.png?12321214124)
 
-Obviously, we want the app to look good on all iPhone models, and in both portrait & landscape orientation. This is why we have to learn auto layout. It’s the answer to the layout issues, that we have just talked about.
+显然，我们想要在所有iPhone设备和朝向上都如我们期望的那样显示，这就是为何要学习使用auto layout，可以解决这种布局的问题。
 
 ## Auto Layout is All About Constraints
 
