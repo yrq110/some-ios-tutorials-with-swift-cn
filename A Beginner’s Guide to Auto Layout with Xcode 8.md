@@ -65,3 +65,18 @@ Auto layout is all about constraints. While we describe the constraints in words
 Fortunately, we do not need to deal with the formulas. All you need to know is how to express the constraints descriptively and use Interface Builder to create them.
 
 Okay, that’s quite enough for the auto layout theory. Now let’s see how to define layout constraints in Interface Builder to center the “Hello World” button.
+
+## Live Previewing in Interface Builder
+
+First, open Main.storyboard of your HelloWorld project (or download it from http://www.appcoda.com/resources/swift3/HelloWorld.zip). Before we add the layout constraints to the user interface, let me introduce a handy feature in Xcode 8.
+
+Instead of viewing the app UI in simulators, Xcode 8 provides a configuration bar in Interface Builder for developers to live preview the user interface.
+
+By default, Interface Builder is set to preview the UI on iPhone 6s. To see how your app looks on other devices, click View as: iPhone 6s button to reveal the configuration bar and then choose your preferred iPhone/iPad devices to test. You can also alter the device’s orientation to see how it affects your app’s UI. The figure below shows a live preview of the Hello World app on iPhone 6s in landscape orientation.
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-3.png?12321214124)
+
+The configuration bar is a great feature in Xcode 8. Take some time to play around with it.
+
+> Note: You may wonder what “(wC hC)” means. Just forget about it right now and focus on learning auto layout. If you’re interested in learning more about it, you can check out our Swift book.
+
