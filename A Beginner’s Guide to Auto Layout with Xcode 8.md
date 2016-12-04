@@ -9,7 +9,7 @@
 
 ***
 
-Auto layout是一个基于constraint的布局系统，允许开发者做出可以响应屏幕尺寸与设备方向的UI组件。一些新人开发者因为它的难度而敬而远之，有些开发者则不去用它。不过相信我，今天来用它开发一个app后你会爱不释手的。
+Auto layout是一个基于约束(constraint-based)的布局系统，允许开发者做出可以响应屏幕尺寸与设备方向的UI组件。一些新人开发者因为它的难度而敬而远之，有些开发者则不去用它。不过相信我，今天来用它开发一个app后你会爱不释手的。
 
 随着iPhone 6/6s、6/6s Plus的发布，苹果手机的屏幕尺寸包含了3.5英寸, 4英寸, 4.7英寸和5.5英寸这几种。若不用auto layout的话很难创建一个适配所有屏幕尺寸的app，并且从Xcode 6开始必然会使用auto layout去设计用户界面。
 
@@ -49,24 +49,24 @@ Auto layout并不像人们想象中的那么难。理解它的基础概念与使
 
 ## Auto Layout is All About Constraints
 
-As mentioned before, auto layout is a constraint-based layout system. It allows developers to create an adaptive UI that responds appropriately to changes in screen size and device orientation. Okay, it sounds good. But what does the term “constraint-based layout” mean? Let me put it in a more descriptive way. Consider the “Hello World” button again, how do you describe its position if you want to place the button at the center of the view? You would probably describe it like this:
+auto layout是一个基于约束(constraint-based)的布局系统，使开发者可以做出自动适配屏幕尺寸与朝向的UI组件，这听起来不错，不过“基于约束的布局”是什么意思？让我来解释一下，想想之前的那个“Hello World”按钮，如果你想把它放在视图中心会怎么描述它的位置？也许你会这么描述：
 
-The button should be centered both horizontally and vertically, regardless of the screen resolution and orientation.
+*不管怎样的屏幕分辨率与朝向，按钮都在水平与竖直方向的中心。
 
-Here you actually define two constraints:
+实际上你已经定义了两个约束:
 
-* center horizontally
-* center vertically
+* 水平中心
+* 竖直中心
 
-These constraints express rules for the layout of the button in the interface.
+这些约束表示出了界面中按钮布局的规则。
 
-Auto layout is all about constraints. While we describe the constraints in words, the constraints in auto layout are expressed in mathematical form. For example, if you’re defining the position of a button, you might want to say “the left edge should be 30 points from the left edge of its containing view.” This translates to button.left = (container.left + 30).
+Auto layout的核心就是一些约束，当用文字描述约束时，在auto layout中这些约束会通过数学形式来表示。比如说，当定义一个按钮的位置时，也许想说“按钮的左侧边界应距容器视图的左侧边界30pt。” 变成数学形式就是 button.left = (container.left + 30)。
 
-Fortunately, we do not need to deal with the formulas. All you need to know is how to express the constraints descriptively and use Interface Builder to create them.
+幸运的是不需要我们去处理这些公式，你只需知道如何使用Interface Builder创建合适的约束即可。
 
-Okay, that’s quite enough for the auto layout theory. Now let’s see how to define layout constraints in Interface Builder to center the “Hello World” button.
+好了，auto layout的基本知识差不多够了，现在来看看在Interface Builder中如何定义处于中心位置“Hello World”按钮的约束。
 
-## Live Previewing in Interface Builder
+## Interface Builder中的实时预览
 
 First, open Main.storyboard of your HelloWorld project (or download it from http://www.appcoda.com/resources/swift3/HelloWorld.zip). Before we add the layout constraints to the user interface, let me introduce a handy feature in Xcode 8.
 
