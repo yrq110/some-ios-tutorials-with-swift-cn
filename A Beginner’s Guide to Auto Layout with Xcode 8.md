@@ -55,8 +55,8 @@ auto layout是一个基于约束(constraint-based)的布局系统，使开发者
 
 实际上你已经定义了两个约束:
 
-* 水平中心
-* 竖直中心
+* 水平居中
+* 竖直居中
 
 这些约束表示出了界面中按钮布局的规则。
 
@@ -68,15 +68,40 @@ Auto layout的核心就是一些约束，当用文字描述约束时，在auto l
 
 ## Interface Builder中的实时预览
 
-First, open Main.storyboard of your HelloWorld project (or download it from http://www.appcoda.com/resources/swift3/HelloWorld.zip). Before we add the layout constraints to the user interface, let me introduce a handy feature in Xcode 8.
+首先，打开HelloWorld工程中的Main.storyboard(或者从这儿下载:http://www.appcoda.com/resources/swift3/HelloWorld.zip). 在UI界面上添加布局约束之前，先简要介绍一下Xcode 8中的一个方便的特性。
 
-Instead of viewing the app UI in simulators, Xcode 8 provides a configuration bar in Interface Builder for developers to live preview the user interface.
+除了在模拟器中观察app的UI外，Xcode 8还在Interface Builder中提供了一个配置栏，方便开发者进行用户界面的实时预览。
 
-By default, Interface Builder is set to preview the UI on iPhone 6s. To see how your app looks on other devices, click View as: iPhone 6s button to reveal the configuration bar and then choose your preferred iPhone/iPad devices to test. You can also alter the device’s orientation to see how it affects your app’s UI. The figure below shows a live preview of the Hello World app on iPhone 6s in landscape orientation.
+默认情况下Interface Builder被设为预览iPhone 6s的界面，为了观察在其他设备上的效果，点击`View as: iPhone 6s`按钮展开配置栏，然后选择你想要测试的iPhone/iPad设备，也可以改变设备的朝向。下图展示了一个Hello World app在iPhone 6s横屏时的实时预览。
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-3.png?12321214124)
 
-The configuration bar is a great feature in Xcode 8. Take some time to play around with it.
+配置栏是Xcode 8中的一个很棒的特性，花点时间把玩一下。
 
-> Note: You may wonder what “(wC hC)” means. Just forget about it right now and focus on learning auto layout. If you’re interested in learning more about it, you can check out our Swift book.
+> 注意: 可能会想“(wC hC)”是什么意思，先把它忘掉专注于学习auto layout。若对这个感兴趣可以看下我们的[Swift教程](https://www.appcoda.com/swift)。
 
+## 使用Auto Layout居中按钮
+
+来继续讨论auto layout，Xcode提供了两种定义约束的方法:
+
+1. Auto layout bar
+2. Control-drag
+
+在文章中会使用两种方法来进行约束。首先使用auto layout bar，在Interface Builder编辑器的右下角应该会看到四个按钮，这些按钮都属于布局栏，可以使用它们来定义不同类型的布局约束。
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-4.png?12321214124)
+
+每个按钮都有自己的方法:
+
+* 对齐 – 新建对齐约束，比如对齐两个视图的左边界。
+* 固定 – 新建空间约束，比如定义一个UI空间的宽度。
+* 问题 – 解决布局问题
+* 栈 – 把视图嵌入到栈视图中，栈视图是Xcode 7中出现的新特性，在下一节会讨论这个。
+
+如之前所说的那样，要居中“Hello World”按钮需要定义两个约束：水平居中与竖直居中，这两种约束都是相对于视图的。
+
+需要使用对齐方法来创建约束。首先在Interface Builder选择按钮然后点击布局栏中的对齐图标。在弹出的菜单中，选中“Horizontal in container”和“Vertically in container”选项，然后点击“Add 2 Constraints”选项。
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-5.png?12321214124)
+
+> 快捷键: 可以按下command+0来隐藏项目导航栏，这样可以释放一些屏幕空间，设计起来更方便。
