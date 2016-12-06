@@ -104,4 +104,44 @@ Auto layout的核心就是一些约束，当用文字描述约束时，在auto l
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-5.png?12321214124)
 
-> 快捷键: 可以按下command+0来隐藏项目导航栏，这样可以释放一些屏幕空间，设计起来更方便。
+> 提示: 可以按下command+0来隐藏项目导航栏，这样可以释放一些屏幕空间，设计起来更方便。
+
+可以看到一些约束线条，展开左侧文档视图的Constraints选项，可以看到刚刚给按钮添加的两个约束，这些约束确保按钮一直保持在视图中心的位置，你也可以在右上角的Size inspector中查看这些约束。
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-6.png?12321214124)
+
+> 提示: 蓝色的约束线条表示视图布局的设置是正确无冲突的。
+
+准备好可以测试app了。点击Run使用iPhone 6/6s Plus(或iPhone 4s)模拟器启动app，也可以在底部的配置栏中选择其他设备与设备朝向来验证布局的情况。不论何种屏幕尺寸与朝向，按钮都会完美的出现在屏幕中心。
+
+## 解决布局的约束问题
+
+The layout constraints that we have just set are perfect. But that is not always the case. Xcode is intelligent enough to detect any constraint issues.
+
+Try to drag the Hello World button to the lower-left part of the screen. Xcode immediately detects some layout issues and the corresponding constraint lines turns orange that indicates a misplaced item.
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-7.png?12321214124)
+
+Auto layout issues occur when you create ambiguous or conflicting constraints. Here we said the button should be vertically and horizontally centered in the container (i.e. the view). However, the button is now placed at the lower-left corner of the view. Interface Builder found this confusing, therefore it uses orange lines to indicate the layout issues.
+
+When there is any layout issue, the Document Outline view displays a disclosure arrow (red/orange). Now click the disclosure arrow to see a list of the issues. Interface Builder is smart enough to resolve the layout issues for us. Click the indicator icon next to the issue and a pop-over shows you a number of solutions. In this case, select the “Update Frame” option and click “Fix Misplacement” button. The button will then be moved to the center of the view.
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-8.png?12321214124)
+
+This layout issue was triggered manually. I just wanted to demonstrate how to find the issues and fix them. As you go through the exercises in the later chapters, you will probably face a similar layout issue. You should know how to resolve layout issues easily and quickly.
+
+## An Alternative Way to Preview Storyboards
+
+While you can use the configuration bar to live preview your app UI, Xcode provides an alternate Preview feature for developers to preview the user interface on different devices simultaneously.
+
+In Interface Builder, open the Assistant pop-up menu > Preview (1). Now press and hold option key, then click Main.storyboard (Preview). You can refer to the figure below for the steps.
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-9.png?12321214124)
+
+Xcode will display a preview of your app’s UI in the assistant editor. By default, it shows you the preview on a iPhone 6s device. You can click the + button at the lower-left corner of the assistant editor to add other iOS devices (e.g. iPhone 4s/SE) for preview. If you want to see how the screen looks like in landscape orientation, simply click the rotate button. The Preview feature is extremely useful for designing your app’s user interface. You can make changes to the storyboard (say, adding another button to the view) and see how the UI looks on the chosen devices all at once.
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-10.png?12321214124)
+
+If you want to free up some more screen space for the preview pane, hold both command and option keys and then press 0 to hide the Utility area.
+
+> Quick tip: When you add more devices in the preview assistant, Xcode may not be able fit the preview of all devices sizes into the screen at the same time. If you’re using a trackpad, you can scroll through the preview by swiping left or right with two fingers. What if you’re still using a mouse with a scroll wheel? Simply hold the shift key to scroll horizontally.
