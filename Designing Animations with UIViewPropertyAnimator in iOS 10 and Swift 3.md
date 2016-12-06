@@ -9,8 +9,6 @@
 
 ***
 
-这篇教程中介绍了iOS 10中的新特性，Swift语言与Xcode 8 beta，都是WWDC 16上刚刚发布的。
-
 iOS 10中的UIKit中加入了一些新的对象与协议，具有“基于对象、完全交互，支持可中断动画来保持对动画的控制，使用基于手势的交互来连接”等特点。
 
 简而言之就是为了给开发者可扩展的、更上层的控制，比如一些时间函数，更方便地去取消、回放、暂停与重启动画, and change the timing and duration on the fly with smoothly interpolated results. 这些动画的功能同样适用于view controller的变换。
@@ -153,9 +151,9 @@ Animators有三种状态:
 
 (来源 [UIViewAnimating protocol reference](https://developer.apple.com/reference/uikit/uiviewanimating))
 
-任何向inactive状态的转换会使所有animator中的动画被清除(along with the animator’s completion block, if it exists)。
+任何指向inactive状态的转换会使所有animator中的动画被清除。
 
-我们已经见过了startAnimation方法，接下来研究一下其它两个。
+尝试了startAnimation方法，接下来研究一下其它两个。
 
 为了让圆圈动起来，需要改变circleAnimator的初始化代码:
 
@@ -250,9 +248,9 @@ case .changed:
 
 ### UISpringTimingParameters
 
-要使用UISpringTimingParameters实例需要设置衰减率(damping ratio)、质量(mass)、刚度(stiffness)与初始速率(initial velocity)，这些参数会参与适当的算式式计算，得到一个逼真的弹性动画。animator在初始化时输入一个UISpringTimingParameters参数的同时仍然可以接收一个duration参数，不过这个参数会被忽略掉，不会参与算式的计算，这解决了一些以前的sping动画函数中的弊病。
+要使用UISpringTimingParameters实例需要设置衰减率(damping ratio)、质量(mass)、刚度(stiffness)与初始速率(initial velocity)，回使用这些参数通过一些公式计算来得到一个逼真的弹性动画。animator在初始化时可以同时接受UISpringTimingParameters和duration参数，不过后者会被忽略掉，不会参与公式计算，这解决了一些以前的sping动画函数中的弊病。
 
-来做些不同的事情，使用一个sping animator让圆圈吸附在屏幕的中央。
+来做些不同的事情，使用sping animator把圆圈吸附在屏幕的中央。
 
 ViewController.swift
 ```swift
@@ -340,7 +338,7 @@ expansionAnimator = UIViewPropertyAnimator(duration: expansionDuration, timingPa
 
 可以手动设置一个动画暂停的进度，通过使用animator的fractionComplete属性，输入一个0.0 - 1.0<sup>\*</sup>范围内的值。比如说值为0.5的话，则会将动画属性折半赋给最终的值，并且会忽略timing曲线。注意你设置的位置会被映射到当你重启动画时的timing曲线，因此值为0.5的fractionComplete属性并不意味着剩余的持续时间等于原始持续时间。
 
-来做个别的例子。首先，在viewDidLoad:顶部初始化animator，然后输入两个动画:
+来做个别的例子。首先，在viewDidLoad:顶部初始化animator，然后添加两个动画:
 ```swift
 // viewDidLoad:
 // ...
