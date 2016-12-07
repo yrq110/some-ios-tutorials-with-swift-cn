@@ -112,23 +112,23 @@ Auto layout的核心就是一些约束，当用文字描述约束时，在auto l
 
 > 提示: 蓝色的约束线条表示视图布局的设置是正确无冲突的。
 
-准备好可以测试app了。点击Run使用iPhone 6/6s Plus(或iPhone 4s)模拟器启动app，也可以在底部的配置栏中选择其他设备与设备朝向来验证布局的情况。不论何种屏幕尺寸与朝向，按钮都会完美的出现在屏幕中心。
+做好测试app的准备了，点击Run使用iPhone 6/6s Plus(或iPhone 4s)模拟器启动app，也可以在底部的配置栏中选择其他设备与设备朝向来检查布局的情况。不论何种屏幕尺寸与朝向，按钮都会完美的出现在屏幕中心。
 
-## 解决布局的约束问题
+## 解决布局约束的问题
 
-The layout constraints that we have just set are perfect. But that is not always the case. Xcode is intelligent enough to detect any constraint issues.
+我们刚才设置的布局约束是没问题的，不过总会有出问题的时候，不用担心，Xcode可以检测出这些约束问题。
 
-Try to drag the Hello World button to the lower-left part of the screen. Xcode immediately detects some layout issues and the corresponding constraint lines turns orange that indicates a misplaced item.
+试着把Hello World按钮拖到屏幕的左下方部分，Xcode会立即检测到布局问题，通过橙色的约束线条指出错位的部件。
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-7.png?12321214124)
 
-Auto layout issues occur when you create ambiguous or conflicting constraints. Here we said the button should be vertically and horizontally centered in the container (i.e. the view). However, the button is now placed at the lower-left corner of the view. Interface Builder found this confusing, therefore it uses orange lines to indicate the layout issues.
+当创建的约束不明确或有冲突时会出现自动布局的问题。在这里需要按钮出现在容器的水平与竖直方向的中心，不过按钮现在被放置在了视图的左下角，因此Interface Builder会检测出这个问题并用橙色的线条指出布局问题。
 
-When there is any layout issue, the Document Outline view displays a disclosure arrow (red/orange). Now click the disclosure arrow to see a list of the issues. Interface Builder is smart enough to resolve the layout issues for us. Click the indicator icon next to the issue and a pop-over shows you a number of solutions. In this case, select the “Update Frame” option and click “Fix Misplacement” button. The button will then be moved to the center of the view.
+当存在布局问题时，文档大纲视图中会显示一个未闭合的箭头(红/橙)，点击箭头可以看到一个问题列表。Interface Builder会帮我们解决这些问题，点击问题旁的指示图标会出现一些解决方法，选择“Update Frame”并点击“Fix Misplacement”，按钮就被移动到视图中心了。
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-8.png?12321214124)
 
-This layout issue was triggered manually. I just wanted to demonstrate how to find the issues and fix them. As you go through the exercises in the later chapters, you will probably face a similar layout issue. You should know how to resolve layout issues easily and quickly.
+为了示范如何找到并修复问题我是手动触发的这个问题。在之后章节的练习中会遇到相似的布局问题，那时就知道如何快速的解决了。
 
 ## An Alternative Way to Preview Storyboards
 
