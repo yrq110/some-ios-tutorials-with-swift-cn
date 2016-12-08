@@ -145,3 +145,47 @@ Xcode will display a preview of your app’s UI in the assistant editor. By defa
 If you want to free up some more screen space for the preview pane, hold both command and option keys and then press 0 to hide the Utility area.
 
 > Quick tip: When you add more devices in the preview assistant, Xcode may not be able fit the preview of all devices sizes into the screen at the same time. If you’re using a trackpad, you can scroll through the preview by swiping left or right with two fingers. What if you’re still using a mouse with a scroll wheel? Simply hold the shift key to scroll horizontally.
+
+## Adding a Label
+
+Now that you have some idea about auto layout and the preview feature, let’s add a label to the lower-right part of the view and see how to define the layout constraints for the label. Labels in iOS are usually used for displaying simple text and messages.
+
+In the Interface Builder editor, drag a label from the Object library and place it near the lower-right corner of the view. Double-click the label and change it to “Welcome to Auto Layout” or whatever title you want.
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-11.png?12321214124)
+
+If you opened the preview assistant again, you should see the UI change immediately. Without defining any layout constraints for the label, you are not able to display the label on all iPhone devices except iPhone 6s and 6s Plus.
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-12.png?12321214124)
+
+How can you resolve this issue? Obviously, we need to setup a couple of constraints to make it work properly. The question is: what constraints should we add?
+
+Let’s try to describe the requirement of the label in words. You probably describe it like this:
+
+The label should be placed at the lower-right corner of the view.
+
+That’s okay, but not precise enough. A more precise way to describe the location of the label is like this:
+
+The label is located 0 points away from the right margin of the view and 20 points away from the bottom of the view.
+
+This is much better. When you describe the position of an item precisely, you can easily come up with the layout constraints. Here, the constraints of the label are:
+
+1. The label is 0 points away from the right margin of the view.
+2. The label is 20 points away from the bottom of the view.
+
+In auto layout, we refer this kind of constraints as spacing constraints. To create these spacing constraints, you can use the Pin button of the layout button. But this time we’ll use the Control-drag approach to apply auto layout. In Interface Builder, you can control-drag from an item to itself or to another item along the axis for which you want to add constraints.
+
+To add the first spacing constraint, hold the control key and drag from the label to the right until the view becomes highlighted in blue. Now release the button, you’ll see a pop-over menu showing a list of constraint options. Select “Trailing space to container margin” to add a spacing constraint from the label to the view’s right margin.
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-13.png?12321214124)
+
+In the document outline view, you should see the new constraint. Interface Builder now displays constraint lines in red indicating that there are some missing constraints. That’s normal as we haven’t defined the second constraint.
+
+Now control-drag from the label to the bottom of the view. Release the button and select “Vertical Spacing to Bottom Layout Guide” in the shortcut menu. This creates a spacing constraint from the label to the bottom layout guide of the view.
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-14.png?12321214124)
+
+Once you added the two constraints, all constraint lines should be in solid blue. When you preview the UI or run the app in simulator, the label should display properly on all screen sizes, and even in landscape mode.
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-15.png?12321214124)
+
