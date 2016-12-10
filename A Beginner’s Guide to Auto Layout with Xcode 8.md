@@ -130,23 +130,23 @@ Auto layout的核心就是一些约束，当用文字描述约束时，在auto l
 
 为了示范如何找到并修复问题我是手动触发的这个问题。在之后章节的练习中会遇到相似的布局问题，那时就知道如何快速的解决了。
 
-## An Alternative Way to Preview Storyboards
+## 另一种预览故事板的方式
 
-While you can use the configuration bar to live preview your app UI, Xcode provides an alternate Preview feature for developers to preview the user interface on different devices simultaneously.
+除了配置栏实时预览app的UI界面外，Xcode还为开发者提供了一种在不同设备上预览UI的方法。
 
-In Interface Builder, open the Assistant pop-up menu > Preview (1). Now press and hold option key, then click Main.storyboard (Preview). You can refer to the figure below for the steps.
+在Interface Builder中打开辅助用弹出菜单 > Preview (1)，按住option键的同时点击Main.storyboard (Preview)，如下图:
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-9.png?12321214124)
 
-Xcode will display a preview of your app’s UI in the assistant editor. By default, it shows you the preview on a iPhone 6s device. You can click the + button at the lower-left corner of the assistant editor to add other iOS devices (e.g. iPhone 4s/SE) for preview. If you want to see how the screen looks like in landscape orientation, simply click the rotate button. The Preview feature is extremely useful for designing your app’s user interface. You can make changes to the storyboard (say, adding another button to the view) and see how the UI looks on the chosen devices all at once.
+Xcode会在辅助编辑器中显示app的UI预览界面。默认会使用iPhone 6s来显示。可以点击辅助编辑器左下角的+按钮来添加其它iOS设备(如iPhone 4s/SE)，若想看看屏幕水平朝向时的效果，直接点rotate按钮就行了。预览特性对设计app的UI界面非常有帮助。可以在修改故事板中内容的同时实时观察UI在所选设备中的情况。
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-10.png?12321214124)
 
-If you want to free up some more screen space for the preview pane, hold both command and option keys and then press 0 to hide the Utility area.
+若你想给预览面板腾出更多的屏幕空间，可以在按下command和option的同时按下0来隐藏Utility区域。
 
-> Quick tip: When you add more devices in the preview assistant, Xcode may not be able fit the preview of all devices sizes into the screen at the same time. If you’re using a trackpad, you can scroll through the preview by swiping left or right with two fingers. What if you’re still using a mouse with a scroll wheel? Simply hold the shift key to scroll horizontally.
+> 提示: 如果你在辅助预览中添加了多个设备，那么Xcode也许不能一次性显示所有设备中的预览，有触摸板的话可以使用双指的左划与右划来滚动预览视图，只有鼠标的话可以按下shift的同时使用滚轮进行水平滚动。
 
-## Adding a Label
+## 添加标签
 
 Now that you have some idea about auto layout and the preview feature, let’s add a label to the lower-right part of the view and see how to define the layout constraints for the label. Labels in iOS are usually used for displaying simple text and messages.
 
