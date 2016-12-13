@@ -148,30 +148,30 @@ Xcode会在辅助编辑器中显示app的UI预览界面。默认会使用iPhone 
 
 ## 添加标签
 
-Now that you have some idea about auto layout and the preview feature, let’s add a label to the lower-right part of the view and see how to define the layout constraints for the label. Labels in iOS are usually used for displaying simple text and messages.
+现在你已经对auto layout和预览特性有所了解了，来在视图右下角试着添加一个标签吧，看看如何添加标签的布局约束。iOS中的标签常被用来显示简单的文本与信息。
 
-In the Interface Builder editor, drag a label from the Object library and place it near the lower-right corner of the view. Double-click the label and change it to “Welcome to Auto Layout” or whatever title you want.
+从Interface Builder编辑器的对象库中拖一个标签到视图的右下角。双击标签把文本改成“Welcome to Auto Layout”或你想要的内容。
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-11.png?12321214124)
 
-If you opened the preview assistant again, you should see the UI change immediately. Without defining any layout constraints for the label, you are not able to display the label on all iPhone devices except iPhone 6s and 6s Plus.
+若再次打开预览辅助，会看到UI界面立马发生了变化。在没有定义标签的布局约束的情况下，在除了iPhone 6s/6s外设备上没有显示出标签。
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-12.png?12321214124)
 
-How can you resolve this issue? Obviously, we need to setup a couple of constraints to make it work properly. The question is: what constraints should we add?
+如何解决这个问题? 显然，需要设置一组合适的约束，问题是：应该添加怎样的约束?
 
-Let’s try to describe the requirement of the label in words. You probably describe it like this:
+来尝试用文字描述一下标签的位置要求，也许会这么表达:
 
-The label should be placed at the lower-right corner of the view.
+*标签应被放置在视图的右下角。
 
-That’s okay, but not precise enough. A more precise way to describe the location of the label is like this:
+这样可以不过不够具体，这样描述标签的位置更加具体:
 
-The label is located 0 points away from the right margin of the view and 20 points away from the bottom of the view.
+*标签距离视图右边界0 points，距离下边界20 points。
 
-This is much better. When you describe the position of an item precisely, you can easily come up with the layout constraints. Here, the constraints of the label are:
+这就好多了，能具体地描述一个组件位置的话，就可以轻松添加布局约束了。那么标签的约束如下:
 
-1. The label is 0 points away from the right margin of the view.
-2. The label is 20 points away from the bottom of the view.
+1. 标签离视图右边界的内距为0 points。
+2. 标签离视图下边界的内距为20points。
 
 In auto layout, we refer this kind of constraints as spacing constraints. To create these spacing constraints, you can use the Pin button of the layout button. But this time we’ll use the Control-drag approach to apply auto layout. In Interface Builder, you can control-drag from an item to itself or to another item along the axis for which you want to add constraints.
 
