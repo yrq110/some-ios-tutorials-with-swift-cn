@@ -173,19 +173,51 @@ Xcode会在辅助编辑器中显示app的UI预览界面。默认会使用iPhone 
 1. 标签离视图右边界的内距为0 points。
 2. 标签离视图下边界的内距为20points。
 
-In auto layout, we refer this kind of constraints as spacing constraints. To create these spacing constraints, you can use the Pin button of the layout button. But this time we’ll use the Control-drag approach to apply auto layout. In Interface Builder, you can control-drag from an item to itself or to another item along the axis for which you want to add constraints.
+我们将这些约束转化为auto layout中的空间约束，可以使用布局按钮中的Pin来创建空间约束，不过这次我们使用Control-drag的方式来进行auto layout。在Interface Builder中，可以在使用control键的同时将一个部件拖拽到你想要添加约束的另一个部件的坐标轴上。
 
-To add the first spacing constraint, hold the control key and drag from the label to the right until the view becomes highlighted in blue. Now release the button, you’ll see a pop-over menu showing a list of constraint options. Select “Trailing space to container margin” to add a spacing constraint from the label to the view’s right margin.
+来添加第一个空间约束，按住control键把标签拖拽到右侧直到视图变成蓝色高亮的状态，松开按钮后会出现一个包含约束列表的菜单。选择“Trailing space to container margin”添加一个按钮与视图右边界的空间约束。
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-13.png?12321214124)
 
-In the document outline view, you should see the new constraint. Interface Builder now displays constraint lines in red indicating that there are some missing constraints. That’s normal as we haven’t defined the second constraint.
+在文档大纲视图中可以看到新的约束。Interface Builder用红色的线条指示出缺少了一些约束，这是正常的，因为还没有定义第二个约束。
 
-Now control-drag from the label to the bottom of the view. Release the button and select “Vertical Spacing to Bottom Layout Guide” in the shortcut menu. This creates a spacing constraint from the label to the bottom layout guide of the view.
+现在按住control把标签拖拽到视图底部，松开按钮选择“Vertical Spacing to Bottom Layout Guide”，创建一个按钮与视图下边界的空间约束。
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-14.png?12321214124)
 
-Once you added the two constraints, all constraint lines should be in solid blue. When you preview the UI or run the app in simulator, the label should display properly on all screen sizes, and even in landscape mode.
+添加完这两个约束后，所有的约束线条都应该是蓝色的实线。在预览UI或在模拟器中运行app时，会看到不管是何种尺寸、何种朝向的屏幕，标签都出现了正确的地方。
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-15.png?12321214124)
 
+## 顶部与底部布局指导
+
+You may wonder what the Bottom Layout Guide means. Generally, the Bottom Layout Guide refers to the bottom of the view, like the one shown in the example. Sometimes, the Bottom Layout Guide varies. For example, if there is a tab bar, the Bottom Layout Guide will refer to the top of tab bar.
+
+For the Top Layout Guide, it sits at 20 points (which is the height of the status bar) from the top of the view.
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-16.png?12321214124)
+
+These layout guides are particularly useful for defining layout constraints because they automatically varies its position when the view’s layout is changed. For example, if the view contains a navigation bar, the top layout guide sits below the navigation bar (see figure 5-17). Therefore, as long as the UI object is constrained relative to the top/bottom layout guide, your interface will layout correctly even if you add a navigation or tab bar to the interface.
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-17.png?12321214124)
+
+## 编辑约束
+
+The “Welcome to Auto Layout” label is now located 0 points away from the right margin of the view. What if you want to add some space between the label and the right margin of the view? Interface Builder provides a convenient way to edit the constant of a constraint.
+
+You can simply choose the constraint in the document outline view. Here, you should select “trailingMargin” constraint. In the Attributes inspector, you can find the properties of this constraint including relation, constant, and priority. The constant is now set to 0. You can change it to 20 to add some extra space.
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-18.png?12321214124)
+
+Your Exercise
+
+By now, I hope you should have some basic ideas about how to lay out your app UI and make it fit for all screen sizes. Let’s have a simple exercise before moving on to the next chapter. All I need you to do is add another label named Learn Swift to the view with the following constraints:
+
+* The new label should be 40 points away from the top layout guide.
+* The new label should be centered horizontally.
+
+Optionally, you can increase the font size of the label to 30 points. To change the font size, you just open the Attributes inspector and edit the Font option. Your end result should look like this:
+
+![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-19.png?12321214124)
+
+## 总结
