@@ -164,7 +164,7 @@ Xcode会在辅助编辑器中显示app的UI预览界面。默认会使用iPhone 
 
 *标签应被放置在视图的右下角。
 
-这样可以不过不够具体，这样描述标签的位置更加具体:
+这么描述可以不过不够具体，下面这样描述标签的位置更加具体:
 
 *标签距离视图右边界0 points，距离下边界20 points。
 
@@ -189,35 +189,39 @@ Xcode会在辅助编辑器中显示app的UI预览界面。默认会使用iPhone 
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-15.png?12321214124)
 
-## 顶部与底部布局指导
+## Top 和 Bottom Layout Guide
 
-You may wonder what the Bottom Layout Guide means. Generally, the Bottom Layout Guide refers to the bottom of the view, like the one shown in the example. Sometimes, the Bottom Layout Guide varies. For example, if there is a tab bar, the Bottom Layout Guide will refer to the top of tab bar.
+Bottom Layout Guide(底部布局辅助)是啥东东呢？通常来说，Bottom Layout Guide是与底部视图关联的一个约束边界，有时会发生变化，比如存在一个工具栏的话，Bottom Layout Guide就会与工具栏的顶部关联。
 
-For the Top Layout Guide, it sits at 20 points (which is the height of the status bar) from the top of the view.
+Top Layout Guide的话是在距视图顶部20points(状态栏的高度)的位置。
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-16.png?12321214124)
 
-These layout guides are particularly useful for defining layout constraints because they automatically varies its position when the view’s layout is changed. For example, if the view contains a navigation bar, the top layout guide sits below the navigation bar (see figure 5-17). Therefore, as long as the UI object is constrained relative to the top/bottom layout guide, your interface will layout correctly even if you add a navigation or tab bar to the interface.
+这些布局辅助约束对于定义布局约束来说是非常有用的，因为他们会根据视图的布局变化自动调整。比如说，如果视图中有一个导航栏，那么top layout guide就会移动到导航栏的下方(如下图)。因此，只要UI组件的约束是与top/bottom layout guide相关联的，那么在添加一个导航栏或工具栏时界面就会自动调整成正确的布局。T
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-17.png?12321214124)
 
 ## 编辑约束
 
-The “Welcome to Auto Layout” label is now located 0 points away from the right margin of the view. What if you want to add some space between the label and the right margin of the view? Interface Builder provides a convenient way to edit the constant of a constraint.
+“Welcome to Auto Layout”标签现在被放在了距离视图右边界0 points的地方，若要在标签和视图右边界中添加一些空间怎么办呢？Interface Builder提供了一种很方便的修改约束的方法。
 
-You can simply choose the constraint in the document outline view. Here, you should select “trailingMargin” constraint. In the Attributes inspector, you can find the properties of this constraint including relation, constant, and priority. The constant is now set to 0. You can change it to 20 to add some extra space.
+首先选择文档大纲视图中的约束，这里你可以选择“trailingMargin”约束。在属性查看器中找到这个约束的属性，比如relation, constant和priority。constant现在是0，可以改为20添加一些额外的空间。
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-18.png?12321214124)
 
-Your Exercise
+## 练习
 
-By now, I hope you should have some basic ideas about how to lay out your app UI and make it fit for all screen sizes. Let’s have a simple exercise before moving on to the next chapter. All I need you to do is add another label named Learn Swift to the view with the following constraints:
+我觉得你现在对适配各种屏幕尺寸的方法应该有一定的了解了，来进行一个简单的练习吧。需要你做的是再添加一个名为Learn Swift的标签到视图中，并满足如下约束：
 
-* The new label should be 40 points away from the top layout guide.
-* The new label should be centered horizontally.
+* 新标签距离top layout guide 40 points。
+* 新标签在水平中心位置。
 
-Optionally, you can increase the font size of the label to 30 points. To change the font size, you just open the Attributes inspector and edit the Font option. Your end result should look like this:
+可以把标签的字体大小调整为30points，打开属性观察器编辑Font选项即可，结果应如下所示：
 
 ![](http://www.appcoda.com/learnswift/images/chapter-3/auto-layout-19.png?12321214124)
 
 ## 总结
+
+在这里只是介绍了一下auto layout的基本内容，在开发app的过程中再更深的去探索一下它的奥秘吧！
+
+可以在[这里](https://www.appcoda.com/resources/swift3/HelloWorldAutoLayout.zip)下载完整项目
