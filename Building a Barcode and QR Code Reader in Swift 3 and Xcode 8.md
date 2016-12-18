@@ -23,20 +23,18 @@ QR(Quick Response的缩写)码是由Denso开发的一种二维条形码，最初
 
 ## 构建QR码扫描器
 
-The demo app that we’re going to build is fairly simple and straightforward. Before we proceed to build the demo app, however, it’s important to understand that any barcode scanning in iOS, including QR code scanning, is totally based on video capturing. That’s why the barcode scanning feature is added in the AVFoundation framework. Keep this point in mind, as it’ll help you understand the entire chapter.
+我们要做的demo是比较简单直接的，在开始构建之前需要了解一下iOS中的条形码与QR码扫描，它们都是基于视频捕捉的，这就是为何需要引入AVFoundation框架。记住这一点有助于对这一章节内容的理解。
 
-So, how does the demo app work?
+那么，demo是如何工作的?
 
-Take a look at the screenshot below. This is how the app UI looks. The app works pretty much like a video capturing app but without the recording feature. When the app is launched, it takes advantage of the iPhone’s rear camera to spot the QR code and recognizes it automatically. The decoded information (e.g. an URL) is displayed right at the bottom of the screen.
+看看下面的截图，这就是app界面的样子。app的功能有点像一个没有录像功能的视频捕捉app。当app启动后会利用iPhone的前置摄像头标示出QR码并自动识别，解码后的信息会显示在屏幕底部。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/11/qrcode-reader-1-1024x630.png)
 
-It’s that simple.
+就是这么简单。
 
-To build the app, you can start by downloading the project template from here. I have pre-built the storyboard and linked up the message label for you. The main screen is associated with the QRCodeViewController class, while the scanner screen is associated with the QRScannerController class.
+构建这个app前需要先下载[工程模板](https://github.com/appcoda/QRCodeReader/raw/master/QRCodeReaderStarter.zip)，预先设置好了storyboard中的标签，主界面对应QRCodeViewController类，扫描界面对应QRScannerController类。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/11/qrcode-reader-2-1024x565.png)
 
-You can run the starter project to have a look. After launching the app, you can tap the scan button to bring up the scan view. Later we will implement this view controller for QR code scanning.
-
-Now that you understand how the starter project works, let’s get started and develop the QR scanning feature in the app.
+可以先运行一下试试，点击scan按钮会出现扫描视图，下面我们来实现这个视图中的QR码扫描功能。
