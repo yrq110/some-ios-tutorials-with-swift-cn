@@ -38,3 +38,99 @@ QR(Quick Response的缩写)码是由Denso开发的一种二维条形码，最初
 ![](http://www.appcoda.com/wp-content/uploads/2016/11/qrcode-reader-2-1024x565.png)
 
 可以先运行一下试试，点击scan按钮会出现扫描视图，下面我们来实现这个视图中的QR码扫描功能。
+
+## Import AVFoundation Framework
+
+I have created the user interface of the app in the project template. The label in the UI is used to display the decoded information of the QR code and it is associated with the messageLabel property of the QRScannerController class.
+
+As I mentioned earlier, we rely on the AVFoundation framework to implement the QR code scanning feature. First, open the QRScannerController.swift file and import the framework:
+```swift
+class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate
+```
+Later, we need to implement the AVCaptureMetadataOutputObjectsDelegate protocol. We’ll talk about that in a while. For now, update the following line of code:
+```swift
+class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate
+```
+Before moving on, declare the following variables in the QRScannerController class. We’ll talk about them one by one later.
+```swift
+var captureSession:AVCaptureSession?
+var videoPreviewLayer:AVCaptureVideoPreviewLayer?
+var qrCodeFrameView:UIView?
+```
+##Implementing Video Capture
+
+As mentioned in the earlier section, QR code reading is totally based on video capturing. To perform a real-time capture, all we need to do is instantiate an AVCaptureSession object with the input set to the appropriate AVCaptureDevice for video capturing. Insert the following code in the viewDidLoad method of the QRScannerController class:
+
+```swift
+// Get an instance of the AVCaptureDevice class to initialize a device object and provide the video as the media type parameter.
+let captureDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+ 
+do {
+    // Get an instance of the AVCaptureDeviceInput class using the previous device object.
+    let input = try AVCaptureDeviceInput(device: captureDevice)
+    
+    // Initialize the captureSession object.
+    captureSession = AVCaptureSession()
+    
+    // Set the input device on the capture session.
+    captureSession?.addInput(input)
+    
+} catch {
+    // If any error occurs, simply print it out and don't continue any more.
+    print(error)
+    return
+}
+```
+An AVCaptureDevice object represents a physical capture device. You use a capture device to configure the properties of the underlying hardware. Since we are going to capture video data, we call the defaultDevice(withMediaType:) method, passing it AVMediaTypeVideo to get the video capture device.
+
+To perform a real-time capture, we instantiate an AVCaptureSession object and add the input of the video capture device. The AVCaptureSession object is used to coordinate the flow of data from the video input device to our output.
+
+In this case, the output of the session is set to an AVCaptureMetaDataOutput object. The AVCaptureMetaDataOutput class is the core part of QR code reading. This class, in combination with the AVCaptureMetadataOutputObjectsDelegate protocol, is used to intercept any metadata found in the input device (the QR code captured by the device’s camera) and translate it to a human-readable format.
+
+Don’t worry if something sounds weird or if you don’t totally understand it right now – everything will become clear in a while. For now, continue to add the following lines of code in the do block of the viewDidLoad method:
+
+```swift
+// Initialize a AVCaptureMetadataOutput object and set it as the output device to the capture session.
+let captureMetadataOutput = AVCaptureMetadataOutput()
+captureSession?.addOutput(captureMetadataOutput)
+```
+
+Next, proceed to add the lines of code shown below. We set self as the delegate of the captureMetadataOutput object. This is the reason why the QRReaderViewController class adopts the AVCaptureMetadataOutputObjectsDelegate protocol.
+```swift
+// Set delegate and use the default dispatch queue to execute the call back
+captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
+captureMetadataOutput.metadataObjectTypes = [AVMetadataObjectTypeQRCode]
+```
+When new metadata objects are captured, they are forwarded to the delegate object for further processing. In the above code, we specify the dispatch queue on which to execute the delegate’s methods. A dispatch queue can be either serial or concurrent. According to Apple’s documentation, the queue must be a serial queue. So we use DispatchQueue.main to get the default serial queue.
+
+The metadataObjectTypes property is also quite important; as this is the point where we tell the app what kind of metadata we are interested in. The AVMetadataObjectTypeQRCode clearly indicates our purpose. We want to do QR code scanning.
+
+Now that we have set and configured an AVCaptureMetadataOutput object, we need to display the video captured by the device’s camera on screen. This can be done using an AVCaptureVideoPreviewLayer, which actually is a CALayer. You use this preview layer in conjunction with an AV capture session to display video. The preview layer is added as a sublayer of the current view. Insert the code below in the do-catch block:
+
+```swift
+// Initialize the video preview layer and add it as a sublayer to the viewPreview view's layer.
+videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+videoPreviewLayer?.videoGravity = AVLayerVideoGravityResizeAspectFill
+videoPreviewLayer?.frame = view.layer.bounds
+view.layer.addSublayer(videoPreviewLayer!)
+```
+Finally, we start the video capture by calling the startRunning method of the capture session:
+```swift
+// Start video capture.
+captureSession?.startRunning()
+```
+If you compile and run the app on a real iOS device, it crashes unexpectedly with the following error:
+```
+This app has crashed because it attempted to access privacy-sensitive data without a usage description.  The app's Info.plist must contain an NSCameraUsageDescription key with a string value explaining to the user how the app uses this data.
+```
+Similar to what we have done in the audio recording chapter, iOS requires app developers to obtain the user’s permission before allowing to access the camera. To do so, you have to add a key named NSCameraUsageDescription in the Info.plist file. Open the file and right-click any blank area to add a new row. Set the key to Privacy – Camera Usage Description, and value to We need to access your camera for scanning QR code.
+![](http://www.appcoda.com/wp-content/uploads/2016/11/qrcode-reader-3-1024x211.png)
+Once you finish the editing, deploy the app and run it on a real device again. Tapping the scan button should bring up the built-in camera and start capturing video. However, at this point the message label and the top bar are hidden. You can fix it by adding the following line of code. This will move the message label and top bar to appear on top of the video layer.
+```swift
+// Move the message label and top bar to the front
+view.bringSubview(toFront: messageLabel)
+view.bringSubview(toFront: topbar)
+```
+Re-run the app after making the changes. The message label No QR code is detected should now appear on screen.
+```swift
+```
