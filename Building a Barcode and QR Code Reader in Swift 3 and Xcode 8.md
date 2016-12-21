@@ -33,33 +33,33 @@ QR(Quick Response的缩写)码是由Denso开发的一种二维条形码，最初
 
 就是这么简单。
 
-构建这个app前需要先下载[工程模板](https://github.com/appcoda/QRCodeReader/raw/master/QRCodeReaderStarter.zip)，预先设置好了storyboard中的标签，主界面对应QRCodeViewController类，扫描界面对应QRScannerController类。
+构建这个app前需要先下载[项目模板](https://github.com/appcoda/QRCodeReader/raw/master/QRCodeReaderStarter.zip)，预先设置好了storyboard中的标签，主界面对应QRCodeViewController类，扫描界面对应QRScannerController类。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/11/qrcode-reader-2-1024x565.png)
 
 可以先运行一下试试，点击scan按钮会出现扫描视图，下面我们来实现这个视图中的QR码扫描功能。
 
-## Import AVFoundation Framework
+## 导入AVFoundation框架
 
-I have created the user interface of the app in the project template. The label in the UI is used to display the decoded information of the QR code and it is associated with the messageLabel property of the QRScannerController class.
+已经在项目模板中写好了app的UI界面，界面中的标签用来显示QR码解码后的信息，与QRScannerController类中的messageLabel属性关联。
 
-As I mentioned earlier, we rely on the AVFoundation framework to implement the QR code scanning feature. First, open the QRScannerController.swift file and import the framework:
+之前强调过QR码的扫描功能是基于AVFoundation框架来实现的。首先打开QRScannerController.swift文件并导入AVFoundation框架:
+```swift
+import AVFoundation
+```
+接着需要实现AVCaptureMetadataOutputObjectsDelegate协议中的委托方法，这个后面再说，如下添加协议:
 ```swift
 class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate
 ```
-Later, we need to implement the AVCaptureMetadataOutputObjectsDelegate protocol. We’ll talk about that in a while. For now, update the following line of code:
-```swift
-class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate
-```
-Before moving on, declare the following variables in the QRScannerController class. We’ll talk about them one by one later.
+在进行下一步之前在QRScannerController类中声明以下变量:
 ```swift
 var captureSession:AVCaptureSession?
 var videoPreviewLayer:AVCaptureVideoPreviewLayer?
 var qrCodeFrameView:UIView?
 ```
-##Implementing Video Capture
+## 实现视频捕捉
 
-As mentioned in the earlier section, QR code reading is totally based on video capturing. To perform a real-time capture, all we need to do is instantiate an AVCaptureSession object with the input set to the appropriate AVCaptureDevice for video capturing. Insert the following code in the viewDidLoad method of the QRScannerController class:
+QR码的获取是使用视频捕捉来实现的，为了进行实时的视频捕捉需要使用AVCaptureSession对象，设置其输入为用于视频捕捉的AVCaptureDevice。在QRScannerController类的viewDidLoad方法中插入如下代码:
 
 ```swift
 // Get an instance of the AVCaptureDevice class to initialize a device object and provide the video as the media type parameter.
@@ -81,13 +81,13 @@ do {
     return
 }
 ```
-An AVCaptureDevice object represents a physical capture device. You use a capture device to configure the properties of the underlying hardware. Since we are going to capture video data, we call the defaultDevice(withMediaType:) method, passing it AVMediaTypeVideo to get the video capture device.
+AVCaptureDevice对象表示一个物理捕捉设备。为了获取视频数据，需要调用defaultDevice(withMediaType:)方法，输入AVMediaTypeVideo得到视频捕捉设备。 
 
-To perform a real-time capture, we instantiate an AVCaptureSession object and add the input of the video capture device. The AVCaptureSession object is used to coordinate the flow of data from the video input device to our output.
+为了进行实时的视频捕捉需要初始化一个AVCaptureSession对象并添加视频捕捉设备作为输入，AVCaptureSession对象用来协调从视频输入到输出的数据流。
 
-In this case, the output of the session is set to an AVCaptureMetaDataOutput object. The AVCaptureMetaDataOutput class is the core part of QR code reading. This class, in combination with the AVCaptureMetadataOutputObjectsDelegate protocol, is used to intercept any metadata found in the input device (the QR code captured by the device’s camera) and translate it to a human-readable format.
+在这里，session的输出被设为一个AVCaptureMetaDataOutput对象。AVCaptureMetaDataOutput类是QR码识别中的核心部分，这个类结合AVCaptureMetadataOutputObjectsDelegate协议用来截获输入设备中的所有元数据(由设备摄像头所捕捉的QR码)，并将其转换成便于人们可读的格式。
 
-Don’t worry if something sounds weird or if you don’t totally understand it right now – everything will become clear in a while. For now, continue to add the following lines of code in the do block of the viewDidLoad method:
+没有理解的话别担心，一会儿就云开雾散了。在viewDidLoad方法中的do代码块中添加如下代码:
 
 ```swift
 // Initialize a AVCaptureMetadataOutput object and set it as the output device to the capture session.
