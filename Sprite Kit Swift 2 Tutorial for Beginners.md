@@ -19,7 +19,7 @@
 
 在这篇教程中，你将学会如何用苹果的2D游戏框架-Sprite Kit去写一款简单的2D游戏，使用Swift语言！
 
-你可以按顺序看也可以直接跳到最后的样例工程，那里会出现一些忍者。
+你可以按顺序看也可以直接跳到最后的演示项目，那里会出现一些忍者。
 >注意:这篇教程在我心中有特殊的地位，它的初版是我在这个站上发布的第一篇教程，使用Cocos2D与Objective-C所编写的游戏。哎呀嘛呀，时过境迁啊！
 
 **目录**
@@ -77,22 +77,22 @@ If you think Unity is for you, check out some of our Unity written tutorials or 
 
 ![](https://cdn2.raywenderlich.com/wp-content/uploads/2014/09/001_New_Game-480x282.png)
 
-工程名起为SpriteKitSimpleGame, 语言选择Swift, Game Technology选SpriteKit, 设备是iPhone, 然后点Next:
+项目名起为SpriteKitSimpleGame, 语言选择Swift, Game Technology选SpriteKit, 设备是iPhone, 然后点Next:
 
 ![](https://cdn4.raywenderlich.com/wp-content/uploads/2015/10/002_Options-452x320.png)
 
-选择存放工程的地点，点击Create. 选择iPhone 6s模拟器, 点击play按钮运行工程, 在一个简易的启动界面后你应该会看到下图:
+选择存放项目的地点，点击Create. 选择iPhone 6s模拟器, 点击play按钮运行, 在一个简易的启动界面后你应该会看到下图:
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/10/003_Hello_World-281x500.png)
 
 Sprite Kit由场景的概念所组成，就像一个游戏中显示的层级与视图。比如说你可能有一个主要游戏区域的场景与一个拥有层级的世界地图场景。场景与一个拥有层级的世界地图场景。
-如果你看一眼工程会发现模板已经为你创建好了一个默认的场景 - GameScene。打开GameScene.swift你会看到包含了一段在屏幕中显示文本框的代码，还有一个当你点击就会添加的旋转宇宙飞船。
+如果你看一眼项目会发现模板已经为你创建好了一个默认的场景 - GameScene。打开GameScene.swift你会看到包含了一段在屏幕中显示文本框的代码，还有一个当你点击就会添加的旋转宇宙飞船。
 
 在这篇教程中主要在GameScene上进行工作。在开始前你需要进行一些调整使你的游戏可以横屏运行而不是竖屏。
 ##初始设置
 这个模板对于你来说有两个问题。第一，游戏需要被设置为横屏而它是竖屏的。第二，它正在使用Sprite Kit的场景编辑器，你在这篇教程中并不需要。来让我们解决这些问题。
 
-第一，在你的工程导航栏中点击你的SpriteKitSimpleGame工程打开target setting，选择SpriteKitSimpleGame target。然后在Deployment Info部分，去掉Portrait使仅有Landscape Left and Landscape Right被选中，像下面这样:
+第一，在工程导航栏中点击SpriteKitSimpleGame，打开target setting，选择SpriteKitSimpleGame target。然后在Deployment Info部分，去掉Portrait使仅有Landscape Left and Landscape Right被选中，像下面这样:
 
 ![](https://cdn3.raywenderlich.com/wp-content/uploads/2015/10/004_Landscape-700x377.png)
 
@@ -125,7 +125,7 @@ GameViewController是一个UIViewController类, 它的一个根视图是SKView, 
 
 这里你实现了viewDidLoad()去创建一个启动时的GameScene，尺寸与视图本身相同。这就是最初的设置，现在屏幕上有些东西了！
 ##添加一个精灵
-首先下载这个功能的资源文件拖进你的Xcode工程中。确保Copy items into destination group’s folder (if needed)这一项被选中，并且是在你SpriteKitSimpleGame target被选中的情况下。
+首先下载这个功能的资源文件拖进你的Xcode项目中。确保Copy items into destination group’s folder (if needed)这一项被选中，并且是在你SpriteKitSimpleGame target被选中的情况下。
 
 下面打开GameScene.swift用如下代码替换内容:
 ~~~~swift
@@ -219,7 +219,7 @@ runAction(SKAction.repeatActionForever(
 ~~~~
 这里你运行了一个动作队列，调用了一块block代码，然后等待一秒。一直重复执行这个队列。
 
-搞定了！构建并运行工程，现在你应该会看到一些怪物在屏幕上活蹦乱跳了:
+搞定了！构建并运行，现在你应该会看到一些怪物在屏幕上活蹦乱跳了:
 ![](http://www.raywenderlich.com/wp-content/uploads/2015/10/006_Monsters-480x270.png)
 
 ##射出子弹
