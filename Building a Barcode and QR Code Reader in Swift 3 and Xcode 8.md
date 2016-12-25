@@ -95,17 +95,17 @@ let captureMetadataOutput = AVCaptureMetadataOutput()
 captureSession?.addOutput(captureMetadataOutput)
 ```
 
-Next, proceed to add the lines of code shown below. We set self as the delegate of the captureMetadataOutput object. This is the reason why the QRReaderViewController class adopts the AVCaptureMetadataOutputObjectsDelegate protocol.
+接着添加下列代码，将captureMetadataOutput对象的委托设为自身(self)，这样就使QRReaderViewController实现了AVCaptureMetadataOutputObjectsDelegate协议。
 ```swift
 // Set delegate and use the default dispatch queue to execute the call back
 captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
 captureMetadataOutput.metadataObjectTypes = [AVMetadataObjectTypeQRCode]
 ```
-When new metadata objects are captured, they are forwarded to the delegate object for further processing. In the above code, we specify the dispatch queue on which to execute the delegate’s methods. A dispatch queue can be either serial or concurrent. According to Apple’s documentation, the queue must be a serial queue. So we use DispatchQueue.main to get the default serial queue.
+当捕捉到原数据对象时会将其传给委托对象进行下一步的处理。在上面的代码中，指定了执行委托方法的调度队列(dispatch queue)，一个调度队列是串行或并行的。根据苹果的文档，这个队列必须是一个串行队列(serial queue)，因此需要使用DispatchQueue.main取得默认的串行队列。
 
-The metadataObjectTypes property is also quite important; as this is the point where we tell the app what kind of metadata we are interested in. The AVMetadataObjectTypeQRCode clearly indicates our purpose. We want to do QR code scanning.
+metadataObjectTypes属性同样很重要，通过这个属性告诉app需要的是哪种格式的元数据，AVMetadataObjectTypeQRCode指明了我们的目标 —— QR码。
 
-Now that we have set and configured an AVCaptureMetadataOutput object, we need to display the video captured by the device’s camera on screen. This can be done using an AVCaptureVideoPreviewLayer, which actually is a CALayer. You use this preview layer in conjunction with an AV capture session to display video. The preview layer is added as a sublayer of the current view. Insert the code below in the do-catch block:
+现在来设置AVCaptureMetadataOutput对象。使用AVCaptureVideoPreviewLayer在屏幕上显示设备摄像头捕捉到的视频，实际上是一个CALayer。结合预览层(preview layer)与AV capture session来显示视频，预览层作为当前视图的一个子层添加。将如下代码插入到do-catch代码块中:
 
 ```swift
 // Initialize the video preview layer and add it as a sublayer to the viewPreview view's layer.
@@ -114,23 +114,122 @@ videoPreviewLayer?.videoGravity = AVLayerVideoGravityResizeAspectFill
 videoPreviewLayer?.frame = view.layer.bounds
 view.layer.addSublayer(videoPreviewLayer!)
 ```
-Finally, we start the video capture by calling the startRunning method of the capture session:
+最后，调用capture session的startRunning方法启动视频捕捉:
 ```swift
 // Start video capture.
 captureSession?.startRunning()
 ```
-If you compile and run the app on a real iOS device, it crashes unexpectedly with the following error:
+若在iOS真机上编译运行app会崩溃并出现以下错误:
 ```
 This app has crashed because it attempted to access privacy-sensitive data without a usage description.  The app's Info.plist must contain an NSCameraUsageDescription key with a string value explaining to the user how the app uses this data.
 ```
-Similar to what we have done in the audio recording chapter, iOS requires app developers to obtain the user’s permission before allowing to access the camera. To do so, you have to add a key named NSCameraUsageDescription in the Info.plist file. Open the file and right-click any blank area to add a new row. Set the key to Privacy – Camera Usage Description, and value to We need to access your camera for scanning QR code.
+iOS要求app开发者在访问摄像头之前需要取得用户的许可。解决方法是在Info.plist中添加一个NSCameraUsageDescription的key，打开文件后在空白区域点击右键选择添加新的一行，将key设为`Privacy – Camera Usage Description`，value设为`We need to access your camera for scanning QR code`。
+
 ![](http://www.appcoda.com/wp-content/uploads/2016/11/qrcode-reader-3-1024x211.png)
-Once you finish the editing, deploy the app and run it on a real device again. Tapping the scan button should bring up the built-in camera and start capturing video. However, at this point the message label and the top bar are hidden. You can fix it by adding the following line of code. This will move the message label and top bar to appear on top of the video layer.
+
+完成编辑后，再次部署app并在真机上运行。点击scan按钮启动摄像头开始捕捉视频，会发现信息标签和顶部工具栏被隐藏了，可以添加如下代码来解决这个问题，它会将这两个组件移动到视频层的顶部。
+
 ```swift
 // Move the message label and top bar to the front
 view.bringSubview(toFront: messageLabel)
 view.bringSubview(toFront: topbar)
 ```
-Re-run the app after making the changes. The message label No QR code is detected should now appear on screen.
+修改完成后再次重启，屏幕中的信息标签会显示*No QR code is detected*。
+
+## Implementing QR Code Reading
+
+As of now, the app looks pretty much like a video capture app. How can it scan QR codes and translate the code into something meaningful? The app itself is already capable of detecting QR codes. We just aren’t aware of that. Here is how we are going to tweak the app:
+
+* When a QR code is detected, the app will highlight the code using a green box
+* The QR code will be decoded and the decoded information will be displayed at the bottom of the screen
+
+### Initializing the Green Box
+
+In order to highlight the QR code, we’ll first create a UIView object and set its border to green. Add the following code in the do block of the viewDidLoad method:
+
 ```swift
+// Initialize QR Code Frame to highlight the QR code
+qrCodeFrameView = UIView()
+ 
+if let qrCodeFrameView = qrCodeFrameView {
+    qrCodeFrameView.layer.borderColor = UIColor.green.cgColor
+    qrCodeFrameView.layer.borderWidth = 2
+    view.addSubview(qrCodeFrameView)
+    view.bringSubview(toFront: qrCodeFrameView)
+}
 ```
+The qrCodeFrameView variable is invisible on screen because the size of the UIView object is set to zero by default. Later, when a QR code is detected, we will change its size and turn it into a green box.
+
+### Decoding the QR Code
+
+As mentioned earlier, when the AVCaptureMetadataOutput object recognizes a QR code, the following delegate method of AVCaptureMetadataOutputObjectsDelegate will be called:
+
+```swift
+optional func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [Any]!, from connection: AVCaptureConnection!)
+```
+
+So far we haven’t implemented the method; this is why the app can’t translate the QR code. In order to capture the QR code and decode the information, we need to implement the method to perform additional processing on metadata objects. Here is the code:
+
+```swift
+func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [Any]!, from connection: AVCaptureConnection!) {
+    
+    // Check if the metadataObjects array is not nil and it contains at least one object.
+    if metadataObjects == nil || metadataObjects.count == 0 {
+        qrCodeFrameView?.frame = CGRect.zero
+        messageLabel.text = "No QR code is detected"
+        return
+    }
+    
+    // Get the metadata object.
+    let metadataObj = metadataObjects[0] as! AVMetadataMachineReadableCodeObject
+    
+    if metadataObj.type == AVMetadataObjectTypeQRCode {
+        // If the found metadata is equal to the QR code metadata then update the status label's text and set the bounds
+        let barCodeObject = videoPreviewLayer?.transformedMetadataObject(for: metadataObj)
+        qrCodeFrameView?.frame = barCodeObject!.bounds
+        
+        if metadataObj.stringValue != nil {
+            messageLabel.text = metadataObj.stringValue
+        }
+    }
+}
+```
+The second parameter (i.e. metadataObjects) of the method is an array object, which contains all the metadata objects that have been read. The very first thing we need to do is make sure that this array is not nil, and it contains at least one object. Otherwise, we reset the size of qrCodeFrameView to zero and set messageLabel to its default message.
+
+If a metadata object is found, we check to see if it is a QR code. If that’s the case, we’ll proceed to find the bounds of the QR code. These couple lines of code are used to set up the green box for highlighting the QR code. By calling the transformedMetadataObject(for:) method of viewPreviewLayer, the metadata object’s visual properties are converted to layer coordinates. From that, we can find the bounds of the QR code for constructing the green box.
+
+Lastly, we decode the QR code into human-readable information. This step should be fairly simple. The decoded information can be accessed by using the stringValue property of an AVMetadataMachineReadableCode object.
+
+Now you’re ready to go! Hit the Run button to compile and run the app on a real device.
+
+![](http://www.appcoda.com/wp-content/uploads/2016/11/qrcode-reader-4-1024x593.png)
+
+Once launched, tap the scan button and then point the device to the QR code in figure 11.4. The app immediately detects the code and decodes the information.
+
+![](http://www.appcoda.com/wp-content/uploads/2016/11/qrcode-reader-5-1024x637.jpg)
+
+
+## Your Exercise – Barcode Reader
+
+The demo app is currently capable of scanning a QR code. Wouldn’t it be great if you could turn it into a general barcode reader? Other than the QR code, the AVFoundation framework supports the following types of barcodes:
+
+* UPC-E (AVMetadataObjectTypeUPCECode)
+* Code 39 (AVMetadataObjectTypeCode39Code)
+* Code 39 mod 43 (AVMetadataObjectTypeCode39Mod43Code)
+* Code 93 (AVMetadataObjectTypeCode93Code)
+* Code 128 (AVMetadataObjectTypeCode128Code)
+* EAN-8 (AVMetadataObjectTypeEAN8Code)
+* EAN-13 (AVMetadataObjectTypeEAN13Code)
+* Aztec (AVMetadataObjectTypeAztecCode)
+* PDF417 (AVMetadataObjectTypePDF417Code)
+
+![](http://www.appcoda.com/wp-content/uploads/2016/11/qrcode-reader-6-1024x626.png)
+
+Your task is to tweak the existing Xcode project and enable the demo to scan other types of barcodes. You’ll need to instruct captureMetadataOutput to identify an array of barcode types rather than just QR codes.
+```swift
+captureMetadataOutput.metadataObjectTypes = [AVMetadataObjectTypeQRCode]
+```
+
+I’ll leave it for you to figure out the solution. While I include the solution in the Xcode project below, I encourage you to try to sort out the problem on your own. It’s gonna be fun and this is the best way to really understand how the code operates.
+
+If you’ve given it your best shot and are still stumped, you can download the solution on GitHub.
