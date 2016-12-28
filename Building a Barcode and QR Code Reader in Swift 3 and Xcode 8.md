@@ -232,4 +232,3 @@ captureMetadataOutput.metadataObjectTypes = [AVMetadataObjectTypeQRCode]
 ```
 
 可以在[Gihub](https://github.com/appcoda/QRCodeReader)下载完整代码。
-If you’ve given it your best shot and are still stumped, you can download the solution on GitHub.
