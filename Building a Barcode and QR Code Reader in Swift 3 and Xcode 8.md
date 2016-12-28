@@ -1,5 +1,5 @@
 # Building a Barcode and QR Code Reader in Swift 3 and Xcode 8
-## Xcode 8中使用Swift 3构建条形码与QR码扫描器
+## Xcode 8中使用Swift 3构建条形码与QR码识别器
 
 ***
 
@@ -15,13 +15,13 @@ QR码是什么? 我相信大部分人应该都知道QR码，如果没听说过�
 
 QR(Quick Response的缩写)码是由Denso开发的一种二维条形码，最初是被设计用来跟踪制造过程的，近些年经常被用来对登录页面或商品信息的URL地址编码。跟普通的条形码不同的是，QR码包含水平与竖直两个方向的信息。在这里我不想讨论QR码的技术细节，若感兴趣可以看看QR码的[官网](http://www.qrcode.com/)。
 
-随着iPhone与Android智能手机的流行，QR码的使用越来越广泛。在一些国家QR码随处可见，杂志上，报纸上，广告上，名片上，甚至是菜单上。作为一个iOS开发者，也许很想知道如何给你的app添加读取QR码的功能。在iOS 7之前需要依赖第三方库来实现扫描功能，现在可以直接使用内置的AVFoundation框架进行实时的扫描条形码。
+随着iPhone与Android智能手机的流行，QR码的使用越来越广泛。在一些国家QR码随处可见，杂志上，报纸上，广告上，名片上，甚至是菜单上。作为一个iOS开发者，也许很想知道如何给你的app添加读取QR码的功能。在iOS 7之前需要依赖第三方库来实现识别功能，现在可以直接使用内置的AVFoundation框架进行实时识别条形码。
 
 不过，做一个能够扫描与解析QR码的app一直不是个轻松的差事。
 
 > 小提示: 可以在 http://www.qrcode-monkey.com 生成你自己的QR码。
 
-## 构建QR码扫描器
+## 构建QR码识别器
 
 我们要做的demo是比较简单直接的，在开始构建之前需要了解一下iOS中的条形码与QR码扫描，它们都是基于视频捕捉的，这就是为何需要引入AVFoundation框架。记住这一点有助于对这一章节内容的理解。
 
@@ -136,16 +136,16 @@ view.bringSubview(toFront: topbar)
 ```
 修改完成后再次重启，屏幕中的信息标签会显示*No QR code is detected*。
 
-## Implementing QR Code Reading
+## 实现读取QR码
 
-As of now, the app looks pretty much like a video capture app. How can it scan QR codes and translate the code into something meaningful? The app itself is already capable of detecting QR codes. We just aren’t aware of that. Here is how we are going to tweak the app:
+现在这个app看起来像那么回事儿了，那么如何让它能在扫描QR码之后还能解析出其中的内容？其实app已经具有检测QR码这个功能了，只是还没有挖掘出来。如下修改一下app:
 
-* When a QR code is detected, the app will highlight the code using a green box
-* The QR code will be decoded and the decoded information will be displayed at the bottom of the screen
+* 高亮检测到的QR码。
+* 将解码后的信息显示在屏幕底端。
 
-### Initializing the Green Box
+### 初始化高亮视图
 
-In order to highlight the QR code, we’ll first create a UIView object and set its border to green. Add the following code in the do block of the viewDidLoad method:
+为了高亮显示QR码需要创建一个绿色边界的UIView对象。在viewDidLoad方法的do代码块中添加如下代码:
 
 ```swift
 // Initialize QR Code Frame to highlight the QR code
@@ -158,17 +158,17 @@ if let qrCodeFrameView = qrCodeFrameView {
     view.bringSubview(toFront: qrCodeFrameView)
 }
 ```
-The qrCodeFrameView variable is invisible on screen because the size of the UIView object is set to zero by default. Later, when a QR code is detected, we will change its size and turn it into a green box.
+qrCodeFrameView在屏幕中是不可见的，因为默认情况下它的尺寸是0，当检测到QR码时会设置它的尺寸并将其设为一个绿色边框的视图。
 
-### Decoding the QR Code
+### 解析QR码
 
-As mentioned earlier, when the AVCaptureMetadataOutput object recognizes a QR code, the following delegate method of AVCaptureMetadataOutputObjectsDelegate will be called:
+当AVCaptureMetadataOutput对象识别出QR码时，会调用AVCaptureMetadataOutputObjectsDelegate中的委托方法:
 
 ```swift
 optional func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [Any]!, from connection: AVCaptureConnection!)
 ```
 
-So far we haven’t implemented the method; this is why the app can’t translate the QR code. In order to capture the QR code and decode the information, we need to implement the method to perform additional processing on metadata objects. Here is the code:
+由于至此还未实现这个方法，因此无法解析QR码。为了捕捉并解析QR码中的信息，需要实现这个方法对元数据对象执行额外的操作。代码如下:
 
 ```swift
 func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [Any]!, from connection: AVCaptureConnection!) {
@@ -194,24 +194,24 @@ func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects m
     }
 }
 ```
-The second parameter (i.e. metadataObjects) of the method is an array object, which contains all the metadata objects that have been read. The very first thing we need to do is make sure that this array is not nil, and it contains at least one object. Otherwise, we reset the size of qrCodeFrameView to zero and set messageLabel to its default message.
+方法的第二个参数(metadataObjects)是一个包含所有元数据对象的数组。首先要做的是确认这个数组是否非空，至少需要包含一个对象，否则需要将qrCodeFrameView的尺寸设为0并重置messageLabel所显示的信息。
 
-If a metadata object is found, we check to see if it is a QR code. If that’s the case, we’ll proceed to find the bounds of the QR code. These couple lines of code are used to set up the green box for highlighting the QR code. By calling the transformedMetadataObject(for:) method of viewPreviewLayer, the metadata object’s visual properties are converted to layer coordinates. From that, we can find the bounds of the QR code for constructing the green box.
+若存在元数据对象，还需要验证是否是QR码，若是则需要找到QR码的边界，上面那些代码用来设置高亮QR码的视图。通过调用viewPreviewLayer的transformedMetadataObject(for:)方法获取元数据对象对应的视图层坐标，这样就可以确定所要添加的绿色边框视图的尺寸与位置了。
 
-Lastly, we decode the QR code into human-readable information. This step should be fairly simple. The decoded information can be accessed by using the stringValue property of an AVMetadataMachineReadableCode object.
+最后将QR码解析成人类可读的信息，这一步很简单，可以使用AVMetadataMachineReadableCode对象的stringValue属性访问解码出的信息。
 
-Now you’re ready to go! Hit the Run button to compile and run the app on a real device.
+准备好了！按下Run键在真机上编译并运行app。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/11/qrcode-reader-4-1024x593.png)
 
-Once launched, tap the scan button and then point the device to the QR code in figure 11.4. The app immediately detects the code and decodes the information.
+启动后点击scan按钮将设备对准QR码，app会立刻检测到QR码并解码出其中的信息。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/11/qrcode-reader-5-1024x637.jpg)
 
 
-## Your Exercise – Barcode Reader
+## 练习 – 条形码识别器
 
-The demo app is currently capable of scanning a QR code. Wouldn’t it be great if you could turn it into a general barcode reader? Other than the QR code, the AVFoundation framework supports the following types of barcodes:
+demo app现在可以识别出QR码，如果你能将它变成一个通用的条形码识别器是不是很棒？除了QR码，AVFoundation框架还支持如下类型的条形码:
 
 * UPC-E (AVMetadataObjectTypeUPCECode)
 * Code 39 (AVMetadataObjectTypeCode39Code)
@@ -225,11 +225,11 @@ The demo app is currently capable of scanning a QR code. Wouldn’t it be great 
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/11/qrcode-reader-6-1024x626.png)
 
-Your task is to tweak the existing Xcode project and enable the demo to scan other types of barcodes. You’ll need to instruct captureMetadataOutput to identify an array of barcode types rather than just QR codes.
+你的任务就是修改Xcode项目使其能够扫描其他类型的条形码，需要设置captureMetadataOutput的metadataObjectTypes属性使其可以识别多种条形码。
+
 ```swift
 captureMetadataOutput.metadataObjectTypes = [AVMetadataObjectTypeQRCode]
 ```
 
-I’ll leave it for you to figure out the solution. While I include the solution in the Xcode project below, I encourage you to try to sort out the problem on your own. It’s gonna be fun and this is the best way to really understand how the code operates.
-
+可以在[Gihub](https://github.com/appcoda/QRCodeReader)下载完整代码。
 If you’ve given it your best shot and are still stumped, you can download the solution on GitHub.
