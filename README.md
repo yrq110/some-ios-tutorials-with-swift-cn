@@ -35,7 +35,7 @@
 26. [使用Vapor构建你的第一个Swift Web应用](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Building%20Your%20First%20Web%20App%20in%20Swift%20Using%20Vapor.html)
 27. [Swift中的ARC与内存管理](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/ARC%20and%20Memory%20Management%20in%20Swift.html)
 28. [Xcode 8中的Auto Layout新手指南](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/A%20Beginner%E2%80%99s%20Guide%20to%20Auto%20Layout%20with%20Xcode%208.html)
-29. (进行中)[iOS10中的User Notifications Framework介绍(Introduction to User Notifications Framework in iOS 10)](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Introduction%20to%20User%20Notifications%20Framework%20in%20iOS%2010.html)
+29. (进行中)[iOS10中的User Notifications框架介绍](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Introduction%20to%20User%20Notifications%20Framework%20in%20iOS%2010.html)
 30. [Xcode 8中使用Swift 3构建条形码与QR码识别器](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Building%20a%20Barcode%20and%20QR%20Code%20Reader%20in%20Swift%203%20and%20Xcode%208.html)
 31. (未开始)[Core Plot指南:入门](https://www.raywenderlich.com/131985/core-plot-tutorial-getting-started)
 32. (未开始)[奇幻的Swift错误处理](https://www.raywenderlich.com/130197/magical-error-handling-swift)
