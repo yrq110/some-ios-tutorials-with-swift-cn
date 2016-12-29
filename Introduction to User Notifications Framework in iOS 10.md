@@ -9,13 +9,14 @@
 
 ***
 
-Hello, and welcome to the notifications in iOS 10 tutorial! Today, we will be talking about how to implement notifications in iOS 10. iOS 10 features a plethora of changes and additions to the notifications APIs, which includes a new, powerful notification request system based off of triggers, which we will talk more about shortly. The biggest change to notifications in iOS 10 is part of a framework called UserNotificationsUI, which lets us embed custom view controller in our notifications! This allows us to create powerful new notifications that simply weren’t possible before.
+![](http://www.appcoda.com/wp-content/uploads/2016/10/user-notifications-part1-1680x1143.jpg)
 
-In this tutorial, we will be covering various types of local notifications on iOS, starting with basic text notifications and working our way up to embedding an image and an action in our notification. Follow along for more and feel free to comment any questions you may have.
+欢迎阅读iOS 10中的推送教程，今天我们要讲的是如何在iOS10中实现推送，iOS10在推送相关的API上做了大量的改变，包括一个全新、强力的给予触发器的推送请求系统，会简要介绍一下这个系统，此外改变最大的部分就是一个叫做UserNotificationsUI的框架，它允许开发者将自定义的视图控制器嵌入到推送中！这就使我们可以创建出以前无法实现的强有力的推送。
 
-## Simple User Notifications
+这篇教程的内容中涵盖iOS中不同类型的本地推送，会从一个基本的文本推送开始，之后逐渐在推送中加入图像与用户操作。
 
-Not all of the notifications we want to show will be fancy and interactive. For this reason, we will start by demonstrating how to show a basic text notification. Download the starter project and open up NotificationsUI.xcodeproj. Looking around, you’ll see it’s pretty empty: we have Main.storyboard for the user interface, along with ViewController.swift and AppDelegate.swift.
+## 简单用户推送
+并不是所有我们想展现的推送都是漂亮与可交互的，因此从一个基本的文本推送开始，下载[开始项目](https://github.com/appcoda/NotificationsUI-Demo/raw/master/NotificationsUI.zip)，打开NotificationsUI.xcodeproj。浏览一下项目内容，会发现没有什么东西：设计用户界面的Main.storyboard，ViewController.swift，还有AppDelegate.swift。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/10/user-notification-storyboard.png)
 
