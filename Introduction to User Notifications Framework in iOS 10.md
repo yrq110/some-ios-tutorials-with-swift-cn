@@ -20,23 +20,23 @@
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/10/user-notification-storyboard.png)
 
-Open up Main.storyboard and take a look at ViewController. The app we’re making today is going to remind its users to go online and read an AppCoda article. It lets users pick a date and time for a notification reminder. The first change we’re going to make to this app is simple: we’re going to enable notifications! Currently, picking a date and time does nothing. We’re going to update the app so that setting a date and time creates a notification at the specified time.
+打开Main.storyboard并浏览下ViewController中的内容，今天所要做的app具有提醒用户阅读AppCoda文章的功能，会让用户选择一个推送的日期与时间。为了达到目的，第一个任务显而易见：启用推送。现在选择日期与时间没有任何效果，需要修改app来设置一个日期时间使其在设定的时间进行推送。
 
-Go ahead and open ViewController.swift. Let’s get started.
+打开ViewController.swift，开始吧！
 
-When you open ViewController.swift, you’ll notice it’s pretty empty. There is only an action method named datePickerDidSelectNewDate that will be invoked when a new date is selected in the date picker. As mentioned before, right now, the app does nothing instead of creating a notification. Let’s implement the feature.
+ViewController中没什么代码，只有一个名为datePickerDidSelectNewDate的方法，当在日期选择器中选择日期后会调用这个方法。如前面所说的那样，现在app只需要创建一个推送即可，来一起实现这个功能。
 
-The process for creating a notification has changed slightly in iOS 10. Developers must now create requests, which are requests to iOS to present a notification. These requests consist of 2 components: triggers and content. A trigger is a set of conditions that must be met for a notification to deliver. To show a notification in iOS 10, we begin with a trigger. The class we use for date based triggers is UNCalendarNotificationTrigger. Apple provides a few others, such as UNLocationNotificationTrigger (which triggers a notification when the user arrives a particular location).
+iOS 10中推送的创建方法稍有改变，开发者必须先创建请求，请求iOS显示一个推送。这些请求由两部分组成：触发器和内容。为了在iOS 10中显示推送，需要从创建一个触发器开始，要使用一个基于日期的触发器——UNCalendarNotificationTrigger类。苹果同时也提供了其它一些触发器，比如UNLocationNotificationTrigger(当用户到达一个特定的地点后触发推送)。
 
-The first step to displaying a notification on iOS, as stated above, is creating a trigger. Let’s go ahead and make one now.
+为了在iOS中显示推送，第一步需要创建触发器，Let's go。
 
-Go to AppDelegate.swift, and make sure you import the UserNotification framework. All the notification-related APIs are organized in this framework:
+打开AppDelegate.swift文件，确保引入了UserNotification框架，所有与推送有关的API都在这个框架中:
 
 ```swift
 import UserNotifications
 ```
 
-Next, add a function called scheduleNotification(at date: Date). As its name implies, this function will be responsible for scheduling a notification at a provided date.
+接着添加scheduleNotification(at date: Date)方法，顾名思义，这个方法根据提供的日期来安排推送的时间。
 
 ```swift
 func scheduleNotification(at date: Date) {
@@ -46,16 +46,16 @@ func scheduleNotification(at date: Date) {
 }
 ```
 
-In the above code, we use the Gregorian calendar to separate a provided date into components. Dates and components are beyond the scope of this tutorial, but all you need to know is that a date consists of components. An individual component represents a piece of a date, such as the hour, minute, second, etc. The code we have written so far separates the date parameter into components and it saves these components in the components constant. The reason we do this is that UNCalendarNotificationTrigger requires date components, not dates, to function. However, one other oddity of UNCalendarNotificationTrigger is that the complete set of components taken directly from a date do not seem to work. Instead, we need to construct our own instance of DateComponents using some information from the existing instance we have. The third line does just that: it creates a new instance of DateComponents using only the relevant information from date.
+在上述代码中使用公历日历将提供的日期分割为不同要素(年、月、日、小时、分钟)。这部分内容超出了教程的范围，不过你需要知道一个日期是由要素组成的。一个独立的要素表示日期中的一部分，比如小时、分钟、秒等。代码将日期分割为不同要素并保存在常量中，这么做是因为UNCalendarNotificationTrigger需要日期要素，而不是日期，有一点奇怪的是，UNCalendarNotificationTrigger不接受一个由日期中所有要素组成的输入，因此需要自己通过已存在的对象建立DateComponents对象。方法中的第三行代码就是那么做的：使用日期中的相关信息来创建DateComponents对象。
 
-Now that we have the components from date, let’s go ahead and make a calendar notification trigger. Like most other things in iOS, Apple has made this process pretty easy. Just add the following line of code in the function:
+现在获得了日期中的要素，可以来制作推送触发器了，这一步很简单，如下添加代码即可:
 
 ```swift
 let trigger = UNCalendarNotificationTrigger(dateMatching: newComponents, repeats: false)
 ```
-As you can probably infer, this line creates a new UNCalendarNotificationTrigger using the date components we extracted above. We have set repeats to false because we only want the notification to be appeared once.
+如你所想，这行代码使用刚刚提取的日期要素新建一个UNCalendarNotificationTrigger对象，将repeats属性设为false使其只出现一次。
 
-Now that we have created a trigger, the next thing is to create some content to display in our notification. This can be done through the UNMutableNotificationContent class. You can add the following lines of code to create the notification content. Simply put the code snippet right below the trigger variable:
+创建好触发器了，接下来创建想在推送中显示的内容，使用UNMutableNotificationContent类来做这件事。添加如下代码来创建推送的内容，把代码放在触发器变量的后面即可:
 
 ```swift
 let content = UNMutableNotificationContent()
@@ -64,21 +64,21 @@ content.body = "Just a reminder to read your tutorial over at appcoda.com!"
 content.sound = UNNotificationSound.default()
 ```
 
-These lines are pretty self explanatory: we create a new instance of UNMutableNotificationContent, and then set its title, body, and sound accordingly.
+上面的代码新建了一个UNMutableNotificationContent对象，然后设置它的title，body和sound属性。
 
-It looks like we’re all ready to show our first notification! However, there are still a couple of steps left: 1. creating a notification request, 2. providing it to the system, that tells iOS to show our notification.
+看起来已经做好显示第一个推送的准备了！还有些事儿没做：1.创建一个推送请求。2.提交给系统，告诉iOS显示我们的推送。
 
-To create a notification request, you instantiate a UNNotificationRequest object with the corresponding content and trigger. You also need to give it a unique identifier for identifying this notification request. Insert the following line of code in the scheduleNotification function:
+需要使用触发器与内容来初始化一个UNNotificationRequest对象，还需要给予请求一个唯一标识符。在scheduleNotification函数中插入如下代码:
 
 ```swift
 let request = UNNotificationRequest(identifier: "textNotification", content: content, trigger: trigger)
 ```
 
-Easy, right? We create a request with 3 parameters:
+小case，不是吗? 使用了三个参数来创建请求:
 
-* identifier: This is a unique identifier for our request. As you’ll see shortly, this identifier can be used to cancel notification requests.
-* content: This is the notification content we created earlier.
-* trigger: This is the trigger we would like to use to trigger our notification. When the conditions of the trigger are met, iOS will display the notification.
+* 标识符: 请求的唯一标识符，这个标识符可以用来取消推送请求。
+* 内容: 之前创建的推送内容。
+* 触发器: 用来触发推送的触发器，当满足条件时会iOS会显示推送。
 
 Okay, the last thing we have to do is add the request to the notification center that manages all notifications for your app. The notification center will listen to the appropriate event and trigger the notification accordingly.
 
