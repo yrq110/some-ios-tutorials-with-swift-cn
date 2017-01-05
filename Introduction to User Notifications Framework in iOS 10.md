@@ -16,6 +16,7 @@
 这篇教程的内容中涵盖iOS中不同类型的本地推送，会从一个基本的文本推送开始，之后逐渐在推送中加入图像与用户操作。
 
 ## 简单用户推送
+
 并不是所有我们想展现的推送都是漂亮与可交互的，因此从一个基本的文本推送开始，下载[开始项目](https://github.com/appcoda/NotificationsUI-Demo/raw/master/NotificationsUI.zip)，打开NotificationsUI.xcodeproj。浏览一下项目内容，会发现没有什么东西：设计用户界面的Main.storyboard，ViewController.swift，还有AppDelegate.swift。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/10/user-notification-storyboard.png)
@@ -80,9 +81,9 @@ let request = UNNotificationRequest(identifier: "textNotification", content: con
 * 内容: 之前创建的推送内容。
 * 触发器: 用来触发推送的触发器，当满足条件时会iOS会显示推送。
 
-Okay, the last thing we have to do is add the request to the notification center that manages all notifications for your app. The notification center will listen to the appropriate event and trigger the notification accordingly.
+好了，最后一件事就是将请求添加至推送中心，推送中心管理着app中的所有推送，推送中心会监听相应的事件并在合适的时机触发推送。
 
-Before we add the notification request to the notification center, it is good to remove any existing notification requests. This step helps prevent unnecessary duplicate notifications. Insert the following code snippet in the function:
+在将请求添加至推送中心前，最好先移除已有的推送请求。这一步可以避免重复的推送请求，在函数中插入如下代码段:
 
 ```swift
 UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
@@ -93,7 +94,7 @@ UNUserNotificationCenter.current().add(request) {(error) in
 }
 ```
 
-The first line of code gets the shared instance of the notification center and calls the removeAllPendingNotificationRequests method to remove all pending notification requests. And then we add the request to the notification center. The method also takes in a completion handler. In our implementation, we use this handler to print an error. Before we continue, make sure your scheduleNotification function looks something like this:
+第一行代码取得推送中心中的所有对象后，调用removeAllPendingNotificationRequests方法移除所有待定的推送请求，接着将请求添加到推送中心。这个方法会接收一个完成后的handler，使用handler输出错误信息。在开始前确保你的scheduleNotification函数如下所示:
 
 ```swift
 func scheduleNotification(at date: Date) {
@@ -118,3 +119,74 @@ func scheduleNotification(at date: Date) {
     }
 }
 ```
+
+现在需要配置ViewController.swift，当用户选择日期时调用cheduleNotification(date:)函数。在ViewController.swift的datePickerDidSelectNewDate方法中插入如下代码:
+
+```swift
+let selectedDate = sender.date
+let delegate = UIApplication.shared.delegate as? AppDelegate
+delegate?.scheduleNotification(at: selectedDate)
+```
+
+上述代码取得当前应用的AppDelegate对象，使用之前缩写的函数设置一个推送。来试一试，运行app并选择一个时间，等待时钟到达那个时刻看看会发生什么!
+
+哇哦! 推送并没有出现，为撒子?
+
+它没有正常工作的原因有如下几点:
+
+首先，苹果力求在iOS中保持平滑的用户体验，给予用户对来自app推送的最终控制权就是用户体验的一部分。用户还未授权我们显示推送，这就是为何没有将信息传递过去。
+
+来修复这个问题，在AppDelegate.swift中添加如下方法:
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
+    
+    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) {(accepted, error) in
+        if !accepted {
+            print("Notification access denied.")
+        }
+    }
+    
+    return true
+}
+```
+
+Here we call the requestAuthorization method of the notification center to ask the user’s permission for using notification. We also request the ability to display alerts and play sounds.
+
+Now run the app again. When the app is launched, you should see the authorization request. Make sure you accept it, and the app is allowed to send notifications to the device.
+
+The other thing you have to take note is that the notification will not be presented in-app. Therefore, once you set the date, make sure you go back to home screen or lock screen.
+
+If you’ve done all the things correctly, the notification should be delivered!
+
+![](http://www.appcoda.com/wp-content/uploads/2016/10/user-notification-1-576x1024.jpg)
+
+See? It’s not so hard to send notifications to users on iOS, we just need to take a few precautionary steps first, such as requesting notification access. Now that we’ve sent simple text, let’s move on to attaching an image!
+
+## Attaching an Image in the Notification
+
+The notification is now in text-based. This is nothing new! Let’s explore some other features, like displaying an image in a notification.
+
+In the starter project, I have already bundled an image: named logo.png. If you haven’t seen it, it may be because it’s buried in the NotificationsUI group. Anyhow, the image is in the starter project. Let’s see how to display it in the notification.
+
+The UserNotification framework provides the UNNotificationAttachment class for developers to add attachments to the notification. The attachment can be audio, images, and videos. It also supports a variety of file formats. For details, you can check them out on the Apple Developer Website.
+
+Creating an attachment is rather easy, just like most tasks in UserNotifications.framework. We simply initialize an instance of UNNotificationAttachment and add it to the notification content. Update the scheduleNotification method and Insert the following code snippet right before the request variable:
+```swift
+if let path = Bundle.main.path(forResource: "logo", ofType: "png") {
+    let url = URL(fileURLWithPath: path)
+    
+    do {
+        let attachment = try UNNotificationAttachment(identifier: "logo", url: url, options: nil)
+        content.attachments = [attachment]
+    } catch {
+        print("The attachment was not loaded.")
+    }
+}
+```
+The above code loads the path for our logo image, converts it to a URL, and then initializes an attachment using the image. The initializer for UNNotificationAttachment is marked as throwing, so we include a catch block to handle any errors. Once we have created an attachment, we add it to content. Let’s test out the app again. Once it loads, pick a time and wait for the notification to appear.
+
+![](http://www.appcoda.com/wp-content/uploads/2016/10/user-notification-image-1024x599.png)
+
+Wow! Look at that, we’ve sent a notification with an image bundled. This is a new feature that was first introduced in iOS 10. This is pretty cool, but I think it will be even better if we can add a “remind me later” button that allows users to temporarily ignore a reminder.
+
+Let’s do that now.
