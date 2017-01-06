@@ -166,11 +166,11 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 
 现在的推送是纯文本的，并没有什么新意。来尝试下其他特性，比如在推送中显示一张图片。
 
-在开始项目中已经有一张图片: logo.png。若没找到请看看NotificationsUI文件夹，无论如何项目中肯定有这个图片。来看看如何将它显示在推送中。
+在开始项目中有一张图片: logo.png，没找到请看看NotificationsUI文件夹。来看看如何将它显示在推送中。
 
-UNNotificationAttachmentThe UserNotification framework provides the UNNotificationAttachment class for developers to add attachments to the notification. The attachment can be audio, images, and videos. It also supports a variety of file formats. For details, you can check them out on the Apple Developer Website.
+UserNotification框架提供了UNNotificationAttachment类，使用它可以将附件添加到推送中，附件可以时音频、图片和视频，支持多种文件格式。可以在[苹果开发者网站](https://developer.apple.com/reference/usernotifications/unnotificationattachment)上查看详情。
 
-Creating an attachment is rather easy, just like most tasks in UserNotifications.framework. We simply initialize an instance of UNNotificationAttachment and add it to the notification content. Update the scheduleNotification method and Insert the following code snippet right before the request variable:
+跟UserNotifications框架中的其他任务一样，创建附件也是很简单的。先初始化一个UNNotificationAttachment对象，将其添加到推送内容中即可。修改一下scheduleNotification方法并把如下代码插入到请求变量之前:
 ```swift
 if let path = Bundle.main.path(forResource: "logo", ofType: "png") {
     let url = URL(fileURLWithPath: path)
@@ -183,10 +183,12 @@ if let path = Bundle.main.path(forResource: "logo", ofType: "png") {
     }
 }
 ```
-The above code loads the path for our logo image, converts it to a URL, and then initializes an attachment using the image. The initializer for UNNotificationAttachment is marked as throwing, so we include a catch block to handle any errors. Once we have created an attachment, we add it to content. Let’s test out the app again. Once it loads, pick a time and wait for the notification to appear.
+上述代码通过文件路径加载logo图片，使用图片初始化一个附件。创建成功后添加到内容中。再次测试app，加载后选择一个日期等待推送出现。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/10/user-notification-image-1024x599.png)
 
-Wow! Look at that, we’ve sent a notification with an image bundled. This is a new feature that was first introduced in iOS 10. This is pretty cool, but I think it will be even better if we can add a “remind me later” button that allows users to temporarily ignore a reminder.
+哇哦! 看到了吧，发送了一个带有图片的推送。这是iOS 10中首次引入的新特性，很酷吧，不过我觉得可以做得更好，添加一个"稍后提醒我"的按钮，允许用户暂时忽视提醒。
 
-Let’s do that now.
+来一起实现吧。
+
+## Adding a Reminder Using Notification Actions
