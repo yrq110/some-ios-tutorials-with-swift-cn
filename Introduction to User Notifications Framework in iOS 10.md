@@ -150,25 +150,25 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 }
 ```
 
-Here we call the requestAuthorization method of the notification center to ask the user’s permission for using notification. We also request the ability to display alerts and play sounds.
+这里调用了推送中心的requestAuthorization方法来从用户那里获取关于使用推送的许可，还需要请求显示警告视图和播放音频的权限。
 
-Now run the app again. When the app is launched, you should see the authorization request. Make sure you accept it, and the app is allowed to send notifications to the device.
+再次运行app。当app启动时，会看到授权请求。点击接受，这样app就被允许给设备发送推送。
 
-The other thing you have to take note is that the notification will not be presented in-app. Therefore, once you set the date, make sure you go back to home screen or lock screen.
+需要注意一点的是推送不会在app中显示。，此在设置完日期后确保回到home界面或锁屏界面中。
 
-If you’ve done all the things correctly, the notification should be delivered!
+如果都按部就班了，应该会收到推送！
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/10/user-notification-1-576x1024.jpg)
 
-See? It’s not so hard to send notifications to users on iOS, we just need to take a few precautionary steps first, such as requesting notification access. Now that we’ve sent simple text, let’s move on to attaching an image!
+看到没？在iOS中给用户推送并不难，只需要做一些前置工作，比如请求推送许可。现在已经可以发送简单文本了，下一步来附上一个图片吧！
 
-## Attaching an Image in the Notification
+## 在推送中附上一张图片
 
-The notification is now in text-based. This is nothing new! Let’s explore some other features, like displaying an image in a notification.
+现在的推送是纯文本的，并没有什么新意。来尝试下其他特性，比如在推送中显示一张图片。
 
-In the starter project, I have already bundled an image: named logo.png. If you haven’t seen it, it may be because it’s buried in the NotificationsUI group. Anyhow, the image is in the starter project. Let’s see how to display it in the notification.
+在开始项目中已经有一张图片: logo.png。若没找到请看看NotificationsUI文件夹，无论如何项目中肯定有这个图片。来看看如何将它显示在推送中。
 
-The UserNotification framework provides the UNNotificationAttachment class for developers to add attachments to the notification. The attachment can be audio, images, and videos. It also supports a variety of file formats. For details, you can check them out on the Apple Developer Website.
+UNNotificationAttachmentThe UserNotification framework provides the UNNotificationAttachment class for developers to add attachments to the notification. The attachment can be audio, images, and videos. It also supports a variety of file formats. For details, you can check them out on the Apple Developer Website.
 
 Creating an attachment is rather easy, just like most tasks in UserNotifications.framework. We simply initialize an instance of UNNotificationAttachment and add it to the notification content. Update the scheduleNotification method and Insert the following code snippet right before the request variable:
 ```swift
