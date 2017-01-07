@@ -191,4 +191,68 @@ if let path = Bundle.main.path(forResource: "logo", ofType: "png") {
 
 来一起实现吧。
 
-## Adding a Reminder Using Notification Actions
+## 在推送中添加交互行为 Adding a Reminder Using Notification Actions
+
+在推送中添加交互行为有一些复杂，需要设置一些API。不过没有我们搞不定的，在推送中添加交互行为需要用到UNNotificationAction和UNNotificationCategory类。
+
+首先要定义action(动作)的category(目录)，简单起见只定义一个category和action。将如下代码添加到application(\_:didFinishLaunchingWithOptions:)方法中:
+
+```swift
+let action = UNNotificationAction(identifier: "remindLater", title: "Remind me later", options: [])
+let category = UNNotificationCategory(identifier: "myCategory", actions: [action], intentIdentifiers: [], options: [])
+UNUserNotificationCenter.current().setNotificationCategories([category])
+```
+
+上述代码创建了一个action和category，并在UNUserNotificationCenter中注册了category。
+
+也许你会想为何会有category，它们与action有不同的作用，将category想象成包含很多action的集合。所有在category中包含的action都会体现在推送内容中。
+
+在这个demo中，catrgory中只有一个action。若category中包含多个action的话，将其分配给推送，则推送会使用category中的所有action，这就是为何苹果的工程师会提供UNNotificationCategory类来管理推送中的action。
+
+现在已经创建了action与category并注册了category，接下来在内容中使用它。修改创建内容的代码，添加如下行:
+
+```swift
+content.categoryIdentifier = "myCategory"
+```
+
+它会告诉系统将在新的推送中使用“myCategory”目录，再次构建并运行app看看会发生什么:
+
+![](http://www.appcoda.com/wp-content/uploads/2016/10/Simulator-Screen-Shot-4-Oct-2016-12.03.05-PM-576x1024.png)
+
+棒极了! 推送中出现了一个可爱的按钮。不过点击按钮的话只是返回了推送，剩下的任务就是要实现响应动作的代码。
+
+UNUserNotificationCenterDelegate协议定义了推送中行为的响应方法。因此为了响应操作，需要扩展AppDelegate实现UNUserNotificationCenterDelegate协议:
+
+```swift
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        
+    }
+}
+```
+
+The userNotificationCenter(_:didReceive:withCompletionHandler:) method is called when the user selects an action. You can determine which action the user has selected by accessing the actionIdentifier of the given UNNotificationResponse. Let’s implement the method like this:
+
+```swift
+func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+ 
+    if response.actionIdentifier == "remindLater" {
+        let newDate = Date(timeInterval: 900, since: Date())
+        scheduleNotification(at: newDate)
+    }
+}
+```
+
+The above code schedules a new notification 900 seconds (60 seconds * 15 minutes) after the current date. Finally, set the default notification center’s delegate to AppDelegate in the scheduleNotification(at:) method:
+
+```swift
+UNUserNotificationCenter.current().delegate = self
+```
+
+Now run the app again and schedule a notification to test it out. When the notification appears, tap the Remind me later button. You should receive another notification after 15 minutes.
+
+## 总结
+
+I hope you enjoy reading this introductory tutorial for the UserNotifications framework. In part 2, we will discuss notifications in more depth and learn about embedding custom view controllers in our notifications.
+
+For reference, you can download the demo project on Github.
