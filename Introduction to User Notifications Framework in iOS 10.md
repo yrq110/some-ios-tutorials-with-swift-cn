@@ -191,7 +191,7 @@ if let path = Bundle.main.path(forResource: "logo", ofType: "png") {
 
 来一起实现吧。
 
-## 在推送中添加交互行为 Adding a Reminder Using Notification Actions
+## 在推送中添加交互行为
 
 在推送中添加交互行为有一些复杂，需要设置一些API。不过没有我们搞不定的，在推送中添加交互行为需要用到UNNotificationAction和UNNotificationCategory类。
 
@@ -231,7 +231,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 }
 ```
 
-The userNotificationCenter(_:didReceive:withCompletionHandler:) method is called when the user selects an action. You can determine which action the user has selected by accessing the actionIdentifier of the given UNNotificationResponse. Let’s implement the method like this:
+当用户点击按钮时会调用userNotificationCenter(\_:didReceive:withCompletionHandler:)方法，可以根据输入的UNNotificationResponse对象的actionIdentifier属性判断用户进行的是哪项操作，像下面这样实现这个方法:
 
 ```swift
 func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
@@ -243,16 +243,16 @@ func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive respo
 }
 ```
 
-The above code schedules a new notification 900 seconds (60 seconds * 15 minutes) after the current date. Finally, set the default notification center’s delegate to AppDelegate in the scheduleNotification(at:) method:
+上面的代码中安排了一个距当前时刻900秒(15分钟)后的推送。最后，在scheduleNotification(at:)方法中将推送中心的代理设为AppDelegate:
 
 ```swift
 UNUserNotificationCenter.current().delegate = self
 ```
 
-Now run the app again and schedule a notification to test it out. When the notification appears, tap the Remind me later button. You should receive another notification after 15 minutes.
+再次运行app，设置一个推送测试一下。当推送出现时，点击稍后提醒我的按钮，则会在15分钟后收到另一个推送。
 
 ## 总结
 
-I hope you enjoy reading this introductory tutorial for the UserNotifications framework. In part 2, we will discuss notifications in more depth and learn about embedding custom view controllers in our notifications.
+希望这篇关于UserNotifications框架的介绍性教程对你有所帮助，在下一篇中我们会更深入的讨论如何在推送中嵌入自定义的视图控制器。
 
-For reference, you can download the demo project on Github.
+可以在Github上下载[项目Demo](https://github.com/appcoda/NotificationsUI-Demo)。
