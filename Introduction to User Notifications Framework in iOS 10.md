@@ -17,7 +17,7 @@
 
 ## 简单用户推送
 
-并不是所有我们想展现的推送都是漂亮与可交互的，因此从一个基本的文本推送开始，下载[开始项目](https://github.com/appcoda/NotificationsUI-Demo/raw/master/NotificationsUI.zip)，打开NotificationsUI.xcodeproj。浏览一下项目内容，会发现没有什么东西：设计用户界面的Main.storyboard，ViewController.swift，还有AppDelegate.swift。
+并不是所有我们想展现的推送都是漂亮与可交互的，因此从一个基本的文本推送开始，下载[开始项目](https://github.com/appcoda/NotificationsUI-Demo/raw/master/NotificationsUI.zip)，打开NotificationsUI.xcodeproj。浏览一下项目内容：设计用户界面的Main.storyboard，ViewController.swift，还有AppDelegate.swift。
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/10/user-notification-storyboard.png)
 
