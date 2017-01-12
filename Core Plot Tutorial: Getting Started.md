@@ -264,3 +264,4 @@ func sliceFill(for pieChart: CPTPieChart, record idx: UInt) -> CPTFill? {
 Build and run, and you’ll see a nifty-looking pie chart:
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-04.png)
+
