@@ -41,39 +41,41 @@ Core Plot是一个2D图表绘图库，可以用于iOS、Mac OS X和tvOS，使用
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/Screen-Shot-2016-05-17-at-9.24.00-PM.png)
 
-Select Get Rates to navigate to the HostViewController and then change the segmented control’s selection. The app really doesn’t do very much… yet. ;]
+选择Get Rates进入HostViewController界面，改变分段控件的选择，app还没有实现这些功能...
 
-It’s time in this Core Plot tutorial to get plotting!
+是时候学习使用Core Plot绘图了!
 
 ### 安装Core Plot
 
-首先需要安装Core Plot。差First in this Core Plot tutorial, you need to install Core Plot. The easiest way to do this is via CocoaPods.
+首先需要安装Core Plot，使用CocoaPods安装比较简单。
 
 将下面这行添加到Podfile中:
 
 ```swift
 pod 'CorePlot', '~> 2.2'
 ```
-Open Terminal; cd into your project directory; and run pod install.
-After the install completes, build the project.
-No errors, right? Great, you’re all setup to use Core Plot. Thanks, CocoaPods. :]
-If you do get any errors, try updating CocoaPods via sudo gem install cocoapods and then pod install again.
+打开终端，进入项目目录，执行pod install。
 
-## Creating the Pie Chart
+安装完成后构建项目。没毛病，现在准备好Core Plot了，谢谢你，CocoaPods :]
 
-Open PieChartViewController.swift and add the following import:
+如果出了一些错误，可以尝试一下使用sudo gem install cocoapods更新CocoaPods然后再执行pod install。
+
+## 创建饼图
+
+打开PieChartViewController.swift文件导入Core Plot:
 
 ```swift
 import CorePlot
 ```
-Next, add the following property:
+接着添加如下属性:
 
 ```swift
 @IBOutlet weak var hostView: CPTGraphHostingView!
 ```
 
-CPTGraphHostingView is responsible for “hosting” a chart/graph. You can think of it as a “graph container”.
-Next, add the following class extension after the ending class curly brace:
+CPTGraphHostingView负责"管理"一个图表，可以把它当做一个"图表容器"。
+
+接着，在类的大括号结束符后添加如下类扩展:
 
 ```swift
 extension PieChartViewController: CPTPieChartDataSource, CPTPieChartDelegate {
@@ -99,18 +101,22 @@ extension PieChartViewController: CPTPieChartDataSource, CPTPieChartDelegate {
   }  
 }
 ```
-You provide data for a Core Plot chart via CPTPieChartDataSource, and you get user interaction events via CPTPieChartDelegate. You’ll fill in these methods as the Core Plot tutorial progresses.
+通过CPTPieChartDataSource提供Core Plot图表的数据，通过CPTPieChartDelegate得到用户的响应事件，会在之后填充这些方法的内容。
 
-### Setting Up the Graph Host View
+### 设置图表管理视图
 
-To continue this Core Plot tutorial, open Main.storyboard and select the PieChartViewController scene.
-Drag a new UIView onto this view. Change its class to CPTGraphHostingView, and connect it to the hostView outlet.
-Add constraints on each side to pin this view to its parent view, making sure that Constrain to margins is NOT set:
+打开Main.storyboard，选择PieChartViewController。
+
+把一个新的UIView拖拽到这个视图中，将它的类改为CPTGraphHostingView，连接到hostView。
+
+在每条边上添加约束使其嵌在父视图上，确保Constrain to margins没有被勾选:
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-05-700x428.png)
 
-Set the background color to any color you like. I used a gray scale color with an opacity of 92%.
-Back in PieChartViewController.swift, add the following methods right after viewDidLoad():
+背景色随意设置，我使用透明度是92%的灰度色。
+
+回到PieChartViewController.swif文件，在viewDidLoad()后添加如下方法:
+
 ```swift
 override func viewDidLayoutSubviews() {
   super.viewDidLayoutSubviews()
@@ -136,14 +142,17 @@ func configureChart() {
 func configureLegend() {
 }
 ```
-This sets up the plot right after the subviews are laid out. This is the earliest that the frame size for the view has been set, which you’ll need to configure the plot.
-Each method within initPlot() represents a stage in setting up the plot. This helps keep the code a bit more organized.
-Add the following to configureHostView():
+子视图布局好后在这里设置需要绘制的图标，这里是最早设置视图尺寸的地方，需要在这里设置图表的参数。
+
+initPlot()中的每一个方法都是图标设置中的一环，这种写法使代码更具组织性。
+
+添加如下代码到configureHostView()方法中:
 ```swift
 hostView.allowPinchScaling = false
 ```
-This disables pinching scaling on the pie chart, which determines whether the host view responds to pinch gestures.
-You next need to add a graph to the hostView. Add the following to configureGraph():
+这里禁用了饼图的捏合缩放，决定饼图的管理视图是否会对捏合手势作出响应。
+
+接着在hostView中添加一个图像。在configureGraph()方法中添加如下代码:
 ```swift
 // 1 - Create and configure the graph
 let graph = CPTXYGraph(frame: hostView.bounds)
