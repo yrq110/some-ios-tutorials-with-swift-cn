@@ -175,23 +175,25 @@ graph.title = "\(base.name) exchange rates\n\(rate.date)"
 graph.titleTextStyle = textStyle
 graph.titlePlotAreaFrameAnchor = CPTRectAnchor.top
 ```
-Here’s a breakdown for each section:
-1. You first create an instance of CPTXYGraph and designate it as the hostedGraph of the hostView. This associates the graph with the host view.
+下面是对代码的分解:
+1. 首先新建了一个CPTXYGraph实例，将其设为hostView的hostedGraph属性值，结合图形与管理视图。
 
-The CPTGraph encompasses everything you see in a standard chart or graph: the border, the title, the plotted data, axes, and legend.
+CPTGraph包含一个标准图表中的所有元素：边界、标题、绘制的数据、坐标轴和图例。
 
-By default, CPTXYGraph has a padding of 20 points per side. This doesn’t look great here, so you explicitly set the padding for each side to 0.
-2. You next set up the text style for the graph’s title by creating and configuring a CPTMutableTextStyle instance.
-3. Lastly, you set the title for the graph and set its style to the one you just created. You also specify the anchoring point to be the top of the view’s bounding rectangle.
+默认情况下，CPTXYGraph的每一条边有20 px的内边距。看起来并不是很好，你需要将它设为0。
 
-Build and run the app, and you should see the chart’s title displayed at the top of the screen:
+2. 接着通过创建CPTMutableTextStyle实例设置图形的文本样式。
+3. 最后设置图表的标题，将它的样式设为刚刚创建好的样式，并将锚点设为视图矩形的顶部。
+
+构建并运行app，你应该会看到屏幕上方显示的图表标题。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-03.png)
 
-### Plotting the Pie Chart
+### 绘制饼图
 
-The title looks great, but you know what would be even better in this Core Plot tutorial? Actually seeing the pie chart!
-Add the following lines of code to configureChart():
+标题看着还行，不过怎么能做的更好？来看看如何绘制饼图！
+
+将如下代码添加到configureChart()方法中:
 
 ```swift
 // 1 - Get a reference to the graph
@@ -222,22 +224,24 @@ pieChart.labelTextStyle = textStyle
 // 5 - Add chart to graph
 graph.add(pieChart)
 ```
-Here’s what this does:
-1. You first get a reference to the graph.
-2. You then instantiate a CPTPieChart, set its delegate and data source to be the view controller, and configure its appearance.
-3. You then configure the chart’s border style.
-4. And then, configure its text style.
-5. Lastly, you add the pie chart to the graph.
+这些代码干了什么:
+1. 首先得到一个图的引用。
+2. 接着实例化CPTPieChart，设置它的委托与数据源为view controller，并设置它的外观。
+3. 设置表的边界样式。
+4. 设置表的文本样式。
+5. 最后将表添加到图中。
 
-If you build and run the app right now, you’ll see that nothing has changed… This is because you still need to implement the data source and delegate for the pie chart.
-First, replace current numberOfRecords(for:) with the following:
+如果你现在就运行app的话会看不到任何改变... 这是因为还需要为饼图实现数据源与委托。
+
+首先使用如下代码替换numberOfRecords(for:)中的内容:
 ```swift
 func numberOfRecords(for plot: CPTPlot) -> UInt {
   return UInt(symbols.count)
 }
 ```
-This method determines the number of slices to show on the graph; it will display one pie slice for each symbol.
-Next, replace number(for:field:record:) with the following:
+这个方法决定了在图中显示的分块数，会为每一个货币符号分配一个饼图区域。
+
+接着使用如下代码替换number(for:field:record:)中的内容:
 ```swift
 func number(for plot: CPTPlot, field fieldEnum: UInt, record idx: UInt) -> Any? {
   let symbol = symbols[Int(idx)]
@@ -245,9 +249,12 @@ func number(for plot: CPTPlot, field fieldEnum: UInt, record idx: UInt) -> Any? 
   return 1.0 / currencyRate
 }
 ```
-The pie chart uses this method to get the “gross” value for the currency symbol at the idx.
+饼图使用这个方法在idx中得到货币符号的值。
+
 You should note that this value is not a percentage. Rather, this method calculates the currency exchange rate relative to the base currency: the return value of 1.0 / currencyRate is the exchange rate for “1 base currency per value of another comparison currency.”
+
 CPTPieChart will take care of calculating the percentage value for each slice, which ultimately will determine how big each slice is, using these values.
+
 Next, replace dataLabelForPlot(for:record:) with the following:
 ```swift
 func dataLabel(for plot: CPTPlot, record idx: UInt) -> CPTLayer? {
