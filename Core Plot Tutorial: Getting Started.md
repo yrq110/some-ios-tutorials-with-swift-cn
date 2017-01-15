@@ -239,7 +239,7 @@ func numberOfRecords(for plot: CPTPlot) -> UInt {
   return UInt(symbols.count)
 }
 ```
-这个方法决定了在图中显示的分块数，会为每一个货币符号分配一个饼图区域。
+这个方法决定了在图中显示的分块数，会为每一种货币分配一个扇形区域。
 
 接着使用如下代码替换number(for:field:record:)中的内容:
 ```swift
@@ -251,11 +251,11 @@ func number(for plot: CPTPlot, field fieldEnum: UInt, record idx: UInt) -> Any? 
 ```
 饼图使用这个方法在idx中得到货币符号的值。
 
-You should note that this value is not a percentage. Rather, this method calculates the currency exchange rate relative to the base currency: the return value of 1.0 / currencyRate is the exchange rate for “1 base currency per value of another comparison currency.”
+应该注意到了这个值并不是个百分率，这个方法计算当前货币相对于基本货币的汇率：返回值1.0 / currencyRate是“比较货币相对于1个基本货币的值”。
 
-CPTPieChart will take care of calculating the percentage value for each slice, which ultimately will determine how big each slice is, using these values.
+CPTPieChart会计算每一块区域的百分比值，使用这些值决定扇形区域的大小。
 
-Next, replace dataLabelForPlot(for:record:) with the following:
+接着，使用如下代码替换dataLabelForPlot(for:record:)方法:
 ```swift
 func dataLabel(for plot: CPTPlot, record idx: UInt) -> CPTLayer? {
   let value = rate.rates[symbols[Int(idx)].name]!.floatValue
@@ -264,9 +264,9 @@ func dataLabel(for plot: CPTPlot, record idx: UInt) -> CPTLayer? {
   return layer
 }
 ```
-This method returns a label for the pie slice. The expected return type, CPTLayer is similar to a CALayer. However, a CPTLayer is abstracted to work on both Mac OS X and iOS and provides other drawing niceties used by Core Plot.
-Here, you create and return a CPTTextLayer, which is a subclass of CPTLayer designed to display text.
-Finally, you’ll add color to the slices by replacing sliceFillForPieChart(for:, record:) with the following:
+这个方法返回饼图区域的标签，返回的类型是CPTLayer，它与CALayer很像，不同的是CPTLayer可以在macOS和iOS上使用，并且提供了Core Plot的一些绘制细节。
+
+在这里新建并返回了一个CPTTextLayer对象，它用于显示文本的CPTLayer子类。最后给饼图中的区域赋予颜色。使用如下代码替换sliceFillForPieChart(for:, record:)方法:
 ```swift
 func sliceFill(for pieChart: CPTPieChart, record idx: UInt) -> CPTFill? {
   switch idx {
@@ -277,7 +277,62 @@ func sliceFill(for pieChart: CPTPieChart, record idx: UInt) -> CPTFill? {
   }
 }
 ```
-Build and run, and you’ll see a nifty-looking pie chart:
+构建并运行，会看到一个漂亮的饼图:
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-04.png)
 
+## Legen … Wait For It… dary!
+
+The chart looks pretty nice, but adding a legend would make it even better. You’ll now add a legend to the graph in this Core Plot tutorial.
+First, replace configureLegend() with the following:
+
+```swift
+func configureLegend() {
+  // 1 - Get graph instance
+  guard let graph = hostView.hostedGraph else { return }
+ 
+  // 2 - Create legend
+  let theLegend = CPTLegend(graph: graph)
+ 
+  // 3 - Configure legend
+  theLegend.numberOfColumns = 1
+  theLegend.fill = CPTFill(color: CPTColor.white())
+  let textStyle = CPTMutableTextStyle()
+  textStyle.fontSize = 18
+  theLegend.textStyle = textStyle
+ 
+  // 4 - Add legend to graph
+  graph.legend = theLegend
+  if view.bounds.width > view.bounds.height {
+    graph.legendAnchor = .right
+    graph.legendDisplacement = CGPoint(x: -20, y: 0.0)
+ 
+  } else {
+    graph.legendAnchor = .bottomRight
+    graph.legendDisplacement = CGPoint(x: -8.0, y: 8.0)
+  }
+}
+```
+You also need to provide legend data for each slice.
+To do this, replace legendTitleForPieChart(for:record:) with the following:
+```swift
+func legendTitle(for pieChart: CPTPieChart, record idx: UInt) -> String? {
+  return symbols[Int(idx)].name
+}
+```
+Build and run, and you’ll be greeted with a “legendary” graph.
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-06.png)
+
+```swift
+```
+```swift
+```
+```swift
+```
+```swift
+```
+```swift
+```
+```swift
+```
