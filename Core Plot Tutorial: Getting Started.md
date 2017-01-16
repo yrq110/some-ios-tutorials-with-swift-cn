@@ -324,14 +324,46 @@ Build and run, and you’ll be greeted with a “legendary” graph.
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-06.png)
 
+## Raising the Bar (Graph)
+
+You’re plotting pie charts like a pro, but it’s time you raised the bar (graph)!
+Open BarGraphViewController and add the following import:
+
 ```swift
+import CorePlot
 ```
+Next, add the following outlet:
 ```swift
+@IBOutlet var hostView: CPTGraphHostingView!
 ```
+Just like a pie chart, the host view will contain the bar graph.
+Next, add the following properties:
 ```swift
+var plot1: CPTBarPlot!
+var plot2: CPTBarPlot!
+var plot3: CPTBarPlot!
 ```
+Here you declare three CPTBarPlot properties, which will correspond to each currency shown on the graph.
+Note there are also three IBOutlet labels and three IBAction methods already defined, all of which have already been connected for you on the storyboard.
+Lastly, add the following extension at the end of the file:
 ```swift
+extension BarGraphViewController: CPTBarPlotDataSource, CPTBarPlotDelegate {
+ 
+  func numberOfRecords(for plot: CPTPlot) -> UInt {
+    return 0
+  }
+ 
+  func number(for plot: CPTPlot, field fieldEnum: UInt, record idx: UInt) -> Any? {
+    return 0
+  }
+ 
+  func barPlot(_ plot: CPTBarPlot, barWasSelectedAtRecord idx: UInt, with event: UIEvent) {
+ 
+  }
+}
+
 ```
+This too is similar to a pie chart: you provide the data for a bar chart via CPTBarPlotDataSource, and you get user interaction events via CPTBarPlotDelegate. You’ll write these in a bit.
 ```swift
 ```
 ```swift
