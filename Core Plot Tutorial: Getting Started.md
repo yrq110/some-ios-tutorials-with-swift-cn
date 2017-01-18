@@ -9,7 +9,7 @@
 
 ***
 
-Core Plot是一个2D图表绘图库，可以用于iOS、Mac OS X和tvOS，使用了苹果的框架实现：Quartz与Core Animation，有较稳固的测试覆盖，在BSD许可下发布。
+Core Plot是一个2D图表库，可以用于iOS、Mac OS X和tvOS，使用了苹果的框架实现：Quartz与Core Animation，有较稳固的测试覆盖，在BSD许可下发布。
 
 在这片教程中，你将会学到如何使用Core Plot创建饼图与柱状图，还会添加很酷的图表交互功能！
 
@@ -73,7 +73,7 @@ import CorePlot
 @IBOutlet weak var hostView: CPTGraphHostingView!
 ```
 
-CPTGraphHostingView负责"管理"一个图表，可以把它当做一个"图表容器"。
+CPTGraphHostingView负责"管理"一个图表(graph)，可以把它当做一个"图表容器"。
 
 接着，在类的大括号结束符后添加如下类扩展:
 
@@ -103,7 +103,7 @@ extension PieChartViewController: CPTPieChartDataSource, CPTPieChartDelegate {
 ```
 通过CPTPieChartDataSource提供Core Plot图表的数据，通过CPTPieChartDelegate得到用户的响应事件，会在之后填充这些方法的内容。
 
-### 设置图表管理视图
+### 设置graph管理视图
 
 打开Main.storyboard，选择PieChartViewController。
 
@@ -152,9 +152,9 @@ hostView.allowPinchScaling = false
 ```
 这里禁用了饼图的捏合缩放，决定饼图的管理视图是否会对捏合手势作出响应。
 
-接着在hostView中添加一个图像。在configureGraph()方法中添加如下代码:
+接着在hostView中添加一个graph。在configureGraph()方法中添加如下代码:
 ```swift
-// 1 - Create and configure the graph
+// 1 - 创建并设置graph
 let graph = CPTXYGraph(frame: hostView.bounds)
 hostView.hostedGraph = graph
 graph.paddingLeft = 0.0
@@ -163,14 +163,14 @@ graph.paddingRight = 0.0
 graph.paddingBottom = 0.0
 graph.axisSet = nil
  
-// 2 - Create text style
+// 2 - 创建文本样式
 let textStyle: CPTMutableTextStyle = CPTMutableTextStyle()
 textStyle.color = CPTColor.black()
 textStyle.fontName = "HelveticaNeue-Bold"
 textStyle.fontSize = 16.0
 textStyle.textAlignment = .center
  
-// 3 - Set graph title and text style
+// 3 - 设置graph的标题与文本样式
 graph.title = "\(base.name) exchange rates\n\(rate.date)"
 graph.titleTextStyle = textStyle
 graph.titlePlotAreaFrameAnchor = CPTRectAnchor.top
@@ -185,7 +185,7 @@ CPTGraph包含一个标准图表中的所有元素：边界、标题、绘制的
 2. 接着通过创建CPTMutableTextStyle实例设置图形的文本样式。
 3. 最后设置图表的标题，将它的样式设为刚刚创建好的样式，并将锚点设为视图矩形的顶部。
 
-构建并运行app，你应该会看到屏幕上方显示的图表标题。
+构建并运行app，你应该会看到屏幕上方显示的graph标题。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-03.png)
 
@@ -196,10 +196,10 @@ CPTGraph包含一个标准图表中的所有元素：边界、标题、绘制的
 将如下代码添加到configureChart()方法中:
 
 ```swift
-// 1 - Get a reference to the graph
+// 1 - 获取graph引用
 let graph = hostView.hostedGraph!
  
-// 2 - Create the chart
+// 2 - 创建chart
 let pieChart = CPTPieChart()
 pieChart.delegate = self
 pieChart.dataSource = self
@@ -209,19 +209,19 @@ pieChart.startAngle = CGFloat(M_PI_4)
 pieChart.sliceDirection = .clockwise
 pieChart.labelOffset = -0.6 * pieChart.pieRadius
  
-// 3 - Configure border style
+// 3 - 设置边界样式
 let borderStyle = CPTMutableLineStyle()
 borderStyle.lineColor = CPTColor.white()
 borderStyle.lineWidth = 2.0
 pieChart.borderLineStyle = borderStyle
  
-// 4 - Configure text style
+// 4 - 设置文本样式
 let textStyle = CPTMutableTextStyle()
 textStyle.color = CPTColor.white()
 textStyle.textAlignment = .center
 pieChart.labelTextStyle = textStyle
  
-// 5 - Add chart to graph
+// 5 - 将chart添加到graph中
 graph.add(pieChart)
 ```
 这些代码干了什么:
@@ -251,7 +251,7 @@ func number(for plot: CPTPlot, field fieldEnum: UInt, record idx: UInt) -> Any? 
 ```
 饼图使用这个方法在idx中得到货币符号的值。
 
-应该注意到了这个值并不是个百分率，这个方法计算当前货币相对于基本货币的汇率：返回值1.0 / currencyRate是“比较货币相对于1个基本货币的值”。
+应该注意到了这个值并不是个百分率，这个方法计算当前货币相对于基本货币的汇率：返回值1.0 / currencyRate是“当前货币相对于1个基本货币”的值。
 
 CPTPieChart会计算每一块区域的百分比值，使用这些值决定扇形区域的大小。
 
@@ -281,27 +281,28 @@ func sliceFill(for pieChart: CPTPieChart, record idx: UInt) -> CPTFill? {
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-04.png)
 
-## Legen … Wait For It… dary!
+### 加些图注!
 
-The chart looks pretty nice, but adding a legend would make it even better. You’ll now add a legend to the graph in this Core Plot tutorial.
-First, replace configureLegend() with the following:
+图表看起来不错，不过有图注的话会更好，接下来给图表添加一个图注。
+
+首先，使用如下代码替换configureLegend()方法中的内容:
 
 ```swift
 func configureLegend() {
-  // 1 - Get graph instance
+  // 1 - 获取graph对象
   guard let graph = hostView.hostedGraph else { return }
  
-  // 2 - Create legend
-  let theLegend = CPTLegend(graph: graph)
+  // 2 - 创建图注
+  let theLegend = CPTLegend(graph: graph)
  
-  // 3 - Configure legend
-  theLegend.numberOfColumns = 1
+  // 3 - 设置图注
+  theLegend.numberOfColumns = 1
   theLegend.fill = CPTFill(color: CPTColor.white())
   let textStyle = CPTMutableTextStyle()
   textStyle.fontSize = 18
   theLegend.textStyle = textStyle
  
-  // 4 - Add legend to graph
+  // 4 - 将图注添加到图
   graph.legend = theLegend
   if view.bounds.width > view.bounds.height {
     graph.legendAnchor = .right
@@ -313,39 +314,44 @@ func configureLegend() {
   }
 }
 ```
-You also need to provide legend data for each slice.
-To do this, replace legendTitleForPieChart(for:record:) with the following:
+还需要提供每一个区域的图注数据。
+
+使用如下代码替换legendTitleForPieChart(for:record:)方法中的内容:
 ```swift
 func legendTitle(for pieChart: CPTPieChart, record idx: UInt) -> String? {
   return symbols[Int(idx)].name
 }
 ```
-Build and run, and you’ll be greeted with a “legendary” graph.
+构建并运行，迎接一个 "传奇(legendary，包含图注的，这里一语双关)"的图表。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-06.png)
 
-## Raising the Bar (Graph)
+## 创建条形图(Raising the Bar，提高标准，这里双关)
 
-You’re plotting pie charts like a pro, but it’s time you raised the bar (graph)!
-Open BarGraphViewController and add the following import:
+现在你画饼图应该挺6了，是时候提高一些标准，试下画条形图了!
+
+打开BarGraphViewController导入Core Plot:
 
 ```swift
 import CorePlot
 ```
-Next, add the following outlet:
+添加一个outlet:
 ```swift
 @IBOutlet var hostView: CPTGraphHostingView!
 ```
-Just like a pie chart, the host view will contain the bar graph.
-Next, add the following properties:
+像画饼图一样，host view需要包含这个条形图。
+
+添加如下属性:
 ```swift
 var plot1: CPTBarPlot!
 var plot2: CPTBarPlot!
 var plot3: CPTBarPlot!
 ```
-Here you declare three CPTBarPlot properties, which will correspond to each currency shown on the graph.
-Note there are also three IBOutlet labels and three IBAction methods already defined, all of which have already been connected for you on the storyboard.
-Lastly, add the following extension at the end of the file:
+这里创建的三个CPTBarPlot属性分别对应graph中的每一种货币。
+
+注意这里已经定义了三个IBOutlet标签与三个IBAction方法，并且已经与故事板连接好了。
+
+最后，在文件末尾处添加如下扩展:
 ```swift
 extension BarGraphViewController: CPTBarPlotDataSource, CPTBarPlotDelegate {
  
@@ -363,8 +369,4 @@ extension BarGraphViewController: CPTBarPlotDataSource, CPTBarPlotDelegate {
 }
 
 ```
-This too is similar to a pie chart: you provide the data for a bar chart via CPTBarPlotDataSource, and you get user interaction events via CPTBarPlotDelegate. You’ll write these in a bit.
-```swift
-```
-```swift
-```
+这里跟饼图很像: 使用CPTBarPlotDataSource给条形图提供数据，通过CPTBarPlotDelegate获取用户交互事件。
