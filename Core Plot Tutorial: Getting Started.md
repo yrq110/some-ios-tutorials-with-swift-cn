@@ -370,3 +370,114 @@ extension BarGraphViewController: CPTBarPlotDataSource, CPTBarPlotDelegate {
 
 ```
 这里跟饼图很像: 使用CPTBarPlotDataSource给条形图提供数据，通过CPTBarPlotDelegate获取用户交互事件。
+
+### Setting Up the Graph Host View (again!)
+
+Again, just like you did for the pie chart in this Core Plot tutorial, you need to add the host view via Interface Builder.
+Return to Main.storyboard, and select the BarGraphViewController scene.
+Drag a new UIView onto the view; change its class to CPTGraphHostingView; and connect its outlet to the hostView on the controller.
+Update its frame to the following via the Utilities\Size Inspector (the ruler tab):
+X = 0, Y = 53, Width = 600, Height = 547
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/05/BarGraph_HostView_Frame_-480x276.png)
+
+Add constraints to pin it to all of its neighbors, making sure that Constrain to margins is NOT set.
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/05/BarGraph_HostView_Constraints.png)
+
+Lastly, set the background color to any color you like. Again, I used a gray scale color with an opacity of 92%.
+
+### Plotting the Bar Graph
+
+Now that the UI is all hooked up in this Core Plot tutorial, it’s time to plot the bar graph.
+First, back in BarGraphViewController, you need a couple constant properties. Add the following right below the other properties:
+
+```swift
+let BarWidth = 0.25
+let BarInitialX = 0.25
+```
+
+You’re also going to need a helper function to calculate the highest rate value. Add the following function right after updateLabels():
+
+```swift
+func highestRateValue() -> Double {
+  var maxRate = DBL_MIN
+  for rate in rates {
+    maxRate = max(maxRate, rate.maxRate().doubleValue)
+  }
+  return maxRate
+}
+```
+
+Next, add the following methods, right after highestRateValue():
+
+
+```swift
+override func viewDidLayoutSubviews() {
+  super.viewDidLayoutSubviews()
+  initPlot()
+}
+ 
+func initPlot() {
+  configureHostView()
+  configureGraph()
+  configureChart()
+  configureAxes()
+}
+ 
+func configureHostView() {
+}
+ 
+func configureGraph() {
+}
+ 
+func configureChart() {
+}
+ 
+func configureAxes() {
+}
+```
+Does this look familiar? Yep, it’s nearly the exact same structure as before.
+Add the following to configureHostView():
+```swift
+hostView.allowPinchScaling = false
+```
+Again, as you won’t be using pinch scaling, you should disable it.
+Next, add the following lines to configureGraph():
+```swift
+
+// 1 - Create the graph
+let graph = CPTXYGraph(frame: hostView.bounds)
+graph.plotAreaFrame?.masksToBorder = false
+hostView.hostedGraph = graph
+ 
+// 2 - Configure the graph
+graph.apply(CPTTheme(named: CPTThemeName.plainWhiteTheme))
+graph.fill = CPTFill(color: CPTColor.clear())
+graph.paddingBottom = 30.0
+graph.paddingLeft = 30.0
+graph.paddingTop = 0.0
+graph.paddingRight = 0.0
+ 
+// 3 - Set up styles
+let titleStyle = CPTMutableTextStyle()
+titleStyle.color = CPTColor.black()
+titleStyle.fontName = "HelveticaNeue-Bold"
+titleStyle.fontSize = 16.0
+titleStyle.textAlignment = .center
+graph.titleTextStyle = titleStyle
+ 
+let title = "\(base.name) exchange rates\n\(rates.first!.date) - \(rates.last!.date)"
+graph.title = title
+graph.titlePlotAreaFrameAnchor = .top
+graph.titleDisplacement = CGPoint(x: 0.0, y: -16.0)
+ 
+// 4 - Set up plot space
+let xMin = 0.0
+let xMax = Double(rates.count)
+let yMin = 0.0
+let yMax = 1.4 * highestRateValue()
+guard let plotSpace = graph.defaultPlotSpace as? CPTXYPlotSpace else { return }
+plotSpace.xRange = CPTPlotRange(locationDecimal: CPTDecimalFromDouble(xMin), lengthDecimal: CPTDecimalFromDouble(xMax - xMin))
+plotSpace.yRange = CPTPlotRange(locationDecimal: CPTDecimalFromDouble(yMin), lengthDecimal: CPTDecimalFromDouble(yMax - yMin))
+```
