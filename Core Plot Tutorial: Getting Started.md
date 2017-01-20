@@ -11,7 +11,7 @@
 
 Core Plot是一个2D图表库，可以用于iOS、Mac OS X和tvOS，使用了苹果的框架实现：Quartz与Core Animation，有较稳固的测试覆盖，在BSD许可下发布。
 
-在这片教程中，你将会学到如何使用Core Plot创建饼图与柱状图，还会添加很酷的图表交互功能！
+在这片教程中，你将会学到如何使用Core Plot创建饼图与条形图，还会添加很酷的图表交互功能！
 
 开始前需要安装Xcode 8.0并且对Swift、Interface Builder和storyboard有一些基本的认识与理解，如果你对这些方面不太了解需要看看其他教程学习一下。
 
@@ -35,7 +35,7 @@ Core Plot是一个2D图表库，可以用于iOS、Mac OS X和tvOS，使用了苹
 * `PieChartViewController.swift`
   使用饼图显示所选日期的汇率，首先会实现这个图表。
 * `BarGraphViewController.swift`
-  使用柱状图显示一定天数的汇率.实现饼图后这个就是个小case！
+  使用条形图显示一定天数的汇率.实现饼图后这就是个小case！
 
 构建并运行一下看看。
 
@@ -330,7 +330,7 @@ func legendTitle(for pieChart: CPTPieChart, record idx: UInt) -> String? {
 
 现在你画饼图应该挺6了，是时候提高一些标准，试下画条形图了!
 
-打开BarGraphViewController导入Core Plot:
+打开BarGraphViewController，导入Core Plot:
 
 ```swift
 import CorePlot
@@ -349,7 +349,7 @@ var plot3: CPTBarPlot!
 ```
 这里创建的三个CPTBarPlot属性分别对应graph中的每一种货币。
 
-注意这里已经定义了三个IBOutlet标签与三个IBAction方法，并且已经与故事板连接好了。
+注意这里已经定义了三个IBOutlet标签与三个IBAction方法，并且已与故事板连接。
 
 最后，在文件末尾处添加如下扩展:
 ```swift
@@ -369,35 +369,39 @@ extension BarGraphViewController: CPTBarPlotDataSource, CPTBarPlotDelegate {
 }
 
 ```
-这里跟饼图很像: 使用CPTBarPlotDataSource给条形图提供数据，通过CPTBarPlotDelegate获取用户交互事件。
+这里跟饼图很像: 通过CPTBarPlotDataSource给条形图提供数据，通过CPTBarPlotDelegate获取用户交互事件。
 
-### Setting Up the Graph Host View (again!)
+### 再次设置graph管理视图
 
-Again, just like you did for the pie chart in this Core Plot tutorial, you need to add the host view via Interface Builder.
-Return to Main.storyboard, and select the BarGraphViewController scene.
-Drag a new UIView onto the view; change its class to CPTGraphHostingView; and connect its outlet to the hostView on the controller.
-Update its frame to the following via the Utilities\Size Inspector (the ruler tab):
+跟刚才所做的一样，使用Interface Builder添加管理视图。
+
+回到Main.storyboard中，选择BarGraphViewController场景。
+
+把一个新的UIView拖到视图中，将class改为CPTGraphHostingView，将outlet连接到view controller的hostView对象上。
+
+在Utilities\Size Inspector(尺子状的标签)中调整成如下尺寸:
 X = 0, Y = 53, Width = 600, Height = 547
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/BarGraph_HostView_Frame_-480x276.png)
 
-Add constraints to pin it to all of its neighbors, making sure that Constrain to margins is NOT set.
+添加四条边的约束，确保Constrain to margins没有被勾选。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/BarGraph_HostView_Constraints.png)
 
-Lastly, set the background color to any color you like. Again, I used a gray scale color with an opacity of 92%.
+最后设置任意的背景色，仍然使用的是透明度为92%的灰度色。
 
-### Plotting the Bar Graph
+### 绘制条形图
 
-Now that the UI is all hooked up in this Core Plot tutorial, it’s time to plot the bar graph.
-First, back in BarGraphViewController, you need a couple constant properties. Add the following right below the other properties:
+UI组件都弄好了，现在来绘制条形图吧。
+
+首先回到BarGraphViewController中，需要添加几个常量属性。在其他属性后添加如下属性:
 
 ```swift
 let BarWidth = 0.25
 let BarInitialX = 0.25
 ```
 
-You’re also going to need a helper function to calculate the highest rate value. Add the following function right after updateLabels():
+来需要一个辅助函数来计算最高汇率，在updateLabels()方法后添加如下函数:
 
 ```swift
 func highestRateValue() -> Double {
@@ -409,8 +413,7 @@ func highestRateValue() -> Double {
 }
 ```
 
-Next, add the following methods, right after highestRateValue():
-
+接着在highestRateValue()后添加如下方法:
 
 ```swift
 override func viewDidLayoutSubviews() {
@@ -437,21 +440,21 @@ func configureChart() {
 func configureAxes() {
 }
 ```
-Does this look familiar? Yep, it’s nearly the exact same structure as before.
-Add the following to configureHostView():
+是不是有点眼熟? 对的，这个结构跟之前一样。
+在configureHostView()方法中添加如下:
 ```swift
 hostView.allowPinchScaling = false
 ```
-Again, as you won’t be using pinch scaling, you should disable it.
-Next, add the following lines to configureGraph():
-```swift
+这次也不需要捏合缩放，禁用它。
 
-// 1 - Create the graph
+在configureGraph()方法中添加如下代码:
+```swift
+// 1 - 新建graph
 let graph = CPTXYGraph(frame: hostView.bounds)
 graph.plotAreaFrame?.masksToBorder = false
 hostView.hostedGraph = graph
  
-// 2 - Configure the graph
+// 2 - 设置graph
 graph.apply(CPTTheme(named: CPTThemeName.plainWhiteTheme))
 graph.fill = CPTFill(color: CPTColor.clear())
 graph.paddingBottom = 30.0
@@ -459,7 +462,7 @@ graph.paddingLeft = 30.0
 graph.paddingTop = 0.0
 graph.paddingRight = 0.0
  
-// 3 - Set up styles
+// 3 - 设置样式
 let titleStyle = CPTMutableTextStyle()
 titleStyle.color = CPTColor.black()
 titleStyle.fontName = "HelveticaNeue-Bold"
@@ -472,7 +475,7 @@ graph.title = title
 graph.titlePlotAreaFrameAnchor = .top
 graph.titleDisplacement = CGPoint(x: 0.0, y: -16.0)
  
-// 4 - Set up plot space
+// 4 - 设置绘制区域
 let xMin = 0.0
 let xMax = Double(rates.count)
 let yMin = 0.0
@@ -481,3 +484,245 @@ guard let plotSpace = graph.defaultPlotSpace as? CPTXYPlotSpace else { return }
 plotSpace.xRange = CPTPlotRange(locationDecimal: CPTDecimalFromDouble(xMin), lengthDecimal: CPTDecimalFromDouble(xMax - xMin))
 plotSpace.yRange = CPTPlotRange(locationDecimal: CPTDecimalFromDouble(yMin), lengthDecimal: CPTDecimalFromDouble(yMax - yMin))
 ```
+
+Here’s a break down of what’s happening:
+1. First, you instantiate a CPTXYGraph, which is essentially a bar graph, and associate it with the hostView.
+2. You then declare the default theme to be plain white and set the padding on the left and bottom to allow room for axes.
+3. You next setup the text style, set the chart’s title, and the title’s position.
+4. Lastly, you configure the CPTXYPlotSpace, which is responsible for mapping device coordinates to the coordinates of your graph.
+For this graph, you’re plotting three exchange rates that use the same plot space. However, it’s also possible to have a separate plot space for each plot.
+You also use an assumed minimum and maximum exchange rate range on the plot space. Later in the Core Plot tutorial, you’ll see how you can auto-size the plot space when you don’t know the range in advance.
+Now that you have your graph, it’s time to add some plots to it! Add the following code to configureChart():
+```swift
+// 1 - Set up the three plots
+plot1 = CPTBarPlot()
+plot1.fill = CPTFill(color: CPTColor(componentRed:0.92, green:0.28, blue:0.25, alpha:1.00))
+plot2 = CPTBarPlot()
+plot2.fill = CPTFill(color: CPTColor(componentRed:0.06, green:0.80, blue:0.48, alpha:1.00))
+plot3 = CPTBarPlot()
+plot3.fill = CPTFill(color: CPTColor(componentRed:0.22, green:0.33, blue:0.49, alpha:1.00))
+ 
+// 2 - Set up line style
+let barLineStyle = CPTMutableLineStyle()
+barLineStyle.lineColor = CPTColor.lightGray()
+barLineStyle.lineWidth = 0.5
+ 
+// 3 - Add plots to graph
+guard let graph = hostView.hostedGraph else { return }
+var barX = BarInitialX
+let plots = [plot1!, plot2!, plot3!]
+for plot: CPTBarPlot in plots {
+  plot.dataSource = self
+  plot.delegate = self
+  plot.barWidth = NSNumber(value: BarWidth)
+  plot.barOffset = NSNumber(value: barX)
+  plot.lineStyle = barLineStyle
+  graph.add(plot, to: graph.defaultPlotSpace)
+  barX += BarWidth
+}
+```
+Here’s what the above code does:
+1. You instantiate each bar plot and set each one’s fill color.
+2. You instantiate a CPTMutableLineStyle instance that represents the outer border of each bar plot.
+3. You apply a “common configuration” to each bar plot. This configuration includes setting the data source and delegate, setting the width and relative (left-right) placement of each bar in the plot, setting the line style, and finally, adding the plot to the graph.
+
+While you still won’t be able to see the bar graph in action yet, build the app to verify everything compiles correctly so far.
+In order to actually display the data on the bar graph, you need to implement the delegate methods that provide the necessary data to the graph.
+Replace numberOfRecordsForPlot(for:) with the following:
+```swift
+return UInt(rates.count)
+```
+This method returns the number of records that should be displayed.
+Replace numberForPlot(for:field:record:) with the following:
+```swift
+if fieldEnum == UInt(CPTBarPlotField.barTip.rawValue) {
+  if plot == plot1 {
+    return 1.0 as AnyObject?
+  }
+  if plot == plot2 {
+    return rates[Int(idx)].rates[symbols[0].name]!
+  }
+  if plot == plot3 {
+    return rates[Int(idx)].rates[symbols[1].name]!
+  }
+}
+return idx
+```
+
+The CPTBarPlotField.BarTip value indicates the relative size of the bar chart. You use the retained properties to figure out the exchange rate for which you need to retrieve the data. The idx corresponds to the index of the rate of interest.
+Build and run, and you should see something similar to the following:
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-08.png)
+
+You’re getting there! However, notice isn’t any indication of what each axis represents.
+To fix this, add the following to configureAxes():
+
+```swift
+
+// 1 - Configure styles
+let axisLineStyle = CPTMutableLineStyle()
+axisLineStyle.lineWidth = 2.0
+axisLineStyle.lineColor = CPTColor.black()
+// 2 - Get the graph's axis set
+guard let axisSet = hostView.hostedGraph?.axisSet as? CPTXYAxisSet else { return }
+// 3 - Configure the x-axis
+if let xAxis = axisSet.xAxis {
+  xAxis.labelingPolicy = .none
+  xAxis.majorIntervalLength = 1
+  xAxis.axisLineStyle = axisLineStyle
+  var majorTickLocations = Set<NSNumber>()
+  var axisLabels = Set<CPTAxisLabel>()
+  for (idx, rate) in rates.enumerated() {
+    majorTickLocations.insert(NSNumber(value: idx))
+    let label = CPTAxisLabel(text: "\(rate.date)", textStyle: CPTTextStyle())
+    label.tickLocation = NSNumber(value: idx)
+    label.offset = 5.0
+    label.alignment = .left
+    axisLabels.insert(label)
+  }
+  xAxis.majorTickLocations = majorTickLocations
+  xAxis.axisLabels = axisLabels
+}
+// 4 - Configure the y-axis
+if let yAxis = axisSet.yAxis {
+  yAxis.labelingPolicy = .fixedInterval
+  yAxis.labelOffset = -10.0
+  yAxis.minorTicksPerInterval = 3
+  yAxis.majorTickLength = 30
+  let majorTickLineStyle = CPTMutableLineStyle()
+  majorTickLineStyle.lineColor = CPTColor.black().withAlphaComponent(0.1)
+  yAxis.majorTickLineStyle = majorTickLineStyle
+  yAxis.minorTickLength = 20
+  let minorTickLineStyle = CPTMutableLineStyle()
+  minorTickLineStyle.lineColor = CPTColor.black().withAlphaComponent(0.05)
+  yAxis.minorTickLineStyle = minorTickLineStyle
+  yAxis.axisLineStyle = axisLineStyle
+}
+```
+Simply put, the above code first defines styles for the axis lines and titles. Then, the code retrieves the axis set for the graph and configures the settings for the x and y axes.
+
+Build and run to see the result of this change.
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-09-700x394.png)
+
+### Grinding Axes
+
+Much better, right? The only drawback is that your axes are plain – giving no idea of the exact exchange rate.
+You can fix this so that when a user taps on an individual bar chart, the app will display the price that the bar represents. To do this, add a new property:
+
+```swift
+var priceAnnotation: CPTPlotSpaceAnnotation?
+```
+Then add the following code to barPlot(for:barWasSelectedAtRecord:with:):
+
+```swift
+// 1 - Is the plot hidden?
+  if plot.isHidden == true {
+    return
+  }
+  // 2 - Create style, if necessary
+  let style = CPTMutableTextStyle()
+  style.fontSize = 12.0
+  style.fontName = "HelveticaNeue-Bold"
+ 
+  // 3 - Create annotation
+  guard let price = number(for: plot,
+                           field: UInt(CPTBarPlotField.barTip.rawValue),
+                           record: idx) as? CGFloat else { return }
+ 
+  priceAnnotation?.annotationHostLayer?.removeAnnotation(priceAnnotation)
+  priceAnnotation = CPTPlotSpaceAnnotation(plotSpace: plot.plotSpace!, anchorPlotPoint: [0,0])
+ 
+  // 4 - Create number formatter
+  let formatter = NumberFormatter()
+  formatter.maximumFractionDigits = 2
+  // 5 - Create text layer for annotation
+  let priceValue = formatter.string(from: NSNumber(cgFloat: price))
+  let textLayer = CPTTextLayer(text: priceValue, style: style)
+ 
+  priceAnnotation!.contentLayer = textLayer
+  // 6 - Get plot index
+  var plotIndex: Int = 0
+  if plot == plot1 {
+    plotIndex = 0
+  }
+  else if plot == plot2 {
+    plotIndex = 1
+  }
+  else if plot == plot3 {
+    plotIndex = 2
+  }
+  // 7 - Get the anchor point for annotation
+  let x = CGFloat(idx) + CGFloat(BarInitialX) + (CGFloat(plotIndex) * CGFloat(BarWidth))
+  let y = CGFloat(price) + 0.05
+  priceAnnotation!.anchorPlotPoint = [NSNumber(cgFloat: x), NSNumber(cgFloat: y)]
+  // 8 - Add the annotation
+  guard let plotArea = plot.graph?.plotAreaFrame?.plotArea else { return }
+  plotArea.addAnnotation(priceAnnotation)
+}
+```
+This requires a bit of explanation:
+1. You don’t display an annotation for a hidden plot. While the plots currently don’t have the ability to be hidden, you’ll be implementing this in the next step when you integrate the switches with the chart.
+2. Here you create a text style for your annotation.
+3. You then get the price for the specified plot and then create an annotation object if one doesn’t exist.
+4. You create a number formatter if one doesn’t exist, since you’ll need to format the price for display.
+5. You create a text layer using the formatted price, and set the content layer for the annotation to this new text layer.
+6. You get the plot index for the plot for which you’ll display the annotation.
+7. You calculate the annotation position based on the plot index, and then set the anchorPlotPoint for the annotation using the calculated position.
+8. Finally, you add the annotation to the graph.
+
+Build and run. Every time you tap on a bar in your chart, the value for that bar should pop up right above the bar.
+Nifty! :]
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-10-700x394.png)
+
+### Hide and Seek
+
+The bar graph looks great, but the switches at the top of the screen do nothing. It’s time in this Core Plot tutorial to rectify that.
+First, you’ll need to add a helper method. Add the following right after switch3Changed(\_:):
+```swift
+func hideAnnotation(graph: CPTGraph) {
+  guard let plotArea = graph.plotAreaFrame?.plotArea,
+    let priceAnnotation = priceAnnotation else {
+      return
+  }
+  plotArea.removeAnnotation(priceAnnotation)
+  self.priceAnnotation = nil
+}
+```
+The code simply removes an annotation, if it exists.
+Next, you want the user to be able to toggle the display of bar charts for a given currency using the switches.
+To do such, replace the implementations for switch1Changed(\_:), switch2Changed(\_:), and switch3Changed(\_:) with the following:
+```swift
+@IBAction func switch1Changed(_ sender: UISwitch) {
+  let on = sender.isOn
+  if !on {
+    hideAnnotation(graph: plot1.graph!)
+  }
+  plot1.isHidden = !on
+}
+ 
+@IBAction func switch2Changed(_ sender: UISwitch) {
+  let on = sender.isOn
+  if !on {
+    hideAnnotation(graph: plot2.graph!)
+  }
+  plot2.isHidden = !on
+}
+ 
+@IBAction func switch3Changed(_ sender: UISwitch) {
+  let on = sender.isOn
+  if !on {
+    hideAnnotation(graph: plot3.graph!)
+  }
+  plot3.isHidden = !on
+}
+```
+The logic is fairly simple. If the switch is set to off, the corresponding plot and any visible annotation is hidden. If the switch is set to on, then the plot is made visible again.
+Build and run. You can now toggle each bar chart to your heart’s content. Nice work on this Core Plot tutorial!
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/05/visit2.gif)
+
+## Where to Go From Here?
+
+You can download the completed project from [here](https://koenig-media.raywenderlich.com/uploads/2016/07/SwiftRates-Final-Swift3.zip).
