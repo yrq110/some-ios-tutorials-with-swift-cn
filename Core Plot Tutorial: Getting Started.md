@@ -441,6 +441,7 @@ func configureAxes() {
 }
 ```
 是不是有点眼熟? 对的，这个结构跟之前一样。
+
 在configureHostView()方法中添加如下:
 ```swift
 hostView.allowPinchScaling = false
@@ -485,6 +486,7 @@ plotSpace.xRange = CPTPlotRange(locationDecimal: CPTDecimalFromDouble(xMin), len
 plotSpace.yRange = CPTPlotRange(locationDecimal: CPTDecimalFromDouble(yMin), lengthDecimal: CPTDecimalFromDouble(yMax - yMin))
 ```
 分析下上面的代码:
+
 1. 首先实例化一个CPTXYGraph对象，其实就是一个条形图，将其与hostView连接起来。
 2. 接着声明默认的主题为空白主题，设置上侧与左侧的内边距给坐标轴留出空间。
 3. 设置文本样式，表格标题与标题位置。
@@ -523,14 +525,15 @@ for plot: CPTBarPlot in plots {
   barX += BarWidth
 }
 ```
-上面的代码做了些什么:
+上面的代码做了什么:
+
 1. 实例化每个条形图并设置填充颜色。
-2. 实例化一个CPTMutableLineStyle对象，表示每个条形图外边界的样式。
+2. 实例化一个CPTMutableLineStyle对象，它表示每个条形图外边界的样式。
 3. 给每个条形图进行一个公共的配置，包含数据源与委托、每个图的宽度与相对距离、线条样式，最后将图形添加到graph中。
 
 现在还看不到条形图，先构建一下app确保所有代码都能编译成功。
 
-为了在条形图中显示数据，需要事先委托方法来给graph提供必要的数据。
+为了在条形图中显示数据，需要实现委托方法来给graph提供必要的数据。
 
 使用如下代码替换numberOfRecordsForPlot(for:)中的内容:
 ```swift
@@ -554,23 +557,25 @@ if fieldEnum == UInt(CPTBarPlotField.barTip.rawValue) {
 return idx
 ```
 
-The CPTBarPlotField.BarTip value indicates the relative size of the bar chart. You use the retained properties to figure out the exchange rate for which you need to retrieve the data. The idx corresponds to the index of the rate of interest.
-Build and run, and you should see something similar to the following:
+CPTBarPlotField.BarTip属性表示条形图的相对尺寸，使用已有的属性进行检索得到所需的汇率数据，idx值为汇率的索引值。
+
+构建并运行，应该会看到下面这样:
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-08.png)
 
-You’re getting there! However, notice isn’t any indication of what each axis represents.
-To fix this, add the following to configureAxes():
+快成功了! 还有件事没做，你会注意到图中并没有坐标轴的标识信息。
+
+在configureAxes()方法中添加如下代码来解决这个问题:
 
 ```swift
 
-// 1 - Configure styles
+// 1 - 设置样式
 let axisLineStyle = CPTMutableLineStyle()
 axisLineStyle.lineWidth = 2.0
 axisLineStyle.lineColor = CPTColor.black()
-// 2 - Get the graph's axis set
+// 2 - 获取graph的轴线集
 guard let axisSet = hostView.hostedGraph?.axisSet as? CPTXYAxisSet else { return }
-// 3 - Configure the x-axis
+// 3 - 设置x轴
 if let xAxis = axisSet.xAxis {
   xAxis.labelingPolicy = .none
   xAxis.majorIntervalLength = 1
@@ -588,7 +593,7 @@ if let xAxis = axisSet.xAxis {
   xAxis.majorTickLocations = majorTickLocations
   xAxis.axisLabels = axisLabels
 }
-// 4 - Configure the y-axis
+// 4 - 设置y轴
 if let yAxis = axisSet.yAxis {
   yAxis.labelingPolicy = .fixedInterval
   yAxis.labelOffset = -10.0
@@ -606,11 +611,11 @@ if let yAxis = axisSet.yAxis {
 ```
 Simply put, the above code first defines styles for the axis lines and titles. Then, the code retrieves the axis set for the graph and configures the settings for the x and y axes.
 
-Build and run to see the result of this change.
+构建并运行一下看看变化。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-09-700x394.png)
 
-### Grinding Axes
+### 完善
 
 Much better, right? The only drawback is that your axes are plain – giving no idea of the exact exchange rate.
 You can fix this so that when a user taps on an individual bar chart, the app will display the price that the bar represents. To do this, add a new property:
@@ -681,7 +686,7 @@ Nifty! :]
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-10-700x394.png)
 
-### Hide and Seek
+### 隐藏和显现
 
 The bar graph looks great, but the switches at the top of the screen do nothing. It’s time in this Core Plot tutorial to rectify that.
 First, you’ll need to add a helper method. Add the following right after switch3Changed(\_:):
@@ -728,6 +733,6 @@ Build and run. You can now toggle each bar chart to your heart’s content. Nice
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/visit2.gif)
 
-## Where to Go From Here?
+## 最后
 
-You can download the completed project from [here](https://koenig-media.raywenderlich.com/uploads/2016/07/SwiftRates-Final-Swift3.zip).
+可以从[这里](https://koenig-media.raywenderlich.com/uploads/2016/07/SwiftRates-Final-Swift3.zip)下载完整的项目文件。
