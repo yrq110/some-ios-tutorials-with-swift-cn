@@ -484,17 +484,19 @@ guard let plotSpace = graph.defaultPlotSpace as? CPTXYPlotSpace else { return }
 plotSpace.xRange = CPTPlotRange(locationDecimal: CPTDecimalFromDouble(xMin), lengthDecimal: CPTDecimalFromDouble(xMax - xMin))
 plotSpace.yRange = CPTPlotRange(locationDecimal: CPTDecimalFromDouble(yMin), lengthDecimal: CPTDecimalFromDouble(yMax - yMin))
 ```
+分析下上面的代码:
+1. 首先实例化一个CPTXYGraph对象，其实就是一个条形图，将其与hostView连接起来。
+2. 接着声明默认的主题为空白主题，设置上侧与左侧的内边距给坐标轴留出空间。
+3. 设置文本样式，表格标题与标题位置。
+4. 最后设置CPTXYPlotSpace，它负责将设备的坐标系映射到graph的坐标系。
 
-Here’s a break down of what’s happening:
-1. First, you instantiate a CPTXYGraph, which is essentially a bar graph, and associate it with the hostView.
-2. You then declare the default theme to be plain white and set the padding on the left and bottom to allow room for axes.
-3. You next setup the text style, set the chart’s title, and the title’s position.
-4. Lastly, you configure the CPTXYPlotSpace, which is responsible for mapping device coordinates to the coordinates of your graph.
-For this graph, you’re plotting three exchange rates that use the same plot space. However, it’s also possible to have a separate plot space for each plot.
-You also use an assumed minimum and maximum exchange rate range on the plot space. Later in the Core Plot tutorial, you’ll see how you can auto-size the plot space when you don’t know the range in advance.
-Now that you have your graph, it’s time to add some plots to it! Add the following code to configureChart():
+在这个graph中需要在同一块区域内绘制出三种汇率，当然，也可以分别在不同区域进行绘制。
+
+在绘图区域中会假定一个汇率的区间范围，在之后会看到如何在事先不知道这个范围的情况下让绘图区域的尺寸自动调节。
+
+graph弄好后，是时候添加一些条形图了，在configureChart()方法中添加如下代码:
 ```swift
-// 1 - Set up the three plots
+// 1 - 设置三个条形图
 plot1 = CPTBarPlot()
 plot1.fill = CPTFill(color: CPTColor(componentRed:0.92, green:0.28, blue:0.25, alpha:1.00))
 plot2 = CPTBarPlot()
@@ -502,12 +504,12 @@ plot2.fill = CPTFill(color: CPTColor(componentRed:0.06, green:0.80, blue:0.48, a
 plot3 = CPTBarPlot()
 plot3.fill = CPTFill(color: CPTColor(componentRed:0.22, green:0.33, blue:0.49, alpha:1.00))
  
-// 2 - Set up line style
+// 2 - 设置线条样式
 let barLineStyle = CPTMutableLineStyle()
 barLineStyle.lineColor = CPTColor.lightGray()
 barLineStyle.lineWidth = 0.5
  
-// 3 - Add plots to graph
+// 3 - 将条形添加到graph
 guard let graph = hostView.hostedGraph else { return }
 var barX = BarInitialX
 let plots = [plot1!, plot2!, plot3!]
@@ -521,19 +523,22 @@ for plot: CPTBarPlot in plots {
   barX += BarWidth
 }
 ```
-Here’s what the above code does:
-1. You instantiate each bar plot and set each one’s fill color.
-2. You instantiate a CPTMutableLineStyle instance that represents the outer border of each bar plot.
-3. You apply a “common configuration” to each bar plot. This configuration includes setting the data source and delegate, setting the width and relative (left-right) placement of each bar in the plot, setting the line style, and finally, adding the plot to the graph.
+上面的代码做了些什么:
+1. 实例化每个条形图并设置填充颜色。
+2. 实例化一个CPTMutableLineStyle对象，表示每个条形图外边界的样式。
+3. 给每个条形图进行一个公共的配置，包含数据源与委托、每个图的宽度与相对距离、线条样式，最后将图形添加到graph中。
 
-While you still won’t be able to see the bar graph in action yet, build the app to verify everything compiles correctly so far.
-In order to actually display the data on the bar graph, you need to implement the delegate methods that provide the necessary data to the graph.
-Replace numberOfRecordsForPlot(for:) with the following:
+现在还看不到条形图，先构建一下app确保所有代码都能编译成功。
+
+为了在条形图中显示数据，需要事先委托方法来给graph提供必要的数据。
+
+使用如下代码替换numberOfRecordsForPlot(for:)中的内容:
 ```swift
 return UInt(rates.count)
 ```
-This method returns the number of records that should be displayed.
-Replace numberForPlot(for:field:record:) with the following:
+这个方法会返回要显示的记录个数。
+
+使用如下代码替换numberForPlot(for:field:record:)中的内容:
 ```swift
 if fieldEnum == UInt(CPTBarPlotField.barTip.rawValue) {
   if plot == plot1 {
