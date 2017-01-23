@@ -176,12 +176,8 @@ graph.titleTextStyle = textStyle
 graph.titlePlotAreaFrameAnchor = CPTRectAnchor.top
 ```
 下面是对代码的分解:
-1. 首先新建了一个CPTXYGraph实例，将其设为hostView的hostedGraph属性值，结合图形与管理视图。
 
-CPTGraph包含一个标准图表中的所有元素：边界、标题、绘制的数据、坐标轴和图例。
-
-默认情况下，CPTXYGraph的每一条边有20 px的内边距。看起来并不是很好，你需要将它设为0。
-
+1. 首先新建了一个CPTXYGraph实例，将其设为hostView的hostedGraph属性值，结合图形与管理视图。CPTGraph包含一个标准图表中的所有元素：边界、标题、绘制的数据、坐标轴和图例。默认情况下，CPTXYGraph的每一条边有20px的内边距。看起来并不是很好，你需要将它设为0。
 2. 接着通过创建CPTMutableTextStyle实例设置图形的文本样式。
 3. 最后设置图表的标题，将它的样式设为刚刚创建好的样式，并将锚点设为视图矩形的顶部。
 
@@ -225,6 +221,7 @@ pieChart.labelTextStyle = textStyle
 graph.add(pieChart)
 ```
 这些代码干了什么:
+
 1. 首先得到一个图的引用。
 2. 接着实例化CPTPieChart，设置它的委托与数据源为view controller，并设置它的外观。
 3. 设置表的边界样式。
