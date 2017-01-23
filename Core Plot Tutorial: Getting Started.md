@@ -9,13 +9,13 @@
 
 ***
 
-Core Plot是一个2D图表库，可以用于iOS、Mac OS X和tvOS，使用了苹果的框架实现：Quartz与Core Animation，有较稳固的测试覆盖，在BSD许可下发布。
+Core Plot是一个2D图表库，可以用于iOS、Mac OS X和tvOS，使用了苹果的Quartz与Core Animation框架实现，在BSD许可下发布。
 
-在这片教程中，你将会学到如何使用Core Plot创建饼图与条形图，还会添加很酷的图表交互功能！
+在这篇教程中，你将会学到如何使用Core Plot创建饼图与条形图，还有如何添加很酷的图表交互功能！
 
 开始前需要安装Xcode 8.0并且对Swift、Interface Builder和storyboard有一些基本的认识与理解，如果你对这些方面不太了解需要看看其他教程学习一下。
 
-教程中使用CocoaPods来安装依赖的第三方库，若你没用过CocoaPods可以先看看其他[教程](https://www.raywenderlich.com/97014/use-cocoapods-with-swift)学习一下。
+教程中使用CocoaPods来安装依赖的第三方库，若你没用过CocoaPods可以先看看这个[教程](https://www.raywenderlich.com/97014/use-cocoapods-with-swift)学习一下。
 
 ## 入门
 
@@ -229,9 +229,9 @@ graph.add(pieChart)
 2. 接着实例化CPTPieChart，设置它的委托与数据源为view controller，并设置它的外观。
 3. 设置表的边界样式。
 4. 设置表的文本样式。
-5. 最后将表添加到图中。
+5. 最后将chart添加到graph中。
 
-如果你现在就运行app的话会看不到任何改变... 这是因为还需要为饼图实现数据源与委托。
+如果你现在就运行app的话会看不到任何改变...这是因为还需要为饼图实现数据源与委托。
 
 首先使用如下代码替换numberOfRecords(for:)中的内容:
 ```swift
@@ -314,7 +314,7 @@ func configureLegend() {
   }
 }
 ```
-还需要提供每一个区域的图注数据。
+还需要提供每一片区域的图注数据。
 
 使用如下代码替换legendTitleForPieChart(for:record:)方法中的内容:
 ```swift
@@ -496,7 +496,7 @@ plotSpace.yRange = CPTPlotRange(locationDecimal: CPTDecimalFromDouble(yMin), len
 
 在绘图区域中会假定一个汇率的区间范围，在之后会看到如何在事先不知道这个范围的情况下让绘图区域的尺寸自动调节。
 
-graph弄好后，是时候添加一些条形图了，在configureChart()方法中添加如下代码:
+graph搞定后，是时候添加一些条形图了，在configureChart()方法中添加如下代码:
 ```swift
 // 1 - 设置三个条形图
 plot1 = CPTBarPlot()
@@ -568,7 +568,6 @@ CPTBarPlotField.BarTip属性表示条形图的相对尺寸，使用已有的属�
 在configureAxes()方法中添加如下代码来解决这个问题:
 
 ```swift
-
 // 1 - 设置样式
 let axisLineStyle = CPTMutableLineStyle()
 axisLineStyle.lineWidth = 2.0
@@ -609,7 +608,7 @@ if let yAxis = axisSet.yAxis {
   yAxis.axisLineStyle = axisLineStyle
 }
 ```
-简单的说，上面的代码首先定义了坐标轴线条与标签的样式，接着检索，设置了x轴与y轴Simply put, the above code first defines styles for the axis lines and titles. Then, the code retrieves the axis set for the graph and configures the settings for the x and y axes.
+简单的说，上面的代码首先定义了坐标轴线条与标签的样式，接着通过检索得到graph中的坐标轴集合，设置x轴与y轴。
 
 构建并运行一下看看变化。
 
@@ -617,9 +616,9 @@ if let yAxis = axisSet.yAxis {
 
 ### 完善
 
-的确更好，不是吗? 唯一的缺点就是你的轴是空白的——没有给予任何关于汇率的准确信息。The only drawback is that your axes are plain – giving no idea of the exact exchange rate.
+的确更好，不是吗? 唯一的缺点就是坐标轴信息是空白的————没有给予任何关于汇率的准确信息。
 
-可以这么来弥补这个问题，当用户点击每个条形图中的粗线条时显示具体的数据，为此需要增加一个属性You can fix this so that when a user taps on an individual bar chart, the app will display the price that the bar represents. To do this, add a new property:
+可以这样来弥补这个问题：当用户点击每个条形图中的粗线条时显示具体的数据，为此需要增加一个属性:
 
 ```swift
 var priceAnnotation: CPTPlotSpaceAnnotation?
@@ -631,7 +630,7 @@ var priceAnnotation: CPTPlotSpaceAnnotation?
   if plot.isHidden == true {
     return
   }
-  // 2 - 若需要则创建样式
+  // 2 - 若未隐藏则创建文本样式
   let style = CPTMutableTextStyle()
   style.fontSize = 12.0
   style.fontName = "HelveticaNeue-Bold"
@@ -663,34 +662,35 @@ var priceAnnotation: CPTPlotSpaceAnnotation?
   else if plot == plot3 {
     plotIndex = 2
   }
-  // 7 - 获取标记的锚点
-  let x = CGFloat(idx) + CGFloat(BarInitialX) + (CGFloat(plotIndex) * CGFloat(BarWidth))
-  let y = CGFloat(price) + 0.05
-  priceAnnotation!.anchorPlotPoint = [NSNumber(cgFloat: x), NSNumber(cgFloat: y)]
+  // 7 - 设置标记的锚点
+  priceAnnotation!.anchorPlotPoint = [NSNumber(cgFloat: x), NSNumber(cgFloat: y)]
   // 8 - 添加标记
   guard let plotArea = plot.graph?.plotAreaFrame?.plotArea else { return }
   plotArea.addAnnotation(priceAnnotation)
 }
 ```
-这里需要分析一下:
-1. You don’t display an annotation for a hidden plot. While the plots currently don’t have the ability to be hidden, you’ll be implementing this in the next step when you integrate the switches with the chart.
-2. Here you create a text style for your annotation.
-3. You then get the price for the specified plot and then create an annotation object if one doesn’t exist.
-4. You create a number formatter if one doesn’t exist, since you’ll need to format the price for display.
-5. You create a text layer using the formatted price, and set the content layer for the annotation to this new text layer.
-6. You get the plot index for the plot for which you’ll display the annotation.
-7. You calculate the annotation position based on the plot index, and then set the anchorPlotPoint for the annotation using the calculated position.
-8. Finally, you add the annotation to the graph.
+分析一下代码:
 
-Build and run. Every time you tap on a bar in your chart, the value for that bar should pop up right above the bar.
-Nifty! :]
+1. 如果条形图隐藏了则不会添加标记，直接返回，虽然条形图现在不具有隐藏的功能，会在下一部分来实现。
+2. 创建标记的文本样式。
+3. 得到所指定条形图的数值，并创建一个标记对象。
+4. 创建一个数字格式化器，用它来格式化要显示的数据。
+5. 创建一个文本层显示格式化后的数据，并将标记的内容层设置为这个文本层。
+6. 获取需要显示标记的条形图索引。
+7. 根据条形图的索引计算标记的位置，使用计算后的位置设置标记的锚点。
+8. 最后将标记添加到graph中。
+
+构建并运行，每当你点击条形图中的粗线条时，就会在它的上面显示出数值。
+
+好极了! :]
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/04/swiftrates-10-700x394.png)
 
 ### 隐藏和显现
 
-The bar graph looks great, but the switches at the top of the screen do nothing. It’s time in this Core Plot tutorial to rectify that.
-First, you’ll need to add a helper method. Add the following right after switch3Changed(\_:):
+条形图看起来不错，不过顶部的开关按钮貌似没什么作用，是时候实现它的功能了。
+
+首先需要添加一个辅助方法，在switch3Changed(\_:)后添加这个方法:
 ```swift
 func hideAnnotation(graph: CPTGraph) {
   guard let plotArea = graph.plotAreaFrame?.plotArea,
@@ -701,9 +701,11 @@ func hideAnnotation(graph: CPTGraph) {
   self.priceAnnotation = nil
 }
 ```
-The code simply removes an annotation, if it exists.
-Next, you want the user to be able to toggle the display of bar charts for a given currency using the switches.
-To do such, replace the implementations for switch1Changed(\_:), switch2Changed(\_:), and switch3Changed(\_:) with the following:
+这段代码的作用是若存在标记则移除它。
+
+下面想让用户使用开关按钮来改变条形图中所显示的货币。
+
+为了实现它，需要使用下面的代码替换switch1Changed(\_:), switch2Changed(\_:)和switch3Changed(\_:)方法:
 ```swift
 @IBAction func switch1Changed(_ sender: UISwitch) {
   let on = sender.isOn
@@ -729,8 +731,9 @@ To do such, replace the implementations for switch1Changed(\_:), switch2Changed(
   plot3.isHidden = !on
 }
 ```
-The logic is fairly simple. If the switch is set to off, the corresponding plot and any visible annotation is hidden. If the switch is set to on, then the plot is made visible again.
-Build and run. You can now toggle each bar chart to your heart’s content. Nice work on this Core Plot tutorial!
+逻辑非常简单，如果开关按钮是关闭状态则隐藏对应的条形图和标记，若为打开状态则设置条形图为可见的。
+
+构建并运行，可以随意切换显示的条形图，干的不错!
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/visit2.gif)
 
