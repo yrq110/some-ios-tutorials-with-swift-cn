@@ -19,7 +19,7 @@ Core Plot是一个2D图表库，可以用于iOS、Mac OS X和tvOS，使用了苹
 
 ## 入门
 
-在这篇教程中会做一个周期显示货币汇率的app。在这里下载[开始项目](https://koenig-media.raywenderlich.com/uploads/2016/07/SwiftRates-Starter-Swift3.zip)，解压后打开SwiftRates.xcworkspace。
+在这篇教程中会做一个显示货币汇率的app。在这里下载[开始项目](https://koenig-media.raywenderlich.com/uploads/2016/07/SwiftRates-Starter-Swift3.zip)，解压后打开SwiftRates.xcworkspace。
 
 项目中的一些关键类:
 * `DataStore.swift`
