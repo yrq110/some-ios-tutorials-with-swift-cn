@@ -609,7 +609,7 @@ if let yAxis = axisSet.yAxis {
   yAxis.axisLineStyle = axisLineStyle
 }
 ```
-Simply put, the above code first defines styles for the axis lines and titles. Then, the code retrieves the axis set for the graph and configures the settings for the x and y axes.
+简单的说，上面的代码首先定义了坐标轴线条与标签的样式，接着检索，设置了x轴与y轴Simply put, the above code first defines styles for the axis lines and titles. Then, the code retrieves the axis set for the graph and configures the settings for the x and y axes.
 
 构建并运行一下看看变化。
 
@@ -617,42 +617,43 @@ Simply put, the above code first defines styles for the axis lines and titles. T
 
 ### 完善
 
-Much better, right? The only drawback is that your axes are plain – giving no idea of the exact exchange rate.
-You can fix this so that when a user taps on an individual bar chart, the app will display the price that the bar represents. To do this, add a new property:
+的确更好，不是吗? 唯一的缺点就是你的轴是空白的——没有给予任何关于汇率的准确信息。The only drawback is that your axes are plain – giving no idea of the exact exchange rate.
+
+可以这么来弥补这个问题，当用户点击每个条形图中的粗线条时显示具体的数据，为此需要增加一个属性You can fix this so that when a user taps on an individual bar chart, the app will display the price that the bar represents. To do this, add a new property:
 
 ```swift
 var priceAnnotation: CPTPlotSpaceAnnotation?
 ```
-Then add the following code to barPlot(for:barWasSelectedAtRecord:with:):
+接下来在barPlot(for:barWasSelectedAtRecord:with:)方法中添加如下代码:
 
 ```swift
-// 1 - Is the plot hidden?
+// 1 - 条形图是否隐藏?
   if plot.isHidden == true {
     return
   }
-  // 2 - Create style, if necessary
-  let style = CPTMutableTextStyle()
+  // 2 - 若需要则创建样式
+  let style = CPTMutableTextStyle()
   style.fontSize = 12.0
   style.fontName = "HelveticaNeue-Bold"
  
-  // 3 - Create annotation
-  guard let price = number(for: plot,
+  // 3 - 创建标记
+  guard let price = number(for: plot,
                            field: UInt(CPTBarPlotField.barTip.rawValue),
                            record: idx) as? CGFloat else { return }
  
   priceAnnotation?.annotationHostLayer?.removeAnnotation(priceAnnotation)
   priceAnnotation = CPTPlotSpaceAnnotation(plotSpace: plot.plotSpace!, anchorPlotPoint: [0,0])
  
-  // 4 - Create number formatter
+  // 4 - 创建数字格式化器
   let formatter = NumberFormatter()
   formatter.maximumFractionDigits = 2
-  // 5 - Create text layer for annotation
+  // 5 - 创建标记的文本层
   let priceValue = formatter.string(from: NSNumber(cgFloat: price))
   let textLayer = CPTTextLayer(text: priceValue, style: style)
  
   priceAnnotation!.contentLayer = textLayer
-  // 6 - Get plot index
-  var plotIndex: Int = 0
+  // 6 - 获取条形图索引
+  var plotIndex: Int = 0
   if plot == plot1 {
     plotIndex = 0
   }
@@ -662,16 +663,16 @@ Then add the following code to barPlot(for:barWasSelectedAtRecord:with:):
   else if plot == plot3 {
     plotIndex = 2
   }
-  // 7 - Get the anchor point for annotation
+  // 7 - 获取标记的锚点
   let x = CGFloat(idx) + CGFloat(BarInitialX) + (CGFloat(plotIndex) * CGFloat(BarWidth))
   let y = CGFloat(price) + 0.05
   priceAnnotation!.anchorPlotPoint = [NSNumber(cgFloat: x), NSNumber(cgFloat: y)]
-  // 8 - Add the annotation
-  guard let plotArea = plot.graph?.plotAreaFrame?.plotArea else { return }
+  // 8 - 添加标记
+  guard let plotArea = plot.graph?.plotAreaFrame?.plotArea else { return }
   plotArea.addAnnotation(priceAnnotation)
 }
 ```
-This requires a bit of explanation:
+这里需要分析一下:
 1. You don’t display an annotation for a hidden plot. While the plots currently don’t have the ability to be hidden, you’ll be implementing this in the next step when you integrate the switches with the chart.
 2. Here you create a text style for your annotation.
 3. You then get the price for the specified plot and then create an annotation object if one doesn’t exist.
