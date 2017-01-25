@@ -11,32 +11,32 @@
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/errorhandling-1-feature-250x250.png)
 
-Error handling in Swift has come a long way since the patterns in Swift 1 that were inspired by Objective-C. Major improvements in Swift 2 made the experience of handling unexpected states and conditions in your application more straightforward. These benefits continue in Swift 3, but there are no significant updates to error handling made in the latest version of the language. (Phew!)
+Swift的错误处理是从Swift 1借鉴OC的模式开始，在那之后取得了很大的进展，在Swift 2中的更新使得app中异常状态和场景的处理更加方便，这个优点延续到了Swift 3，不过在最新版本中却没有什么重大的更新。
 
-Just like other common programming languages, preferred error handling techniques in Swift can vary, depending upon the type of error encountered, and the overall architecture of your app.
+像其它变成语言一样，swift中的错误处理方法会根据所遇到的错误类型与app的整体结构有所不同。
 
-This tutorial will take you through a magical example involving wizards, witches, bats and toads to illustrate how best to deal with common failure scenarios. You’ll also look at how to upgrade error handling from projects written in earlier versions of the language and, finally, gaze into your crystal ball at the possible future of error handling in Swift!
+这篇教程会将你带入一个有巫师、魔女、蝙蝠和蟾蜍的魔法世界中，展示如何较好处理一些常见的错误场景，同时也会学到如何将项目中老版本的错误处理方法更新成新版的语法，最后，通过注视你的水晶球展望Swift错误处理的未来!
 
-> Note: This tutorial assumes you’re familiar with Swift 3 syntax – particularly enumerations and optionals. If you need a refresher on these concepts, start with the What’s New in Swift 2 post by Greg Heo, and the other materials linked.
+> 注意: 这篇教程假定你对Swift 3的语法较为熟悉 - 特别是枚举和可选类型。若需要重温这些概念，可以先看看Greg Heo的[What’s New in Swift 2](https://www.raywenderlich.com/108522/whats-new-in-swift-2)或者其它资料。
 
-Time to dive straight in (from the the cauldron into the fire!) and discover the various charms of error handling in Swift 3!
+是时候开始了(from the the cauldron into the fire!)，一同去发现Swift 3中错误处理的奇妙之处!
 
-## Getting Started
+## 入门
 
-There are two starter playgrounds for this tutorial, one for each section. Download Avoiding Errors with nil – Starter.playground and Avoiding Errors with Custom Handling – Starter.playground playgrounds.
+这篇教程有两个开始项目，分别对应两个小节，[使用nil处理错误](https://koenig-media.raywenderlich.com/uploads/2016/07/Avoiding-Errors-with-nil-Starter.playground-Swift-3-Secondary-Update.zip)和[自定义错误处理方法](https://koenig-media.raywenderlich.com/uploads/2016/07/Avoiding-Errors-with-Custom-Handling-Starter.playground-Swift-3-Secondary-Update.zip)。
 
-Open up the Avoiding Errors with nil starter playground in Xcode.
+在Xcode中打开第一个项目。
 
-Read through the code and you’ll see several classes, structs and enums that hold the magic for this tutorial.
+浏览一下代码会看到一些类、结构体与枚举，它们在这篇教程中具有魔力。
 
-Take note the following parts of the code:
+注意这部分代码:
 
 ```swift
 protocol Avatar {
   var avatar: String { get }
 }
 ```
-This protocol is applied to almost all classes and structs used throughout the tutorial to provide a visual representation of each object that can be printed to the console.
+这个协议基本上被所有类和结构体继承了，为每个对象提供一个可视化的表现使其可以输出到控制台中。
 ```swift
 enum MagicWords: String {
   case abracadbra = "abracadabra"
@@ -45,22 +45,23 @@ enum MagicWords: String {
   case prestoChango = "presto chango"
 }
 ```
-This enumeration denotes magic words that can be used to create a Spell.
+这个枚举表示用来创建魔法的咒语。
 ```swift
 struct Spell {
   var magicWords: MagicWords = .abracadabra
 }
 ```
-This is the basic building block for a Spell. By default, you initialize its magic words to .abracadabra.
-Now that you’re acquainted with the basics of this supernatural world, you’re ready to start casting some spells.
+用于构建一个基本的咒语，默认的咒语是.abracadabra。
 
-## Why Should I Care About Error Handling?
+好了现在你已经熟悉了这个超自然的世界，作为五火球神教的一员已经准备好施放魔法了。
 
-> *“Error handling is the art of failing gracefully.”*    –Swift Apprentice, Chapter 22 (Error Handing)
+## 为何重视错误处理?
 
-Good error handling enhances the experience for end users as well as software maintainers by making it easier to identify issues, their causes and their associated severity. The more specific the error handling is throughout the code, the easier issues are to diagnose. Error handling also lets systems fail in an appropriate way so as not to frustrate or upset users.
+> *“错误处理是一门并不优雅的艺术”*    –Swift Apprentice, Chapter 22 (Error Handing)
 
-But errors don’t always need to be handled. When they don’t, language features let you avoid certain classes of errors altogether. As a general rule, if you can avoid the possibility of an error, take that design path. If you can’t avoid a potential error condition, then explicit handling is your next best option.
+良好的错误处理可以增强终端用户的体验，使软件维护者可以更容易的发现问题、问题起因和引起的严重性。对代码中的错误处理针对性越强，代码就越容易维护。同时错误处理可以在系统层面以合适的方式处理异常，以免给用户带来糟糕的体验。
+
+不过错误并不总是需要被处理的，有时语言的特性就会避免一些常见的错误。比如说，若有些语法特性可以完全避免一个错误的发生可以直接使用这种设计，若在一个无法避免潜在错误的场景下，针对性的处理是最好的选择。
 
 ## Avoiding Swift Errors Using nil
 
