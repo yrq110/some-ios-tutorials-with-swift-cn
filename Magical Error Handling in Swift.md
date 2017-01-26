@@ -72,8 +72,8 @@ Two typical examples of avoiding Swift errors using nil are failable initializer
 ### Failable Initializers
 
 Failable initializers prevent the creation of an object unless sufficient information has been provided. Prior to the availability of these initializers in Swift (and in other languages!), this functionality was typically achieved via the Factory Method Pattern.
-An example of this pattern in Swift can be seen in create::
 
+An example of this pattern in Swift can be seen in create::
 ```swift
 static func create(withMagicWords words: String) -> Spell? {
   if let incantation = MagicWords(rawValue: words) {
@@ -95,3 +95,54 @@ Inspect the creation of the spells at the very bottom of this tutorial to see th
 While first successfully creates a spell using the magic words "abracadabra", "ascendio" doesn’t have the same effect, and the return value of second is nil. (Hey, witches can’t win all the time).
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/errorhandling-2-650x256.png)
+
+Factory methods are an old-school programming style. There are better ways to achieve the same thing in Swift. You’ll update the Spell extension to use a failable initializer instead of a factory method.
+
+Delete create(_words:) and replace it with the following:
+
+```swift
+init?(words: String) {
+  if let incantation = MagicWords(rawValue: words) {
+    self.magicWords = incantation
+  }
+  else {
+    return nil
+  }
+}
+```
+Here you’ve simplified the code by not explicitly creating and returning the Spell object.
+
+The lines that assign first and second now throw compiler errors:
+```swift
+let first = Spell.create(withMagicWords: "abracadabra")
+let second = Spell.create(withMagicWords: "ascendio")
+```
+You’ll need to change these to use the new initializer. Replace the lines above with the following:
+
+```swift
+let first = Spell(words: "abracadabra")
+let second = Spell(words: "ascendio")
+```
+After this, all errors should be fixed and the playground should compile without error. With this change your code is definitely tidier – but you can do even better! :]
+
+### Guard Statements
+
+guard is a quick way to assert that something is true: for example, if a value is > 0, or if a conditional can be unwrapped. You can then execute a block of code if the check fails.
+
+guard was introduced in Swift 2 and is typically used to (bubble, toil and trouble) bubble-up error handling through the call stack, where the error will eventually be handled. Guard statements allow early exit from a function or method; this makes it more clear which conditions need to be present for the rest of the processing logic to run.
+
+To clean up Spell‘s failable initializer further, edit it as shown below to use guard:
+
+```swift
+init?(words: String) {
+  guard let incantation = MagicWords(rawValue: words) else {
+    return nil
+  }
+  self.magicWords = incantation
+}
+```
+With this change, there’s no need need for an else clause on a separate line and and the failure case is more evident as it’s now at the top of the intializer. Also, the “golden path” is the least indented. The “golden path” is the path of execution that happens when everything goes as expected, i.e. no error. Being least indented makes it easy to read.
+
+Note that the values of first and second Spell constants haven’t changed, but the code is more more streamlined.
+
+## Avoiding Errors with Custom Handling
