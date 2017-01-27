@@ -36,7 +36,7 @@ protocol Avatar {
   var avatar: String { get }
 }
 ```
-这个协议基本上被所有类和结构体继承了，为每个对象提供一个可视化的表现使其可以输出到控制台中。
+这个协议基本上被所有类和结构体继承了，为每个对象提供一个可视化的表现属性使其可以输出到控制台中。
 ```swift
 enum MagicWords: String {
   case abracadbra = "abracadabra"
@@ -61,19 +61,19 @@ struct Spell {
 
 良好的错误处理可以增强终端用户的体验，使软件维护者可以更容易的发现问题、问题起因和引起的严重性。对代码中的错误处理针对性越强，代码就越容易维护。同时错误处理可以在系统层面以合适的方式处理异常，以免给用户带来糟糕的体验。
 
-不过错误并不总是需要被处理的，有时语言的特性就会避免一些常见的错误。比如说，若有些语法特性可以完全避免一个错误的发生可以直接使用这种设计，若在一个无法避免潜在错误的场景下，针对性的处理是最好的选择。
+不过错误并不总是需要被处理的，有时语言的特性就会避免一些常见的错误。比如说，若有些语法特性可以完全避免一个错误的发生可以直接使用这种设计，若无法避免一个潜在的错误条件(error condition)，针对性的处理是最好的选择。
 
-## Avoiding Swift Errors Using nil
+## 使用nil避免错误
 
-Since Swift has elegant optional-handling capabilities, you can completely avoid the error condition where you expect a value, but no value is provided. As a clever programmer, you can manipulate this feature to intentionally return nil in an error condition. This approach works best where you should take no action if you reach an error state; i.e. where you choose inaction over emergency action.
+由于Swift优秀的可选处理能力，可以完全避免当期望一个值时但没有值存在时的错误条件。作为一个机智的开发者，可以利用这个特性在错误条件发生时返回nil，当遇到一个错误状态时应该不采取任何操作，这么做效果很好。
 
-Two typical examples of avoiding Swift errors using nil are failable initializers and guard statements.
+使用nil避免swift错误的两个典型示例是可失败构造器和guard语句。
 
-### Failable Initializers
+### 可失败构造器
 
-Failable initializers prevent the creation of an object unless sufficient information has been provided. Prior to the availability of these initializers in Swift (and in other languages!), this functionality was typically achieved via the Factory Method Pattern.
+可失败构造器会阻止一个没有提供有效信息的对象的创建，在Swift提供这个构造器之前一般是用工厂模式来实现的。
 
-An example of this pattern in Swift can be seen in create::
+在create:方法中可以看到这个模式的实现:
 ```swift
 static func create(withMagicWords words: String) -> Spell? {
   if let incantation = MagicWords(rawValue: words) {
@@ -86,21 +86,21 @@ static func create(withMagicWords words: String) -> Spell? {
   }
 }
 ```
-The above initializer tries to create a spell using the magic words provided, but if the words are not magical you return nil instead.
+上面的构造器尝试使用所提供的咒语来创建符咒，若咒语不是魔法咒语则返回nil。
 
-Inspect the creation of the spells at the very bottom of this tutorial to see this behavior in action:
+观察一下创建符咒后的输出:
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/07/Spell.create.png)
 
-While first successfully creates a spell using the magic words "abracadabra", "ascendio" doesn’t have the same effect, and the return value of second is nil. (Hey, witches can’t win all the time).
+第一次使用咒语"abracadabra"成功创建了符咒，不过"ascendio"并没有那么好的运气，第二次返回了nil。(魔女并不是总成功的)
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/errorhandling-2-650x256.png)
 
-Factory methods are an old-school programming style. There are better ways to achieve the same thing in Swift. You’ll update the Spell extension to use a failable initializer instead of a factory method.
+工厂模式是一种老式的编程方法，在Swift中有更佳的实现方法——使用可失败构造器来实现。
 
-Delete create(_words:) and replace it with the following:
+删除create(\_words:)方法，使用如下代码替换它:
 
-```swift
+```swiftd
 init?(words: String) {
   if let incantation = MagicWords(rawValue: words) {
     self.magicWords = incantation
@@ -110,23 +110,22 @@ init?(words: String) {
   }
 }
 ```
-Here you’ve simplified the code by not explicitly creating and returning the Spell object.
+在这里简化了代码，未具体指明创建与返回Spell对象。
 
-The lines that assign first and second now throw compiler errors:
+这几行现在出现了编译错误:
 ```swift
 let first = Spell.create(withMagicWords: "abracadabra")
 let second = Spell.create(withMagicWords: "ascendio")
 ```
-You’ll need to change these to use the new initializer. Replace the lines above with the following:
+需要改成新的构造器进行创建，使用如下代码替换上面的代码:
 
 ```swift
 let first = Spell(words: "abracadabra")
 let second = Spell(words: "ascendio")
 ```
-After this, all errors should be fixed and the playground should compile without error. With this change your code is definitely tidier – but you can do even better! :]
+这样一来就没有错误了，playground顺利编译通过。这样一改代码就更加整洁了，不过还可以做的更好！:]
 
-### Guard Statements
-
+### Guard语句
 guard is a quick way to assert that something is true: for example, if a value is > 0, or if a conditional can be unwrapped. You can then execute a block of code if the check fails.
 
 guard was introduced in Swift 2 and is typically used to (bubble, toil and trouble) bubble-up error handling through the call stack, where the error will eventually be handled. Guard statements allow early exit from a function or method; this makes it more clear which conditions need to be present for the rest of the processing logic to run.
