@@ -57,7 +57,7 @@ struct Spell {
 
 ## 为何重视错误处理?
 
-> *“错误处理是一门并不优雅的艺术”*    –Swift Apprentice, Chapter 22 (Error Handing)
+> *“错误处理是一门让错误变得优雅的艺术”*    –Swift Apprentice, 第22章 (错误处理)
 
 良好的错误处理可以增强终端用户的体验，使软件维护者可以更容易的发现问题、问题起因和引起的严重性。对代码中的错误处理针对性越强，代码就越容易维护。同时错误处理可以在系统层面以合适的方式处理异常，以免给用户带来糟糕的体验。
 
@@ -110,7 +110,7 @@ init?(words: String) {
   }
 }
 ```
-在这里简化了代码，未具体指明创建与返回Spell对象。
+在这里简化了代码，代码中未具体指明创建与返回Spell对象。
 
 这几行现在出现了编译错误:
 ```swift
@@ -123,14 +123,15 @@ let second = Spell.create(withMagicWords: "ascendio")
 let first = Spell(words: "abracadabra")
 let second = Spell(words: "ascendio")
 ```
-这样一来就没有错误了，playground顺利编译通过。这样一改代码就更加整洁了，不过还可以做的更好！:]
+这样一来就没有错误了，playground顺利编译通过。这样一改代码就更加简介了，不过还可以做的更好！:]
 
 ### Guard语句
-guard is a quick way to assert that something is true: for example, if a value is > 0, or if a conditional can be unwrapped. You can then execute a block of code if the check fails.
 
-guard was introduced in Swift 2 and is typically used to (bubble, toil and trouble) bubble-up error handling through the call stack, where the error will eventually be handled. Guard statements allow early exit from a function or method; this makes it more clear which conditions need to be present for the rest of the processing logic to run.
+guard是一个用来断言某些事情为true的快捷方法：比如说，判断一个值是否大于0或一个条件值是否可以被解绑，在验证失败的情况下可以执行一段代码。
 
-To clean up Spell‘s failable initializer further, edit it as shown below to use guard:
+guard语句是在Swift 2中提出的，一般是通过调用堆栈进行冒泡错误处理，错误在最后才会被处理。Guard语句允许从函数或方法中较早的退出，这样就比需要判断条件满足之后的逻辑才会执行的方法更加清晰，简明。
+
+将可失败构造器改为如下使用guard语句的形式来初始化:
 
 ```swift
 init?(words: String) {
@@ -140,8 +141,9 @@ init?(words: String) {
   self.magicWords = incantation
 }
 ```
-With this change, there’s no need need for an else clause on a separate line and and the failure case is more evident as it’s now at the top of the intializer. Also, the “golden path” is the least indented. The “golden path” is the path of execution that happens when everything goes as expected, i.e. no error. Being least indented makes it easy to read.
 
-Note that the values of first and second Spell constants haven’t changed, but the code is more more streamlined.
+这样修改之后就不需要为了判断另一种情况额外增加一行代码了，使在失败的情况下的处理更加显眼，因为它放在了构造器的最前端。并且“黄金路径”的缩进最少。“黄金路径”是指当每件事都如预期即没有错误发生时的执行路径。更少的缩进更易于阅读。
+
+注意到第一个和第二个咒语的常量值并未改变，而代码则变得更加精练了。
 
 ## Avoiding Errors with Custom Handling
