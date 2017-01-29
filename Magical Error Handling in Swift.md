@@ -147,3 +147,112 @@ init?(words: String) {
 注意到第一个和第二个咒语的常量值并未改变，而代码则变得更加精练了。
 
 ## Avoiding Errors with Custom Handling
+
+Having cleaned up the Spell initializer and avoided some errors through the clever use of nil, you’re ready to tackle some more intricate error handling.
+
+For the next section of this tutorial, open up Avoiding Errors with Custom Handling – Starter.playground.
+
+Take note of the following features of the code:
+
+```swift
+struct Spell {
+  var magicWords: MagicWords = .abracadbra
+ 
+  init?(words: String) {
+    guard let incantation = MagicWords(rawValue: words) else {
+      return nil
+    }
+    self.magicWords = incantation
+  }
+ 
+  init?(magicWords: MagicWords) {
+    self.magicWords = magicWords
+  }
+}
+```
+This is the Spell initializer, updated to match the work you completed in the first section of this tutorial. Also note the presence of the Avatar protocol, and a second failable initializer, which has been added for convenience.
+```swift
+protocol Familiar: Avatar {
+  var noise: String { get }
+  var name: String? { get set }
+  init(name: String?)
+}
+```
+The Familiar protocol will be applied to various animals (such as bats and toads) further down in the playground.
+
+> Note: For those unfamiliar with the term familiar, this is a witch’s or wizard’s magical animal sidekick, which usually has human-like qualities. Think Hedwig from Harry Potter, or the flying monkeys in the Wizard of Oz.
+> ![](https://koenig-media.raywenderlich.com/uploads/2016/04/Owl-480x320.jpg)
+  
+>This clearly isn’t Hedwig, but still cute nonetheless, no?
+
+```swift
+struct Witch: Magical {
+  var avatar = "*"
+  var name: String?
+  var familiar: Familiar?
+  var spells: [Spell] = []
+  var hat: Hat?
+ 
+  init(name: String?, familiar: Familiar?) {
+    self.name = name
+    self.familiar = familiar
+ 
+    if let s = Spell(magicWords: .prestoChango) {
+      self.spells = [s]
+    }
+  }
+ 
+  init(name: String?, familiar: Familiar?, hat: Hat?) {
+    self.init(name: name, familiar: familiar)
+    self.hat = hat
+  }
+ 
+  func turnFamiliarIntoToad() -> Toad {
+    if let hat = hat {
+      if hat.isMagical { // When have you ever seen a Witch perform a spell without her magical hat on ? :]
+        if let familiar = familiar {   // Check if witch has a familiar
+          if let toad = familiar as? Toad {  // If familiar is already a toad, no magic required
+            return toad
+          } else {
+            if hasSpell(ofType: .prestoChango) {
+              if let name = familiar.name {
+                return Toad(name: name)
+              }
+            }
+          }
+        }
+      }
+    }
+    return Toad(name: "New Toad")  // This is an entirely new Toad.
+  }
+ 
+  func hasSpell(ofType type: MagicWords) -> Bool { // Check if witch currently has an appropriate spell in their spellbook
+    let change = spells.flatMap { spell in
+      spell.magicWords == type
+    }
+    return change.count > 0
+  }
+}
+```
+Finally, the witch. Here you see the following:
+
+* A Witch is initialized with a name and a familiar, or with a name, a familiar and a hat.
+* A Witch knows a finite number of spells, stored in spells, which is an array of Spell objects.
+* A Witch seems to have a penchant for turning her familiar into a toad via the use of the .prestoChango spell, within turnFamiliarIntoToad().
+
+Notice the length and amount of indentation in turnFamiliarIntoToad(). Also, if anything goes wrong in the method, an entirely new toad will be returned. That seems like a confusing (and incorrect!) outcome for this particular spell. You’ll clean up this code significantly with custom error handling in the next section.
+
+### Refactoring to Use Swift Errors
+
+> “Swift provides first-class support for throwing, catching, propagating, and manipulating
+recoverable errors at runtime.”  -----The Swift Programming Language (Swift 3)
+
+Not to be confused with the Temple of Doom, the Pyramid of Doom is an anti-pattern found in Swift and other languages that can require many levels of nested statements for control flow. It can be seen in turnFamiliarIntoToad() above – note the six closing parentheses required to close out all the statements, trailing down on a diagonal. Reading code nested in this way requires excessive cognitive effort.
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/05/errorhandling-3-650x288.png)
+
+```swift
+```
+
+```swift
+```
