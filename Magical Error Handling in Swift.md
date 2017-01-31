@@ -251,6 +251,36 @@ Not to be confused with the Temple of Doom, the Pyramid of Doom is an anti-patte
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/errorhandling-3-650x288.png)
 
+Guard statements, as you’ve seen earlier, and multiple simultaneous optional bindings can assist with the cleanup of pyramid-like code. The use of a do-catch mechanism, however, eliminates the problem altogether by decoupling control flow from error state handling.
+
+do-catch mechanisms are often found near the following, related, keywords:
+
+* throws
+* do
+* catch
+* try
+* defer
+* Error
+
+To see these mechanisms in action, you are going to throw multiple custom errors. First, you’ll define the states you wish to handle by listing out everything that could possibly go wrong as an enumeration.
+
+Add the following code to your playground above the definition of Witch:
+```swift
+enum ChangoSpellError: Error {
+  case hatMissingOrNotMagical
+  case noFamiliar
+  case familiarAlreadyAToad
+  case spellFailed(reason: String)
+  case spellNotKnownToWitch
+}
+```
+Note two things about ChangoSpellError:
+
+* It conforms to the Error protocol, a requirement for defining errors in Swift.
+* In the spellFailed case, you can handily specify a custom reason for the spell failure with an associated value.
+
+> Note: The ChangoSpellError is named after the magical utterance of “Presto Chango!” – frequently used by a Witch when attempting to change a familiar into a Toad).
+
 ```swift
 ```
 
