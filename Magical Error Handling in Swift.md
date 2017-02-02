@@ -146,14 +146,13 @@ init?(words: String) {
 
 注意到第一个和第二个咒语的常量值并未改变，而代码则变得更加精练了。
 
-## Avoiding Errors with Custom Handling
+## 自定义处理避免错误
 
-Having cleaned up the Spell initializer and avoided some errors through the clever use of nil, you’re ready to tackle some more intricate error handling.
+至此我们已经整理了Spell构造器的代码并且使用nil避免了一些错误，接下来学习如何进行更加复杂的错误处理。
 
-For the next section of this tutorial, open up Avoiding Errors with Custom Handling – Starter.playground.
+进行这一节的学习请先打开Avoiding Errors with Custom Handling – Starter.playground。
 
-Take note of the following features of the code:
-
+看看下面的代码，观察它的特点:
 ```swift
 struct Spell {
   var magicWords: MagicWords = .abracadbra
@@ -170,7 +169,7 @@ struct Spell {
   }
 }
 ```
-This is the Spell initializer, updated to match the work you completed in the first section of this tutorial. Also note the presence of the Avatar protocol, and a second failable initializer, which has been added for convenience.
+这是在教程第一部分中修改后的Spell的构造器。注意下面的Avatar协议和一个为了方便起见使用的可失败构造器，
 ```swift
 protocol Familiar: Avatar {
   var noise: String { get }
@@ -178,12 +177,12 @@ protocol Familiar: Avatar {
   init(name: String?)
 }
 ```
-The Familiar protocol will be applied to various animals (such as bats and toads) further down in the playground.
+在playground的后面会有一些动物(比如蝙蝠和蟾蜍)实现这个Familiar协议。
 
-> Note: For those unfamiliar with the term familiar, this is a witch’s or wizard’s magical animal sidekick, which usually has human-like qualities. Think Hedwig from Harry Potter, or the flying monkeys in the Wizard of Oz.
+> 注意: 这里的familiar并不是熟悉的意思，指的是魔女或者魔法师的宠物或仆从，通常具有类人的能力，想象一下哈利波特中的Hedwig和绿野仙踪中的飞猴。
 > ![](https://koenig-media.raywenderlich.com/uploads/2016/04/Owl-480x320.jpg)
   
->This clearly isn’t Hedwig, but still cute nonetheless, no?
+>这明显不是Hedwig(哈利波特中作为信使的宠物)，不过也挺可爱的，不是吗?
 
 ```swift
 struct Witch: Magical {
@@ -209,9 +208,9 @@ struct Witch: Magical {
  
   func turnFamiliarIntoToad() -> Toad {
     if let hat = hat {
-      if hat.isMagical { // When have you ever seen a Witch perform a spell without her magical hat on ? :]
-        if let familiar = familiar {   // Check if witch has a familiar
-          if let toad = familiar as? Toad {  // If familiar is already a toad, no magic required
+      if hat.isMagical { // 你见过魔女不带帽子就施放魔法吗 :]
+        if let familiar = familiar {   // 检查魔女是否拥有仆从
+          if let toad = familiar as? Toad {  // 若仆从是蟾蜍，则不需要魔法
             return toad
           } else {
             if hasSpell(ofType: .prestoChango) {
@@ -223,10 +222,10 @@ struct Witch: Magical {
         }
       }
     }
-    return Toad(name: "New Toad")  // This is an entirely new Toad.
-  }
+    return Toad(name: "New Toad")  // 这是一只新的蟾蜍
+  }
  
-  func hasSpell(ofType type: MagicWords) -> Bool { // Check if witch currently has an appropriate spell in their spellbook
+  func hasSpell(ofType type: MagicWords) -> Bool { // 检查魔女的魔法书中是否拥有某个咒语
     let change = spells.flatMap { spell in
       spell.magicWords == type
     }
@@ -234,13 +233,13 @@ struct Witch: Magical {
   }
 }
 ```
-Finally, the witch. Here you see the following:
+最后是魔女，代码中会看到:
 
-* A Witch is initialized with a name and a familiar, or with a name, a familiar and a hat.
-* A Witch knows a finite number of spells, stored in spells, which is an array of Spell objects.
-* A Witch seems to have a penchant for turning her familiar into a toad via the use of the .prestoChango spell, within turnFamiliarIntoToad().
+* 一个魔女是使用姓名和仆从或姓名、仆从和帽子初始化的。
+* 一个魔女了解有限数量的咒语，并保存在Spell对象数组中。
+* 一个魔女倾向于使用.prestoChango咒语将仆从变为蟾蜍，在turnFamiliarIntoToad()方法中。
 
-Notice the length and amount of indentation in turnFamiliarIntoToad(). Also, if anything goes wrong in the method, an entirely new toad will be returned. That seems like a confusing (and incorrect!) outcome for this particular spell. You’ll clean up this code significantly with custom error handling in the next section.
+应该注意到了turnFamiliarIntoToad()方法的长度和缩进的数量。若在函数中出错的话会返回一只全新的蟾蜍，对这个特定的咒语来说是一个令人困惑(也是错误的！)的输出结果，接下来会在下一节中使用自定义的错误处理来修改代码。
 
 ### Refactoring to Use Swift Errors
 
