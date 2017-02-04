@@ -280,8 +280,18 @@ Note two things about ChangoSpellError:
 
 > Note: The ChangoSpellError is named after the magical utterance of “Presto Chango!” – frequently used by a Witch when attempting to change a familiar into a Toad).
 
-```swift
-```
+OK, ready to make some magic, my pretties? Excellent. Add throws to the method signature, to indicate that errors may occur as a result of calling this method:
 
 ```swift
+func turnFamiliarIntoToad() throws -> Toad {
 ```
+Update it as well on the Magical protocol:
+
+```swift
+protocol Magical: Avatar {
+  var name: String? { get set }
+  var spells: [Spell] { get set }
+  func turnFamiliarIntoToad() throws -> Toad
+}
+```
+Now that you have the error states listed, you will rework the turnFamiliarIntoToad() method, one clause at a time.
