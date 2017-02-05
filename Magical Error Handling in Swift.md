@@ -295,3 +295,5 @@ protocol Magical: Avatar {
 }
 ```
 Now that you have the error states listed, you will rework the turnFamiliarIntoToad() method, one clause at a time.
+
+### Handling Hat Errors
