@@ -241,18 +241,17 @@ struct Witch: Magical {
 
 应该注意到了turnFamiliarIntoToad()方法的长度和缩进的数量。若在函数中出错的话会返回一只全新的蟾蜍，对这个特定的咒语来说是一个令人困惑(也是错误的！)的输出结果，接下来会在下一节中使用自定义的错误处理来修改代码。
 
-### Refactoring to Use Swift Errors
+### 使用Swift错误进行重构
 
-> “Swift provides first-class support for throwing, catching, propagating, and manipulating
-recoverable errors at runtime.”  -----The Swift Programming Language (Swift 3)
+> “Swift提供了优秀的对运行时的错误抛出、捕获、传递和可恢复操作的支持。”  -----The Swift Programming Language (Swift 3)
 
-Not to be confused with the Temple of Doom, the Pyramid of Doom is an anti-pattern found in Swift and other languages that can require many levels of nested statements for control flow. It can be seen in turnFamiliarIntoToad() above – note the six closing parentheses required to close out all the statements, trailing down on a diagonal. Reading code nested in this way requires excessive cognitive effort.
+不要与末日神殿相混淆，Swifr中的金字塔是一种反模式的结构，需要使用多层嵌套的语句来实现控制流。在上面的turnFamiliarIntoToad()方法中可以看到 - 注意需要使用六个花括号才能闭合语句，要读懂这种多层嵌套的代码需要下一些功夫。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/errorhandling-3-650x288.png)
 
 Guard statements, as you’ve seen earlier, and multiple simultaneous optional bindings can assist with the cleanup of pyramid-like code. The use of a do-catch mechanism, however, eliminates the problem altogether by decoupling control flow from error state handling.
 
-do-catch mechanisms are often found near the following, related, keywords:
+do-catch机制会伴随着下面这些关键字:
 
 * throws
 * do
@@ -261,9 +260,9 @@ do-catch mechanisms are often found near the following, related, keywords:
 * defer
 * Error
 
-To see these mechanisms in action, you are going to throw multiple custom errors. First, you’ll define the states you wish to handle by listing out everything that could possibly go wrong as an enumeration.
+在实际操作do-catch时会抛出不同的自定义错误。首先，需要定义期望处理的状态，使用枚举列出可能发生错误的情况。
 
-Add the following code to your playground above the definition of Witch:
+在Witch的定义前面添加如下代码:
 ```swift
 enum ChangoSpellError: Error {
   case hatMissingOrNotMagical
@@ -273,12 +272,12 @@ enum ChangoSpellError: Error {
   case spellNotKnownToWitch
 }
 ```
-Note two things about ChangoSpellError:
+注意关于ChangoSpellError的两件事:
 
-* It conforms to the Error protocol, a requirement for defining errors in Swift.
-* In the spellFailed case, you can handily specify a custom reason for the spell failure with an associated value.
+* 它符合Error协议，在Swift中定义错误时的必要条件。
+* 在spellFailed的情况下可以自行通过一个关联值设置咒语失败时的原因。
 
-> Note: The ChangoSpellError is named after the magical utterance of “Presto Chango!” – frequently used by a Witch when attempting to change a familiar into a Toad).
+> 注意: The ChangoSpellError is named after the magical utterance of “Presto Chango!” – frequently used by a Witch when attempting to change a familiar into a Toad).
 
 OK, ready to make some magic, my pretties? Excellent. Add throws to the method signature, to indicate that errors may occur as a result of calling this method:
 
