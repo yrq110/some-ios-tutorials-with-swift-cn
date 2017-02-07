@@ -249,9 +249,9 @@ struct Witch: Magical {
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/05/errorhandling-3-650x288.png)
 
-Guard statements, as you’ve seen earlier, and multiple simultaneous optional bindings can assist with the cleanup of pyramid-like code. The use of a do-catch mechanism, however, eliminates the problem altogether by decoupling control flow from error state handling.
+之前见过的guard语句与多个并列的可选绑定类型可以帮助简化金字塔型的代码，不过使用do-cathch的话可以通过在处理错误状态时进行控制流去耦合以解决这个问题。
 
-do-catch机制会伴随着下面这些关键字:
+do-catch机制通常伴随着下面这些关键字:
 
 * throws
 * do
@@ -277,14 +277,15 @@ enum ChangoSpellError: Error {
 * 它符合Error协议，在Swift中定义错误时的必要条件。
 * 在spellFailed的情况下可以自行通过一个关联值设置咒语失败时的原因。
 
-> 注意: The ChangoSpellError is named after the magical utterance of “Presto Chango!” – frequently used by a Witch when attempting to change a familiar into a Toad).
+> 注意: ChangoSpellError的命名是在咒语“Presto Chango!”施放之后 —— 当一个魔女将一个仆从转化为蟾蜍时所使用的魔法。
 
-OK, ready to make some magic, my pretties? Excellent. Add throws to the method signature, to indicate that errors may occur as a result of calling this method:
+好了，准备好施放一些魔法了，在方法名中添加throws来标识调用这个方法后可能产生的错误:
 
 ```swift
 func turnFamiliarIntoToad() throws -> Toad {
 ```
-Update it as well on the Magical protocol:
+
+在Magical协议中更新下这个方法名:
 
 ```swift
 protocol Magical: Avatar {
@@ -293,6 +294,13 @@ protocol Magical: Avatar {
   func turnFamiliarIntoToad() throws -> Toad
 }
 ```
-Now that you have the error states listed, you will rework the turnFamiliarIntoToad() method, one clause at a time.
 
-### Handling Hat Errors
+现在将错误都用枚举列出来了，需要重新编写turnFamiliarIntoToad()方法，分开处理每种错误情况。
+
+### 处理魔法帽错误
+
+### 处理仆从错误
+
+### 处理蟾蜍错误
+
+### 处理咒语错误
