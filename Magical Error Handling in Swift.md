@@ -304,3 +304,5 @@ protocol Magical: Avatar {
 ### 处理蟾蜍错误
 
 ### 处理咒语错误
+
+## What Else Are Custom Errors Good For?
