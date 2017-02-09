@@ -299,10 +299,72 @@ protocol Magical: Avatar {
 
 ### 处理魔法帽错误
 
+首先，修改如下语句以确保魔女带着那顶至关重要的帽子:
+
+```swift
+if let hat = hat {
+```
+改成下面这样:
+```swift
+guard let hat = hat else {
+  throw ChangoSpellError.hatMissingOrNotMagical
+}
+```
+> 注意: 不要忘了移除底部关联的花括号，否则会编译错误。
+
+下面这行是帽子属性的布尔值验证:
+
+```swift
+if hat.isMagical {
+```
+应当使用额外的guard语句来执行这个验证，不过将验证语句打包在一起用一行搞定的话会更加简洁。将第一个guard语句如下整合在一起:
+```swift
+guard let hat = hat, hat.isMagical else {
+  throw ChangoSpellError.hatMissingOrNotMagical
+}
+```
+现在可以删掉if hat.isMagical { 验证了。
+
+下一部分来拆分一下条件语句金字塔。
+
 ### 处理仆从错误
+
+接下来检查魔女是否拥有仆从:
+```swift
+if let familiar = familiar {
+```
+修改成如下使用guard语句的形式，若没有仆从则抛出一个.noFamiliar错误:
+```swift
+guard let familiar = familiar else {
+  throw ChangoSpellError.noFamiliar
+}
+```
+目前先忽略其他情况下的错误，之后代码会进行处理。
 
 ### 处理蟾蜍错误
 
-### 处理咒语错误
+在之后的代码中若魔女调用turnFamiliarIntoToad()咒语则返回已存在的蟾蜍，这里最好有一个能指出她操作"失误"的error。修改下面的代码:
 
+```swift
+if let toad = familiar as? Toad {
+  return toad
+}
+```
+改成如下这样:
+```swift
+if familiar is Toad {
+  throw ChangoSpellError.familiarAlreadyAToad
+}
+```
+注意，把as?改为了is，这样简化了验证语句，没必要使用判断结果来判断是否符合协议。The is keyword can also be used for type comparison in a more general fashion. If you’re interested in learning more about is and as, check out the type casting section of The Swift Programming Language.
+
+Move everything inside the else clause outside of the else clause, and delete the else. It’s no longer necessary!
+
+### 处理咒语错误
+```swift
+```
+```swift
+```
+```swift
+```
 ## What Else Are Custom Errors Good For?
