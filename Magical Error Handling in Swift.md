@@ -392,17 +392,17 @@ return Toad(name: "New Toad")
 ```swift
 func turnFamiliarIntoToad() throws -> Toad {
  
-  // When have you ever seen a Witch perform a spell without her magical hat on ? :]
+  // When have you ever seen a Witch perform a spell without her magical hat on ? :]
   guard let hat = hat, hat.isMagical else {
     throw ChangoSpellError.hatMissingOrNotMagical
   }
  
-  // Check if witch has a familiar
+  // 检查魔女是否拥有仆从
   guard let familiar = familiar else {
     throw ChangoSpellError.noFamiliar
   }
  
-  // Check if familiar is already a toad - if so, why are you casting the spell?
+  // 检查仆从是否为蟾蜍 - 若是的话为何多此一举？
   if familiar is Toad {
     throw ChangoSpellError.familiarAlreadyAToad
   }
@@ -410,25 +410,27 @@ func turnFamiliarIntoToad() throws -> Toad {
     throw ChangoSpellError.spellNotKnownToWitch
   }
  
-  // Check if the familiar has a name
-  guard let name = familiar.name else {
+  // 检查仆从是否拥有名称
+  guard let name = familiar.name else {
     let reason = "Familiar doesn’t have a name."
     throw ChangoSpellError.spellFailed(reason: reason)
   }
  
-  // It all checks out! Return a toad with the same name as the witch's familiar
+  // 检查完毕后返回一个与魔女仆从同名的蟾蜍
   return Toad(name: name)
 }
 ```
 你可以从turnFamiliarIntoToad()中返回一个可选类型来指示出“咒语吟唱时出错了”，不过使用自定义错误的话可以更明确地指出错误状态并作出对应的操作。
 
 ## 使用自定义错误的其他好处
-Now that you have a method to throw custom Swift errors, you need to handle them. The standard mechanism for doing this is called the do-catch statement, which is similar to try-catch mechanisms found in other languages such as Java.
 
-Add the following code to the bottom of your playground:
+现在你拥有了一个可以抛出自定义Swift错误的方法，接下来要处理它们，使用的这种机制一般被称为do-catch语句，类似其他语言比如Java中的try-catch机制。
+
+在playground的底部添加如下代码:
+
 ```swift
 func exampleOne() {
-  print("") // Add an empty line in the debug area
+  print("") // 在调试区域添加一个空行
  
   // 1
   let salem = Cat(name: "Salem Saberhagen")
@@ -450,14 +452,16 @@ func exampleOne() {
   }
 }
 ```
-Here’s what that function does:
-1. Create the familiar for this witch. It’s a cat called Salem.
-2. Create the witch, called Sabrina.
-3. Attempt to turn the feline into a toad.
-4. Catch a ChangoSpellError error and handle the error appropriately.
-5. Finally, catch all other errors and print out a nice message.
-After you add the above, you’ll see a compiler error – time to fix that.
-handle(spellError:) has not yet been defined, so add the following code above the exampleOne() function definition:
+函数做了下面几件事:
+1. 创建魔女的仆从，一只叫Salem的猫。
+2. 创建魔女Sabrina。
+3. 尝试把猫转换为蟾蜍。
+4. 捕获到ChangoSpellError错误并适当地处理错误。
+5. 最后捕获其它错误并打印一条信息。
+
+添加完上述代码并运行后会看到一个编译错误 - 接着处理一下。
+
+handle(spellError:)方法还没有定义，在exampleOne()函数的上方添加如下代码:
 ```swift
 func handle(spellError error: ChangoSpellError) {
   let prefix = "Spell Failed."
@@ -473,15 +477,30 @@ func handle(spellError error: ChangoSpellError) {
   }
 }
 ```
-Finally, run the code by adding the following to the bottom of your playground:
+最后在playground的地步添加如下代码调用并运行:
 
 ```swift
 exampleOne()
 ```
-Reveal the Debug console by clicking the up arrow icon in the bottom left hand corner of the Xcode workspace so you can see the output from your playground:
+点击Xcode工作区左下角的箭头图标展开调试控制台，就可以看到playground的输出了:
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/04/Expand-Debug-Area-1.gif)
 
-### Catching Errors
-
+### 错误捕获
 Below is a brief discussion of each of language feature used in the above code snippet.
+
+`catch`
+
+You can use pattern matching in Swift to handle specific errors or group themes of error types together.
+
+The code above demonstrates several uses of catch: one where you catch a specific ChangoSpell error, and one that handles the remaining error cases.
+
+`try`
+
+You use try in conjunction with do-catch statements to clearly indicate which line or section of code may throw errors.
+
+You can use try in several different ways:
+
+* try: standard usage within a clear and immediate do-catch statement. This is used above.
+* try?: handle an error by essentially ignoring it; if an error is thrown, the result of the statement will be nil.
+* try!: similar to the syntax used for force-unwrapping, this prefix creates the expectation that, in theory, a statement could throw an error – but in practice the error condition will never occur. try! can be used for actions such as loading files, where you are certain the required media exists. Like force-unwrap, this construct should be used carefully.
