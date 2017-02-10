@@ -356,15 +356,132 @@ if familiar is Toad {
   throw ChangoSpellError.familiarAlreadyAToad
 }
 ```
-注意，把as?改为了is，这样简化了验证语句，没必要使用判断结果来判断是否符合协议。The is keyword can also be used for type comparison in a more general fashion. If you’re interested in learning more about is and as, check out the type casting section of The Swift Programming Language.
+注意，把as?改为了is，这样简化了验证语句，没必要使用判断结果来判断是否符合协议。is关键句也常用于类型比较。
 
-Move everything inside the else clause outside of the else clause, and delete the else. It’s no longer necessary!
+把else的相关语句都删掉，不需要了~
 
 ### 处理咒语错误
+
+最后，调用hasSpell(\_ type:)确保魔女吟唱的是正常的咒语，将下面的代码:
 ```swift
+if hasSpell(ofType: .prestoChango) {
+  if let name = familiar.name {
+    return Toad(name: name)
+  }
+}
 ```
+改成这样:
 ```swift
+guard hasSpell(ofType: .prestoChango) else {
+  throw ChangoSpellError.spellNotKnownToWitch
+}
+ 
+guard let name = familiar.name else {
+  let reason = "Familiar doesn’t have a name."
+  throw ChangoSpellError.spellFailed(reason: reason)
+}
+ 
+return Toad(name: name)
 ```
+现在可以移除最后这行了:
+
 ```swift
+return Toad(name: "New Toad")
 ```
-## What Else Are Custom Errors Good For?
+这个方法变得更加简洁了，可以使用了。我在下面的代码中添加了一些注释，可以稍微解释下:
+```swift
+func turnFamiliarIntoToad() throws -> Toad {
+ 
+  // When have you ever seen a Witch perform a spell without her magical hat on ? :]
+  guard let hat = hat, hat.isMagical else {
+    throw ChangoSpellError.hatMissingOrNotMagical
+  }
+ 
+  // Check if witch has a familiar
+  guard let familiar = familiar else {
+    throw ChangoSpellError.noFamiliar
+  }
+ 
+  // Check if familiar is already a toad - if so, why are you casting the spell?
+  if familiar is Toad {
+    throw ChangoSpellError.familiarAlreadyAToad
+  }
+  guard hasSpell(ofType: .prestoChango) else {
+    throw ChangoSpellError.spellNotKnownToWitch
+  }
+ 
+  // Check if the familiar has a name
+  guard let name = familiar.name else {
+    let reason = "Familiar doesn’t have a name."
+    throw ChangoSpellError.spellFailed(reason: reason)
+  }
+ 
+  // It all checks out! Return a toad with the same name as the witch's familiar
+  return Toad(name: name)
+}
+```
+你可以从turnFamiliarIntoToad()中返回一个可选类型来指示出“咒语吟唱时出错了”，不过使用自定义错误的话可以更明确地指出错误状态并作出对应的操作。
+
+## 使用自定义错误的其他好处
+Now that you have a method to throw custom Swift errors, you need to handle them. The standard mechanism for doing this is called the do-catch statement, which is similar to try-catch mechanisms found in other languages such as Java.
+
+Add the following code to the bottom of your playground:
+```swift
+func exampleOne() {
+  print("") // Add an empty line in the debug area
+ 
+  // 1
+  let salem = Cat(name: "Salem Saberhagen")
+  salem.speak()
+ 
+  // 2
+  let witchOne = Witch(name: "Sabrina", familiar: salem)
+  do {
+    // 3
+    try witchOne.turnFamiliarIntoToad()
+  }
+  // 4
+  catch let error as ChangoSpellError {
+    handle(spellError: error)
+  }
+  // 5
+  catch {
+    print("Something went wrong, are you feeling OK?")
+  }
+}
+```
+Here’s what that function does:
+1. Create the familiar for this witch. It’s a cat called Salem.
+2. Create the witch, called Sabrina.
+3. Attempt to turn the feline into a toad.
+4. Catch a ChangoSpellError error and handle the error appropriately.
+5. Finally, catch all other errors and print out a nice message.
+After you add the above, you’ll see a compiler error – time to fix that.
+handle(spellError:) has not yet been defined, so add the following code above the exampleOne() function definition:
+```swift
+func handle(spellError error: ChangoSpellError) {
+  let prefix = "Spell Failed."
+  switch error {
+    case .hatMissingOrNotMagical:
+      print("\(prefix) Did you forget your hat, or does it need its batteries charged?")
+ 
+    case .familiarAlreadyAToad:
+      print("\(prefix) Why are you trying to change a Toad into a Toad?")
+ 
+    default:
+      print(prefix)
+  }
+}
+```
+Finally, run the code by adding the following to the bottom of your playground:
+
+```swift
+exampleOne()
+```
+Reveal the Debug console by clicking the up arrow icon in the bottom left hand corner of the Xcode workspace so you can see the output from your playground:
+
+![](https://koenig-media.raywenderlich.com/uploads/2016/04/Expand-Debug-Area-1.gif)
+
+### Catching Errors
+
+Below is a brief discussion of each of language feature used in the above code snippet.
