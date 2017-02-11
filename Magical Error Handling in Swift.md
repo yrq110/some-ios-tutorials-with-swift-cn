@@ -487,20 +487,113 @@ exampleOne()
 ![](https://koenig-media.raywenderlich.com/uploads/2016/04/Expand-Debug-Area-1.gif)
 
 ### 错误捕获
-Below is a brief discussion of each of language feature used in the above code snippet.
+
+下面是一些在上述代码片段中所出现的语言特性的简要介绍。
 
 `catch`
 
-You can use pattern matching in Swift to handle specific errors or group themes of error types together.
+可以在Swift中使用模式匹配处理特定错误或其它错误类型的主题。
 
-The code above demonstrates several uses of catch: one where you catch a specific ChangoSpell error, and one that handles the remaining error cases.
+上面的代码中使用了catch: 一个捕获特定的ChangoSpell错误，另外一个处理其余的错误情况。
 
 `try`
 
-You use try in conjunction with do-catch statements to clearly indicate which line or section of code may throw errors.
+使用try结合do-catch机制明确地指出哪一行或哪一块代码会抛出错误。
 
-You can use try in several different ways:
+可以用如下几种方式使用try:
 
-* try: standard usage within a clear and immediate do-catch statement. This is used above.
-* try?: handle an error by essentially ignoring it; if an error is thrown, the result of the statement will be nil.
-* try!: similar to the syntax used for force-unwrapping, this prefix creates the expectation that, in theory, a statement could throw an error – but in practice the error condition will never occur. try! can be used for actions such as loading files, where you are certain the required media exists. Like force-unwrap, this construct should be used carefully.
+* try: 标准用法，也是上面所用到的。
+* try?: 忽略要处理的错误，若抛出错误则返回nil。
+* try!: 类似强制解绑，try!可用于加载某些确定存在的媒体文件，需谨慎使用。
+
+是时候使用try?语句了，将下面的代码剪切并粘贴到playground的底部:
+```swift
+func exampleTwo() {
+  print("") // 在调试区域添加一个空行
+ 
+  let toad = Toad(name: "Mr. Toad")
+  toad.speak()
+ 
+  let hat = Hat()
+  let witchTwo = Witch(name: "Elphaba", familiar: toad, hat: hat)
+ 
+  print("") // 在调试区域添加一个空行
+ 
+  let newToad = try? witchTwo.turnFamiliarIntoToad()
+  if newToad != nil { // Same logic as: if let _ = newToad
+    print("Successfully changed familiar into toad.")
+  }
+  else {
+    print("Spell failed.")
+  }
+}
+```
+注意与exampleOne的不同，在这里并不关心发生的错误类型，不过当错误发生时还是会捕获。由于未创建蟾蜍，因此newToad的值是nil。
+
+### 错误传递
+
+`throws`
+
+在Swift中，若一个函数或方法抛出错误时需要使用throw关键字，抛出的错误会自动传递给调用的堆栈，不过让错误冒泡的距离离源头太远通常被认为是不好的。代码库中显著的错误传递会增加错误未被有效处理的可能性，throws是对代码中记录传递过程的授权 - 给编程者留下传递的记录，以便有效的处理错误。
+
+`rethrows`
+
+至此为此看到的所有例子都用的是throws，没见过它的兄弟rethrows吧
+
+rethrows告诉编译器仅当它的函数参数抛出错误时才抛出错误，下面是个简单的例子(不需要添加到playground中):
+
+```swift
+func doSomethingMagical(magicalOperation: () throws -> MagicalResult) rethrows -> MagicalResult {
+  return try magicalOperation()
+}
+```
+这里的doSomethingMagical(\_:)会在magicalOperation给函数抛出一个错误的情况下抛出错误，若是则返回一个MagicalResult。 
+
+### 处理错误的操作
+
+`defer`
+
+Although auto-propagation will serve you well in most cases, there are situations where you might want to manipulate the behavior of your application as an error travels up the call stack.
+
+The defer statement is a mechanism that permits a ‘cleanup’ action to be performed whenever the current scope is exited, such as when a method or function returns. It’s useful for managing resources that need to be tidied up whether or not the action was successful, and so becomes especially useful in an error handling context.
+
+To see this in action, add the following method to the Witch structure:
+```swift
+func speak() {
+  defer {
+    print("*cackles*")
+  }
+  print("Hello my pretties.")
+}
+```
+Add the following code to the bottom of the playground:
+
+```swift
+
+func exampleThree() {
+  print("") // Add an empty line in the debug area
+ 
+  let witchThree = Witch(name: "Hermione", familiar: nil, hat: nil)
+  witchThree.speak()
+}
+ 
+exampleThree()
+```
+In the debug console, you should see the witch cackle after everything she says.
+Interestingly, defer statements are executed in the opposite order to which they are written.
+Add a second defer statement to speak() so that a Witch screeches, then cackles after everything she says:
+
+```swift
+func speak() {
+  defer {
+    print("*cackles*")
+  }
+ 
+  defer {
+    print("*screeches*")
+  }
+ 
+  print("Hello my pretties.")
+}
+```
+Did the statements print in the order you expected? Ah, the magic of defer!
