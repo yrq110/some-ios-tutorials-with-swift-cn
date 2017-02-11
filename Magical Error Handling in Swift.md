@@ -557,7 +557,7 @@ Although auto-propagation will serve you well in most cases, there are situation
 
 The defer statement is a mechanism that permits a ‘cleanup’ action to be performed whenever the current scope is exited, such as when a method or function returns. It’s useful for managing resources that need to be tidied up whether or not the action was successful, and so becomes especially useful in an error handling context.
 
-To see this in action, add the following method to the Witch structure:
+来实践一下，给Witch添加如下方法:
 ```swift
 func speak() {
   defer {
@@ -566,10 +566,8 @@ func speak() {
   print("Hello my pretties.")
 }
 ```
-Add the following code to the bottom of the playground:
-
+在playground底部添加如下代码:
 ```swift
-
 func exampleThree() {
   print("") // Add an empty line in the debug area
  
@@ -596,4 +594,4 @@ func speak() {
   print("Hello my pretties.")
 }
 ```
-Did the statements print in the order you expected? Ah, the magic of defer!
+这些语句如期按顺序输出了吗?是的，这就是defer的魅力!
