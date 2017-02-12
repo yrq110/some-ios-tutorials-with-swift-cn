@@ -180,6 +180,7 @@ protocol Familiar: Avatar {
 在playground的后面会有一些动物(比如蝙蝠和蟾蜍)实现这个Familiar协议。
 
 > 注意: 这里的familiar并不是熟悉的意思，指的是魔女或者魔法师的宠物或仆从，通常具有类人的能力，想象一下哈利波特中的Hedwig和绿野仙踪中的飞猴。
+
 > ![](https://koenig-media.raywenderlich.com/uploads/2016/04/Owl-480x320.jpg)
   
 >这明显不是Hedwig(哈利波特中作为信使的宠物)，不过也挺可爱的，不是吗?
