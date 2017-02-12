@@ -549,13 +549,13 @@ func doSomethingMagical(magicalOperation: () throws -> MagicalResult) rethrows -
 ```
 这里的doSomethingMagical(\_:)会在magicalOperation给函数抛出一个错误的情况下抛出错误，若是则返回一个MagicalResult。 
 
-### 处理错误的操作
+### 操作错误处理的行为
 
 `defer`
 
-Although auto-propagation will serve you well in most cases, there are situations where you might want to manipulate the behavior of your application as an error travels up the call stack.
+虽然自动传递在大多数情况下是适用的，不过也有一些时候想将操作应用的行为像操作向上调用堆栈中的错误一样。
 
-The defer statement is a mechanism that permits a ‘cleanup’ action to be performed whenever the current scope is exited, such as when a method or function returns. It’s useful for managing resources that need to be tidied up whether or not the action was successful, and so becomes especially useful in an error handling context.
+defer语句是一种允许每当跳出一个当前域时执行"清空"操作的机制，比如在一个方法或函数返回时。它有助于管理需要整理的资源，尽管有时操作会不成功，这在处理错误上下文时很有效。
 
 来实践一下，给Witch添加如下方法:
 ```swift
@@ -577,10 +577,11 @@ func exampleThree() {
  
 exampleThree()
 ```
-In the debug console, you should see the witch cackle after everything she says.
-Interestingly, defer statements are executed in the opposite order to which they are written.
-Add a second defer statement to speak() so that a Witch screeches, then cackles after everything she says:
+在调试控制台中，会看到魔女在说完话后会咯咯地笑(先输出"Hello my pretties"然后输出"*cackles*")。
 
+有趣的是，defer语句会以相反的顺序输出我们缩写的print代码内容。
+
+在speak()中添加第二个defer语句，这样魔女会在说完话后先尖叫(screeches)后咯咯地笑(cackles)。
 ```swift
 func speak() {
   defer {
