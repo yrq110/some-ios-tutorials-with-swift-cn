@@ -32,3 +32,4 @@
 * [iOS10中的User Notifications Framework介绍](Introduction to User Notifications Framework in iOS 10.md)
 * [Xcode 8中使用Swift 3构建条形码与QR码扫描器](Building a Barcode and QR Code Reader in Swift 3 and Xcode 8.md)
 * [Core Plot指南:入门](Core Plot Tutorial: Getting Started.md)
+* [奇妙的Swift错误处理](Magical Error Handling in Swift.md)
