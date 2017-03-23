@@ -10,19 +10,18 @@
 ***
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/10/UIPresCon-feature.png)
-> Learn how to build custom presentations with UIPresentationController.
+> 学习如何使用UIPresentationController进行自定义跳转。
 
-View controller presentation has been an integral part of every iOS developer’s toolkit since the early days of iOS. You’ve probably used present(_:animated:completion:) before, but if you’re like a lot of developers, you’ve stayed with the default transition styles shipped with iOS. In this UIPresentationController tutorial you’ll learn how to present view controllers with custom transitions and custom presentation styles. No longer will you be limited to full-screen or popover presentations and the standard transition animations. You’ll start with some drab, lifeless view controller presentations and you’ll bring them to life. By the time you finish, you’ll learn:
-1. How to create a UIPresentationController subclass.
-2. How to use a UIPresentationController for slick custom presentations; the presented view controller doesn’t even have to know it’s there.
-3. How to reuse a UIPresentationController for various controllers where you’ve tweaked presentation parameters.
-4. How to make adaptive presentations that support any screen size your app might encounter.
+View controller presentation has been an integral part of every iOS developer’s toolkit since the early days of iOS. You’ve probably used present(\_:animated:completion:) before, but if you’re like a lot of developers, you’ve stayed with the default transition styles shipped with iOS. In this UIPresentationController tutorial you’ll learn how to present view controllers with custom transitions and custom presentation styles. No longer will you be limited to full-screen or popover presentations and the standard transition animations. You’ll start with some drab, lifeless view controller presentations and you’ll bring them to life.
+看完这篇教程后你会学到：
+1. 如何创建一个UIPresentationController子类
+2. 如何使用UIPresentationController进行圆滑的自定义跳转
+3. 如何复用UIPresentationController，根据不同的controller调整参数
+4. 如何创建自适应的转场动画支持不同设备的屏幕尺寸
 
-> Prequisites: This tutorial requires Xcode 8.0 or newer in order to be compatible with the latest Swift syntax.
-This iOS tutorial also assumes you are familiar with Swift and the iOS SDK. If you’re new to these, try starting out with our written iOS tutorials and Swift tutorials. Make sure you catch some of the video tutorials too!
+> 前提: 这篇教程需要Xcode 8.0或更高版本，这是由于需要使用新版本的Swift语句，并且假定你熟悉Swift与iOS SDK。
 
-## Getting Started
-
+## 入门
 The scenario: With the 2016 summer games all done, a client hires you to create an app that tallies the medal count for international sporting events where athletes and nations earn various medals.
 While the functional requirements are pretty simple, your sponsor asked for a rather cool looking slide-in transition to present the list of games.
 At first, you feel a bit of panic but then realize you do have transition-building tools at your fingertips. You even put down the paper bag!
