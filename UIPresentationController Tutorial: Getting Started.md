@@ -51,3 +51,5 @@ Finally, tap the Medal Count button to bring up the MedalCountViewController for
 
 As you see, the old bottom-up default is used to present this controller too. Tap the screen to dismiss it.
 Now that you’ve seen the app you’ll upgrade, it’s time to turn your attention to some core concepts and theory for UIPresentationController.
+
+## Core Concepts for iOS Transition
