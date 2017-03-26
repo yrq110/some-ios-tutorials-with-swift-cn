@@ -24,8 +24,11 @@ View controller presentation has been an integral part of every iOS developer’
 ## 入门
 The scenario: With the 2016 summer games all done, a client hires you to create an app that tallies the medal count for international sporting events where athletes and nations earn various medals.
 While the functional requirements are pretty simple, your sponsor asked for a rather cool looking slide-in transition to present the list of games.
+
 At first, you feel a bit of panic but then realize you do have transition-building tools at your fingertips. You even put down the paper bag!
+
 Download the starter project and open it.
+
 Take a moment to familiarize your with the project and the following elements:
 * MainViewController.swift: the main controller of this project from which all presentations start. This will be the only existing file in the project that you’ll modify.
 * GamesTableViewController.swift: displays a list of Games the user can select.
@@ -54,4 +57,12 @@ Now that you’ve seen the app you’ll upgrade, it’s time to turn your attent
 
 ## Core Concepts for iOS Transition
 
-
+When you call present(_:animated:completion:), iOS does two things.
+First, it instantiates a UIPresentationController. Second, it attaches the presented view controller to itself then presents it using one of the built-in modal presentation styles.
+You have the power to override this mechanism and provide your own UIPresentationController subclass for a custom presentation.
+Understanding these key components is mandatory if you want to build sweet presentations in your apps:
+1. The presented view controller has a transitioning delegate that’s responsible for loading the UIPresentationController and the presentation/dismissal animation controllers. That delegate is an object that conforms to UIViewControllerTransitioningDelegate.
+2. The UIPresentationController subclass is an object that has many presentation-customizing methods, as you’ll see later in the tutorial.
+3. The animation controller object is responsible for the presentation and dismissal animations. It conforms to UIViewControllerAnimatedTransitioning. Note that some use cases warrant two controllers: one for presentation and one for dismissal.
+4. A presentation controller’s delegate tells the presentation controller what to do when its trait collection changes. For the sake of adaptivity, the delegate must be an object that conforms to UIAdaptivePresentationControllerDelegate.
+That’s all you need to know before you dive in!
