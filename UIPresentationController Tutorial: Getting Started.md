@@ -12,7 +12,8 @@
 ![](https://koenig-media.raywenderlich.com/uploads/2016/10/UIPresCon-feature.png)
 > 学习如何使用UIPresentationController进行自定义跳转。
 
-View controller presentation has been an integral part of every iOS developer’s toolkit since the early days of iOS. You’ve probably used present(\_:animated:completion:) before, but if you’re like a lot of developers, you’ve stayed with the default transition styles shipped with iOS. In this UIPresentationController tutorial you’ll learn how to present view controllers with custom transitions and custom presentation styles. No longer will you be limited to full-screen or popover presentations and the standard transition animations. You’ll start with some drab, lifeless view controller presentations and you’ll bring them to life.
+在iOS的早些时期，视图控制器的跳转一直是iOS开发者工具箱中的一个独立模块，你可能以前使用过present(\_:animated:completion:)方法，可能像其他大多数开发者一样使用iOS自带的跳转样式。在这篇UIPresentationController的教程中你会学习如何设置自定义的视图控制器跳转样式，不再局限于全屏的、弹出式的默认跳转动画，将枯燥、无趣的视图跳转表现为更加的生动、有活力。
+
 看完这篇教程后你会学到：
 1. 如何创建一个UIPresentationController子类
 2. 如何使用UIPresentationController进行圆滑的自定义跳转
@@ -22,14 +23,16 @@ View controller presentation has been an integral part of every iOS developer’
 > 前提: 这篇教程需要Xcode 8.0或更高版本，这是由于需要使用新版本的Swift语句，并且假定你熟悉Swift与iOS SDK。
 
 ## 入门
-The scenario: With the 2016 summer games all done, a client hires you to create an app that tallies the medal count for international sporting events where athletes and nations earn various medals.
-While the functional requirements are pretty simple, your sponsor asked for a rather cool looking slide-in transition to present the list of games.
 
-At first, you feel a bit of panic but then realize you do have transition-building tools at your fingertips. You even put down the paper bag!
+场景: 2016夏季奥运会结束后，一位客户想让你做一款app，统计国际体育赛事中不同运动员与国家的所得奖牌。
 
-Download the starter project and open it.
+由于功能需求比较简单，你的赞助者要求使用一种比较cool的跳转方式来展示运动项目列表。
 
-Take a moment to familiarize your with the project and the following elements:
+起初你觉得有点慌，之后发现只需要动动指头写一个跳转工具即可，小case!
+
+下载[开始工程](https://koenig-media.raywenderlich.com/uploads/2016/08/Medal_Count_Starter.zip)并打开它。
+
+浏览项目目录，熟悉一下以下元素:
 * MainViewController.swift: the main controller of this project from which all presentations start. This will be the only existing file in the project that you’ll modify.
 * GamesTableViewController.swift: displays a list of Games the user can select.
 * MedalCountViewController.swift: displays the medal count for the selected sporting event.
@@ -55,9 +58,8 @@ Finally, tap the Medal Count button to bring up the MedalCountViewController for
 As you see, the old bottom-up default is used to present this controller too. Tap the screen to dismiss it.
 Now that you’ve seen the app you’ll upgrade, it’s time to turn your attention to some core concepts and theory for UIPresentationController.
 
-## Core Concepts for iOS Transition
-
-When you call present(_:animated:completion:), iOS does two things.
+## iOS Transition的核心概念
+When you call present(\_:animated:completion:), iOS does two things.
 First, it instantiates a UIPresentationController. Second, it attaches the presented view controller to itself then presents it using one of the built-in modal presentation styles.
 You have the power to override this mechanism and provide your own UIPresentationController subclass for a custom presentation.
 Understanding these key components is mandatory if you want to build sweet presentations in your apps:
