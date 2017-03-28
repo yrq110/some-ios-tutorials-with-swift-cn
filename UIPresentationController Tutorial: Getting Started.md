@@ -68,3 +68,4 @@ Understanding these key components is mandatory if you want to build sweet prese
 3. The animation controller object is responsible for the presentation and dismissal animations. It conforms to UIViewControllerAnimatedTransitioning. Note that some use cases warrant two controllers: one for presentation and one for dismissal.
 4. A presentation controller’s delegate tells the presentation controller what to do when its trait collection changes. For the sake of adaptivity, the delegate must be an object that conforms to UIAdaptivePresentationControllerDelegate.
 That’s all you need to know before you dive in!
+
