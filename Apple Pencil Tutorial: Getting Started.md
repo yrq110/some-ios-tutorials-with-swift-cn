@@ -1,17 +1,17 @@
-#Apple Pencil Tutorial: Getting Started
-##Apple Pencil指南：入门
+# Apple Pencil Tutorial: Getting Started
+## Apple Pencil指南：入门
 
 ***
 
 >* 原文链接 : [Apple Pencil Tutorial: Getting Started](https://www.raywenderlich.com/121834/apple-pencil-tutorial)
-* 原文作者 : [Caroline Begbie](https://www.raywenderlich.com/u/caroline)
-* 译者 : [yrq110](https://github.com/yrq110)
+>* 原文作者 : [Caroline Begbie](https://www.raywenderlich.com/u/caroline)
+>* 译者 : [yrq110](https://github.com/yrq110)
 
 ***
 
 ![pencil](http://www.raywenderlich.com/wp-content/uploads/2016/12/Final3.png)
 
->更新至Xcode 7.3、iOS9.3与Swift 2.2  04-01-2016
+> 更新至Xcode 7.3、iOS9.3与Swift 2.2  04-01-2016
 
 我知道你们大多数人都有一台搭配一只Pencil（触控笔，以下统一用Pencil）的iPad Pro（话外音:并没有）
 
@@ -30,27 +30,27 @@
 
 
 **目录**
-* [前提](#前提)
-* [入门](#入门)
-* [第一次使用Pencil绘制](#first-pencil)
-* [更加平滑的绘制](#更加平滑的绘制)
-* [倾斜Pencil](#tilt-pencil)
-  * [高度、方位与单位向量](#height-azimuth-vector)
-* [绘制阴影](#绘制阴影)
-* [使用纹理](#使用纹理)
-* [使用方位角调整宽度](#使用方位角调整宽度)
-* [玩玩透明度](#玩玩透明度)
-* [降低延迟](#降低延迟)
+* 前提
+* 入门
+* 第一次使用Pencil绘制
+* 更加平滑的绘制
+* 倾斜Pencil
+  * 高度、方位与单位向量
+* 绘制阴影
+* 使用纹理
+* 使用方位角调整宽度
+* 玩玩透明度
+* 降低延迟
 
 
-##前提
+## 前提
 
 学习本教程，你需要：
 * 一台iPad Pro与Apple Pencil。在模拟器中无法测试Pencil，而且只能在iPad Pro上使用，老版的iPad上无法使用。听起来你有一个升级设备的理由了！
 * 最低Xcode 7.1与iOS 9.1
 * 掌握Core Graphics。你需要知道什么是context，如何创建它，怎么进行线条绘图。看看这个[the first part of our Core Graphics tutorial ](http://www.raywenderlich.com/90690/modern-core-graphics-with-swift-part-1)，会使你快速熟悉，那个app还会提醒你喝水:)
 
-##入门
+## 入门
 在这篇教程中，你将会创建一个叫做Scribble的app。这是一个可以让你使用响应式UI、压力灵敏度与阴影进行绘图的简易app。
 
 下载[Scribble](http://www.raywenderlich.com/wp-content/uploads/2016/12/Scribble-StarterV1.zip)。在你的iPad Pro上试试，用Pencil与手指进行绘图。
@@ -71,8 +71,7 @@ touchesMoved(_:withEvent:)将画板视图显示的图像替换为context中最�
 
 看到没？就是这么简单。
 
-<a name="first-pencil"></a>
-##第一次使用Pencil绘制
+## 第一次使用Pencil绘制
 
 就算在数字环境中，用你的手指绘画从未是一件优雅的事。使用Pencil来绘制就像传统的模拟方法，使用一个铅笔与纸张的基础UI。
 
@@ -81,26 +80,26 @@ touchesMoved(_:withEvent:)将画板视图显示的图像替换为context中最�
 Force的大小被记录在touch.force中。一个平均力度触摸的force是1.0，你需要用force乘以某个值来产生正确的线条宽度。更多详情请见下文
 
 打开CanvasView.swift在类的最前面添加如下常量:
-~~~~swift
+```swift
 private let forceSensitivity: CGFloat = 4.0
-~~~~
+```
 你可以调整这个forceSensitivity量，使线条宽度的变化对压力更敏感。
 
 找到lineWidthForDrawing(_:touch:)，这个方法用来计算线条的宽度。
 
 在return语句前添加如下代码:
-~~~~swift
+```swift
 if touch.force > 0 {
   lineWidth = touch.force * forceSensitivity
 }
-~~~~
+```
 这里你通过计算触摸点的force与forceSensitivity的乘积来得到线条宽度，不过记住这仅适用于Pencil。如果你使用手指的话，touch.force将会是0，你就不能改变线条宽度了。
 
 运行一下。使用Pencil画一些线条，注意线条是怎样随着你触摸屏幕的力度变化而变化的。
 
 ![force](http://www.raywenderlich.com/wp-content/uploads/2016/12/Force.png)
 
-##更加平滑的绘制
+## 更加平滑的绘制
 你会注意到当你绘制时，线条中会有一些尖锐的过渡点而不像自然的曲线那样。在以前，你也许会做一些像将线条转换为样条曲线这样的复杂工作才能得到适宜的图案，不过Pencil及其简化了这些工作。
 
 Apple告诉我们iPad Pro扫描触摸事件的速率是120次/秒，将Pencil在屏幕附近时扫描速率会翻倍达到240次/秒。
@@ -113,12 +112,12 @@ iPad Pro的刷新速率是60Hz。这意味着理论上识别出两个触摸点�
 
 为了解决这个问题，Apple提出了一个合并触摸(coalesced touches)的概念。捕捉那些丢失的触摸放进一个新的UIEvent数组中，你可以通过coalescedTouchesForTouch(_:)来访问。
 
-找到CanvasView.swift中的touchesMoved(_:withEvent:)，将:
-~~~~swift
+找到CanvasView.swift中的touchesMoved(\_:withEvent:)，将:
+```swift
 drawStroke(context, touch: touch)
-~~~~
+```
 替换为:
-~~~~swift
+```swift
 // 1
 var touches = [UITouch]()
  
@@ -136,7 +135,7 @@ print(touches.count)
 for touch in touches {
   drawStroke(context, touch: touch)
 }
-~~~~
+```
 让我们来逐段分析:
 1. 首先，你创建了一个新数组用来放置你需要处理的所有触摸点。
 2. 检查合并触摸，如果存在则将他们存放进新的数组
@@ -151,12 +150,12 @@ for touch in touches {
 
 你还会发现使用Pencil画的圆更圆，这就是由于iPad Pro感应到Pencil时会扫描出双倍的触摸点。
 
-<a name="tilt-pencil"></a>
-##倾斜Pencil
+
+## 倾斜Pencil
 现在你可以熟练的在app里作画了。然而如果你读过任何Pencil评测的话，你会记得讨论过它有阴影绘制的能力。用户们需要做的就是将笔倾斜，殊不知这种阴影是不会自动产生，取决于我们这些聪明的开发者如何利用代码去让它工作。
 
-<a name="height-azimuth-vector"></a>
-###高度、方位与单位向量
+
+### 高度、方位与单位向量
 在这节中，我会向你描述如何测量这种倾斜，你会在下一节添加简易的阴影效果。
 
 当你使用Pencil时，你可以在三维空间中旋转它。上下的方向被叫做高度(altitude),两侧被叫做方位(azimuth):
@@ -173,10 +172,10 @@ azimuthAngleInView(_:)与azimuthUnitVectorInView(_:)。根据你的情况选择�
 
 ![vector](https://cdn3.raywenderlich.com/wp-content/uploads/2016/12/AzimuthVector-361x320.png)
 
-在touchesMoved(_:withEvent:)的最上面，在guard语句之后添加:
-~~~~swift
+在touchesMoved(\_:withEvent:)的最上面，在guard语句之后添加:
+```swift
 print(touch.azimuthUnitVectorInView(self))
-~~~~
+```
 运行一下。
 
 在调试控制台中很难得到满足精度要求的值，不过向量大约在x方向为1，在y方向为0，即(1,0)。
@@ -185,7 +184,7 @@ print(touch.azimuthUnitVectorInView(self))
 
 注意x方向使用cos计算，y方向使用sin。比如说你像上图那样握笔，从你初始的水平方向逆时针旋转45度，单位向量为(cos(45),sin(-45))或(0.7071,-0.7071)。
 
->如果你不太了解向量，这是一个需要补充的知识。这个[教程](http://www.raywenderlich.com/90520/trigonometry-games-sprite-kit-swift-tutorial-part-1)会使你充分了解向量。
+> 如果你不太了解向量，这是一个需要补充的知识。这个[教程](http://www.raywenderlich.com/90520/trigonometry-games-sprite-kit-swift-tutorial-part-1)会使你充分了解向量。
 
 当你理解Pencil方向的改变与指示向量的关系后删掉最后的print语句。
 
@@ -200,45 +199,45 @@ print(touch.azimuthUnitVectorInView(self))
 
 ![shade](https://cdn3.raywenderlich.com/wp-content/uploads/2016/12/RealPencilShading.png)
 
-##使用纹理
+## 使用纹理
 首先要做的是改变线条的纹理使其看着像真正铅笔的阴影。为了达到这个效果我们使用开始工程资源中的PencilTexture图片。
 
 在CanvaView中添加这个属性：
-~~~~swift
+```swift
 private var pencilTexture = UIColor(patternImage: UIImage(named: "PencilTexture")!)
-~~~~
+```
 这里允许你使用pecilTexture作为颜色来绘制，而不是之前默认的红色。
 
-在drawStroke(_:touch:)中找到如下这行:
-~~~~swift
+在drawStroke(\_:touch:)中找到如下这行:
+```swift
 drawColor.setStroke()
-~~~~
+```
 改为:
-~~~~swift
+```swift
 pencilTexture.setStroke()
-~~~~
+```
 运行一下。嘿！你的线条更像一个铅笔的线条了:
 
 ![texture](https://cdn5.raywenderlich.com/wp-content/uploads/2016/12/Tree-373x320.png)
 
->在这篇教程中，你使用了一种很简单的方式来实现纹理。在功能齐全的艺术类app中的笔刷引擎是很复杂的，不过入门的话这样做足够了。
+> 在这篇教程中，你使用了一种很简单的方式来实现纹理。在功能齐全的艺术类app中的笔刷引擎是很复杂的，不过入门的话这样做足够了。
 
 检测一下Pencil倾斜的程度已经足够产生阴影，将这个常量添加进CanvasView中:
-~~~~swift
+```swift
 private let tiltThreshold = π/6  // 30º
-~~~~
+```
 如果你发现这个值没有起作用，你需要自己设置一个合适的值。
 
->π是一个方便的常量，在CanvasView.swift中定义为CGFloat(M_PI)
+> π是一个方便的常量，在CanvasView.swift中定义为CGFloat(M_PI)
 
->在图形编程中，使用弧度是很重要的而不是通过角度为中介进行转换。看看wiki的这个[图片](https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Unit_circle_angles_color.svg/2000px-Unit_circle_angles_color.svg.png)，了解一下角度与弧度间的关系。
+> 在图形编程中，使用弧度是很重要的而不是通过角度为中介进行转换。看看wiki的这个[图片](https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Unit_circle_angles_color.svg/2000px-Unit_circle_angles_color.svg.png)，了解一下角度与弧度间的关系。
 
-接下来，在drawStroke(_:touch:)方法中找到这一行:
-~~~~swift
+接下来，在drawStroke(\_:touch:)方法中找到这一行:
+```swift
 let lineWidth = lineWidthForDrawing(context, touch: touch)
-~~~~
+```
 改为:
-~~~~swift
+```swift
 var lineWidth:CGFloat
  
 if touch.altitudeAngle < tiltThreshold {
@@ -246,11 +245,11 @@ if touch.altitudeAngle < tiltThreshold {
 } else {
   lineWidth = lineWidthForDrawing(context, touch: touch)
 }
-~~~~
+```
 这里你添加了一个if用来检测Pencil倾斜的角度是否超过π/6或30度。如果未超过的话就会调用阴影绘制方法而不是线条绘制方法。
 
 现在将这个方法添加到CanvasView的底部:
-~~~~swift
+```swift
 private func lineWidthForShading(context: CGContext?, touch: UITouch) -> CGFloat {
  
   // 1
@@ -285,7 +284,7 @@ private func lineWidthForShading(context: CGContext?, touch: UITouch) -> CGFloat
  
   return lineWidth
 }
-~~~~
+```
 这儿的数学有点复杂，让我们来详细的分析一下:
 
 1. 保存前一触摸点与当前触摸点
@@ -296,11 +295,11 @@ private func lineWidthForShading(context: CGContext?, touch: UITouch) -> CGFloat
 6. 归一化角度，
 7. 计算线宽最大值与归一化角度的乘积得到正确的阴影宽度
 
->注意 不论何时使用Pencil，运用下面的公式都是很方便的:
+> 注意 不论何时使用Pencil，运用下面的公式都是很方便的:
 
->向量角:angle = atan2(opposite, adjacent)
+> 向量角:angle = atan2(opposite, adjacent)
 
->归一化:normal = (value - minValue) / (maxValue - minValue)
+> 归一化:normal = (value - minValue) / (maxValue - minValue)
 
 运行一下。像图中标示的那样握笔，不改变角度，画些阴影出来。
 
@@ -308,17 +307,17 @@ private func lineWidthForShading(context: CGContext?, touch: UITouch) -> CGFloat
 
 注意笔触的方向是如何改变线宽的。这些做虽然有点幼稚，不过你肯定会发现其中的潜力的。
 
-##使用方位角调整宽度
+## 使用方位角调整宽度
 还有一件事要做:当你使用铅笔以90度的角度进行绘制时，线宽会比其它倾斜的角度时都窄。不过当你使用Apple Pencil时宽度则不会改变。
 
 在CanvaView类的顶部添加这个常量:
-~~~~swift
+```swift
 private let minLineWidth: CGFloat = 5
-~~~~
+```
 它定义了一个阴影线条的最窄宽度，你可以根据自己的喜好调整这个数值。
 
 在lineWidthForShading(_:touch:)方法的底部，在return语句前添加以下语句:
-~~~~swift
+```swift
 // 1    
 let minAltitudeAngle: CGFloat = 0.25
 let maxAltitudeAngle = tiltThreshold
@@ -331,8 +330,8 @@ let normalizedAltitude = 1 - ((altitudeAngle - minAltitudeAngle) / (maxAltitudeA
  
 // 4
 lineWidth = lineWidth * normalizedAltitude + minLineWidth
-~~~~
->注意：确保你将这段代码添加进的是lineWidthForShading(_:touch:)方法，而不是lineWidthForDrawing(_:touch:)
+```
+> 注意：确保你将这段代码添加进的是lineWidthForShading(_:touch:)方法，而不是lineWidthForDrawing(_:touch:)
 
 这里有大量需要消化的东西，让我们捋一捋:
 
@@ -345,18 +344,18 @@ lineWidth = lineWidth * normalizedAltitude + minLineWidth
 
 ![amuth](http://www.raywenderlich.com/wp-content/uploads/2016/12/ShadeDraw.png)
 
-##玩玩透明度
+## 玩玩透明度
 本节中的最后一个任务是根据力道来改变纹理的透明度，使阴影看起来更加真实。
 
 在lineWidthForShading(_:touch:)方法中的return语句前添加以下代码:
-~~~~swift
+```swift
 let minForce: CGFloat = 0.0
 let maxForce: CGFloat = 5
  
 let normalizedAlpha = (touch.force - minForce) / (maxForce - minForce)
  
 CGContextSetAlpha(context, normalizedAlpha)
-~~~~
+```
 经过之前的代码，这个的作用就显而易见了。使用了force属性并且将其归一化在[0,1]范围内，接着使用这个值设置context的alpha值。
 
 运行一下。用不同的压力来绘制:
@@ -370,15 +369,15 @@ CGContextSetAlpha(context, normalizedAlpha)
 检测使用的是Pencil还是手指很简单，使用UITouch中的type属性即可。
 
 在CanvasView的顶部，添加一个橡皮擦颜色的属性。你将会在画布视图上使用背景色进行绘制，这会出现一个橡皮擦的效果。是不是很聪明?:
-~~~~swift
+```swift
 private var eraserColor: UIColor {
   return backgroundColor ?? UIColor.whiteColor()
 }
-~~~~
+```
 这里你将橡皮擦颜色设为了视图的背景色，如果它非空的话。
 
-接下来，找到drawStroke(_:touch:)方法中的如下代码:
-~~~~swift
+接下来，找到drawStroke(\_:touch:)方法中的如下代码:
+```swift
 if touch.altitudeAngle < tiltThreshold {
   lineWidth = lineWidthForShading(context, touch: touch)
 } else {
@@ -386,9 +385,9 @@ if touch.altitudeAngle < tiltThreshold {
 }
  
 pencilTexture.setStroke()
-~~~~
+```
 使用如下代码替换:
-~~~~swift
+```swift
 if touch.type == .Stylus {
   if touch.altitudeAngle < tiltThreshold {
     lineWidth = lineWidthForShading(context, touch: touch)
@@ -400,7 +399,7 @@ if touch.type == .Stylus {
   lineWidth = 20
   eraserColor.setStroke()
 }
-~~~~
+```
 这里添加了一个if用来检测是Pencil还是手指，决定之后是改变线宽还是使用橡皮擦颜色绘制。
 
 运行一下。现在你可以用你的手指来清理那些不整齐的边界或任何其他东西。
@@ -410,20 +409,20 @@ if touch.type == .Stylus {
 在iOS8之后，UITouch中加入了一个叫做majorRadius的属性，如它的名字所示，保存触摸时的尺寸。
 
 找到前面你添加的这段代码:
-~~~~swift
+```swift
 lineWidth = 20
-~~~~
+```
 替换为这个:
-~~~~swift
+```swift
 lineWidth = touch.majorRadius / 2
-~~~~
+```
 运行一下。绘制一片阴影区域，然后用手指的指尖与指面进行擦拭，观察粗细的变化。
 
 ![majorRadius](http://www.raywenderlich.com/wp-content/uploads/2016/12/EraserForce.png)
 
 当你使用优雅的Apple Pencil画图后会发现用手指绘制是多么的笨拙与痛苦。
 
-##降低延迟
+## 降低延迟
 
 你也许会认为线条的绘制会紧随着笔尖的滑动。并不完全是那样，在触摸与线条渲染之间是有延时的。对此Apple使用了一个技巧:触摸预测
 
