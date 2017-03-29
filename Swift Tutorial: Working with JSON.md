@@ -4,8 +4,8 @@
 ***
 
 >* 原文链接 : [Swift Tutorial: Working with JSON](https://www.raywenderlich.com/120442/swift-json-tutorial)
-* 原文作者 : [Attila Hegedüs](https://www.raywenderlich.com/u/cynicalme)
-* 译者 : [yrq110](https://github.com/yrq110)
+>* 原文作者 : [Attila Hegedüs](https://www.raywenderlich.com/u/cynicalme)
+>* 译者 : [yrq110](https://github.com/yrq110)
 
 ***
 
