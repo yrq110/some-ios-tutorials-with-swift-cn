@@ -1,17 +1,17 @@
-#Sprite Kit Swift 2 Tutorial for Beginners
-##Sprite Kit初学指南
+# Sprite Kit Swift 2 Tutorial for Beginners
+## Sprite Kit初学指南
 
 ***
 
->* 原文链接 : [Sprite Kit Swift 2 Tutorial for Beginners](https://www.raywenderlich.com/119815/sprite-kit-swift-2-tutorial-for-beginners)
-* 原文作者 : [Ray Wenderlich](https://www.raywenderlich.com/u/rwenderlich)
-* 译者 : [yrq110](https://github.com/yrq110)
+> * 原文链接 : [Sprite Kit Swift 2 Tutorial for Beginners](https://www.raywenderlich.com/119815/sprite-kit-swift-2-tutorial-for-beginners)
+> * 原文作者 : [Ray Wenderlich](https://www.raywenderlich.com/u/rwenderlich)
+> * 译者 : [yrq110](https://github.com/yrq110)
 
 ***
 
 ![](http://www.raywenderlich.com/wp-content/uploads/2015/10/iOS9_feast_SpriteKit.jpg)
 
->注意:本文使用的是swift2，并非最新版本。
+> 注意:本文使用的是swift2，并非最新版本。
 
 就像蝙蝠侠与罗宾、超人与路易斯霍恩一样，Sprite Kit与Swift是一对惊艳的组合:
 * **Sprite Kit**是一种非常棒的写iOS游戏的方法，它易学、功能强大，并且由苹果全面支持。
@@ -20,45 +20,41 @@
 在这篇教程中，你将学会如何用苹果的2D游戏框架-Sprite Kit去写一款简单的2D游戏，使用Swift语言！
 
 你可以按顺序看也可以直接跳到最后的演示项目，那里会出现一些忍者。
->注意:这篇教程在我心中有特殊的地位，它的初版是我在这个站上发布的第一篇教程，使用Cocos2D与Objective-C所编写的游戏。哎呀嘛呀，时过境迁啊！
+> 注意:这篇教程在我心中有特殊的地位，它的初版是我在这个站上发布的第一篇教程，使用Cocos2D与Objective-C所编写的游戏。哎呀嘛呀，时过境迁啊！
 
 **目录**
-* [Sprite Kit VS Unity](#s-vs-u)
-  * [Sprite Kit的优点](#s-ad)
-  * [Unity的优点](#u-ad)
-* [我该选哪个?](#how-choose)
-* [Hello, Sprite Kit!](#hello)
-* [初始设置](#初始设置)
-* [添加一个精灵](#添加一个精灵)
-* [移动怪物](#移动怪物)
-* [射出子弹](#射出子弹)
-* [碰撞检测与物理效果:概述](#co-de)
-* [碰撞检测与物理效果:实现](#co-ac)
-* [完成触摸](#完成触摸)
-* [哥们！游戏结束！](#game-over)
+* Sprite Kit VS Unity
+  * Sprite Kit的优点
+  * Unity的优点
+* 我该选哪个?
+* Hello, Sprite Kit!
+* 初始设置
+* 添加一个精灵
+* 移动怪物
+* 射出子弹
+* 碰撞检测与物理效果:概述
+* 碰撞检测与物理效果:实现
+* 完成触摸
+* 哥们！游戏结束！
 
-<a name="s-vs-u"></a>
-##Sprite Kit VS Unity
+## Sprite Kit VS Unity
 除了Sprite Kit外最火的游戏框架当属Unity。Unity最初是3D引擎，不过现在也全面支持2D了。
 
 所以在你开始之前，我推荐你考虑一下Sprite Kit与Unity，看看哪个更适合你的游戏。
 
-<a name="s-ad"></a>
-###Sprite Kit的优点:
+### Sprite Kit的优点:
 * **iOS内置**  不需要下载任何的库或者外部依赖。 你可以在其中直接使用其他iOS API，像iAd、In-App Purchases等等。without having to rely on extra plugins.
 * **可利用你所掌握的技能**  如果你懂iOS与Swift开发的话，就可以非常快的上手。
 * **苹果出品**  这会让你放下心来，因为它将被所有的苹果新产品所支持。比如说你可以不需要挂载地使用相同的Sprite Kit代码在iOS，OS X与tvOS上运行。
 * **免费**  可能这是对独立开发者来说最好的原因！ 无需任何费用就可以使用Sprite Kit得所有功能。Unity虽然有免费版本不过并没有专业版本的所有特性(比如说如果你想修改有Unity标志的启动界面的话就需要升级版本)。
 
-<a name="u-ad"></a>
-###Unity的优点:
+### Unity的优点:
 * **跨平台**  这是一个重点。如果你使用Sprite Kit你将会被局限在苹果生态中，使用Unity可以轻松的在安卓、Windows和更多的平台上部署。
 * **虚拟场景设计**  在Unity中场景的布局与编辑视图层是非常简单的事情，而且可以通过点击一个按钮就能进行游戏的实时测试。Sprite Kit有一个基础的场景编辑器，跟Unity提供的比起来真的是很“基础”。
 * **资源包商店**  Unity有一个内置的资源包商店，你可以在那里为你的游戏购买各种各样的组件。这些组件有时可以省掉大半的开发时间！
 * **更强大**  一般来说，Unity拥有比Sprite Kit / Scene Kit更多的特性与功能。
 
-<a name="how-choose"></a>
-##我该选哪个?
+## 我该选哪个?
 看了这么多你可能就想，“好吧，俺该选哪个2D框架？”
 
 答案取决于你的目标是什么。这里是我的两个选择:
@@ -69,8 +65,7 @@ If you think Unity is for you, check out some of our Unity written tutorials or 
 
 若不是，就开始学习Sprite Kit吧!
 
-<a name="hello"></a>
-##Hello, Sprite Kit!
+## Hello, Sprite Kit!
 从一个简单的Hello World项目开始，使用Xcode7中的Sprite Kit游戏模板来运行。
 
 打开Xcode，选择File\New\Project，选择iOS\Application\Game模板，然后点击Next:
@@ -89,7 +84,8 @@ Sprite Kit由场景的概念所组成，就像一个游戏中显示的层级与�
 如果你看一眼项目会发现模板已经为你创建好了一个默认的场景 - GameScene。打开GameScene.swift你会看到包含了一段在屏幕中显示文本框的代码，还有一个当你点击就会添加的旋转宇宙飞船。
 
 在这篇教程中主要在GameScene上进行工作。在开始前你需要进行一些调整使你的游戏可以横屏运行而不是竖屏。
-##初始设置
+
+## 初始设置
 这个模板对于你来说有两个问题。第一，游戏需要被设置为横屏而它是竖屏的。第二，它正在使用Sprite Kit的场景编辑器，你在这篇教程中并不需要。来让我们解决这些问题。
 
 第一，在工程导航栏中点击SpriteKitSimpleGame，打开target setting，选择SpriteKitSimpleGame target。然后在Deployment Info部分，去掉Portrait使仅有Landscape Left and Landscape Right被选中，像下面这样:
@@ -99,7 +95,7 @@ Sprite Kit由场景的概念所组成，就像一个游戏中显示的层级与�
 第二，删除GameScene.sks选择送到废纸篓。这个文件允许你布局精灵与可视场景的其他组件，不过对于我们这个游戏可以通过代码轻松创建所以不需要这个。
 
 然后，打开GameViewController.swift用如下代码替换内容:
-~~~~swift
+```swift
 import UIKit
 import SpriteKit
  
@@ -120,15 +116,15 @@ class GameViewController: UIViewController {
     return true
   }
 }
-~~~~
+```
 GameViewController是一个UIViewController类, 它的一个根视图是SKView, 是一个包含Sprite Kit场景的视图.
 
 这里你实现了viewDidLoad()去创建一个启动时的GameScene，尺寸与视图本身相同。这就是最初的设置，现在屏幕上有些东西了！
-##添加一个精灵
+## 添加一个精灵
 首先下载这个功能的资源文件拖进你的Xcode项目中。确保Copy items into destination group’s folder (if needed)这一项被选中，并且是在你SpriteKitSimpleGame target被选中的情况下。
 
 下面打开GameScene.swift用如下代码替换内容:
-~~~~swift
+```swift
 import SpriteKit
  
 class GameScene: SKScene {
@@ -145,7 +141,7 @@ class GameScene: SKScene {
     addChild(player)
   }
 }
-~~~~
+```
 让我们来逐步分析。
 
 这里你为player(忍者)定义了一个私有常量，一个精灵的例子。如你所见创建一个精灵挺简单的，输入需要使用的图片名即可。
@@ -159,11 +155,11 @@ class GameScene: SKScene {
 构建并运行下。女士们先生们，忍者闯进来了！
 ![](http://www.raywenderlich.com/wp-content/uploads/2015/10/005_Ninja-480x270.png)
 
-##移动怪物
+## 移动怪物
 接下来你要在场景中添加一些怪物与你的忍者战斗。为了使事情变得有趣你需要移动这些怪物，否则的话就太简单了！让我来在屏幕右侧创建怪物，然后设定一个动作告诉它们向左移动。
 
 在GameScene.swift中添加如下方法:
-~~~~swift
+```swift
 func random() -> CGFloat {
   return CGFloat(Float(arc4random()) / 0xFFFFFFFF)
 }
@@ -196,7 +192,7 @@ func addMonster() {
   monster.runAction(SKAction.sequence([actionMove, actionMoveDone]))
  
 }
-~~~~
+```
 这里我会啰嗦一点，为了让事情更好理解。在第一部分应该将场景做成我们之前讨论的那样，对于你想创建对象的位置做一些计算，设置对象的位置，然后将其添加到场景中，像之前添加player那样。
 
 这里的新要素就是添加动作。Sprite Kit提供了大量的内置动作，可以帮助你随时改变精灵的状态，比如移动动作、旋转动作、渐变动作、动画动作等等。这里你可以看到怪物的三种动作:
@@ -204,25 +200,25 @@ func addMonster() {
 * **SKAction.removeFromParent()**: Sprite Kit有一个方便的动作就是从父类中移除一个节点，从场景中删除。当场景中的怪物不可见时你会使用这个动作去移除它，这时很重要的因为否则你会一直添加怪物直到消耗掉所有内存资源。
 * **SKAction.sequence(_:)**: 队列动作允许你添加一个动作队列，依次执行。这样你就可以先执行"移动"动作，完成后执行"从父类移除"动作。
 
->注意:这块代码中包含了一些辅助方法使用arc4random()产生一个范围内的随机数，满足了在这个游戏中的随机数产生需求，如果你想将这块更完善的话看看iOS 9中新的GameplayKit的随机数API。
+> 注意:这块代码中包含了一些辅助方法使用arc4random()产生一个范围内的随机数，满足了在这个游戏中的随机数产生需求，如果你想将这块更完善的话看看iOS 9中新的GameplayKit的随机数API。
 
 还差最后一件事，你需要调用创建怪物的方法！为了好玩，我们来不断地一直产生怪物。
 
 在didMoveToView()的最后添加如下代码:
-~~~~
+```swift
 runAction(SKAction.repeatActionForever(
   SKAction.sequence([
     SKAction.runBlock(addMonster),
     SKAction.waitForDuration(1.0)
   ])
 ))
-~~~~
+```
 这里你运行了一个动作队列，调用了一块block代码，然后等待一秒。一直重复执行这个队列。
 
 搞定了！构建并运行，现在你应该会看到一些怪物在屏幕上活蹦乱跳了:
 ![](http://www.raywenderlich.com/wp-content/uploads/2015/10/006_Monsters-480x270.png)
 
-##射出子弹
+## 射出子弹
 在这里需要忍者作出一些动作 - 来添加射击功能吧！可以使用多种方式来实现射击，在这个游戏中需要当用户点击屏幕时进行射击动作，在点击的方向射出一个子弹。
 
 我想用一个“移动”动作来实现这个功能，在这之前需要你做一些数学上的工作。
@@ -237,7 +233,7 @@ runAction(SKAction.repeatActionForever(
 如果你有一些基本数学向量的方法（不如添加与减去向量）来调用的话对计算来说会很有帮助。然后Sprite Kit默认没有这些方法你需要自己去编写。
 
 幸运的是由于方便的Swift操作符加载这些也是很容易实现的。在你的文件头添加这些函数，在GameScene类之前:
-~~~~swift
+```swift
 func + (left: CGPoint, right: CGPoint) -> CGPoint {
   return CGPoint(x: left.x + right.x, y: left.y + right.y)
 }
@@ -269,11 +265,11 @@ extension CGPoint {
     return self / length()
   }
 }
-~~~~
+```
 这些是典型数学向量函数的实现。如果你对向量不太熟悉，很困惑发生了什么，来看看数学向量的[快速入门](http://www.mathsisfun.com/algebra/vectors.html)。
 
 下一步在文件中添加一个新方法:
-~~~~swift
+```swift
 override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
  
   // 1 - Choose one of the touches to work with
@@ -310,7 +306,7 @@ override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
   projectile.runAction(SKAction.sequence([actionMove, actionMoveDone]))
  
 }
-~~~~
+```
 这儿包含了很多东西，让我们来逐步分析:
 
 1. SpriteKit中一个很酷的事情就是它有一些UITouch的方法，例如locationInNode(_:)与previousLocationInNode(_:)，使你可以通过SKNode的坐标系统获得一个触摸点的坐标。在这里你使用它得到屏幕坐标系统中触摸点的位置。
@@ -327,8 +323,7 @@ override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
 
 ![](https://cdn5.raywenderlich.com/wp-content/uploads/2015/10/007_Shoot-480x270.png)
 
-<a name="co-de"></a>
-##碰撞检测与物理效果:概述
+## 碰撞检测与物理效果:概述
 
 现在你可以将飞镖扔到任何地方，不过你的忍者应该想要击落一些东西，所以让我们来加一些代码来检测子弹与目标的碰撞吧。
 
@@ -343,41 +338,40 @@ Sprite Kit有一个优点就是自带物理引擎，不仅擅长模拟真实运�
 
 现在你了解了战斗计划，是时候添加进动作了！
 
-<a name="co-ac"></a>
-##碰撞检测与物理效果:实现
+## 碰撞检测与物理效果:实现
 在GameScene.swift的头部添加如下结构体:
-~~~~swift
+```swift
 struct PhysicsCategory {
   static let None      : UInt32 = 0
   static let All       : UInt32 = UInt32.max
   static let Monster   : UInt32 = 0b1       // 1
   static let Projectile: UInt32 = 0b10      // 2
 }
-~~~~
+```
 设置一些物理类型的常量。
 
->注意:你也许奇怪这些语句有啥用。注意Sprite Kit中的类别仅仅是一个32位的整型数，相当于掩码。用32位整型数表示类别是一个很美妙的方法。这里你设置第一位表示一个怪物，下一位表示一个子弹。
+> 注意:你也许奇怪这些语句有啥用。注意Sprite Kit中的类别仅仅是一个32位的整型数，相当于掩码。用32位整型数表示类别是一个很美妙的方法。这里你设置第一位表示一个怪物，下一位表示一个子弹。
 
 下面让GameScene实现**SKPhysicsContactDelegate**协议:
-~~~~swift
+```swift
 class GameScene: SKScene, SKPhysicsContactDelegate {
-~~~~
+```
 Then inside  add these lines after adding the player to the scene:
-在**didMoveToView(_:)**方法中添加player到视图的代码后添加如下行:
-~~~~swift
+在**didMoveToView(\_:)**方法中添加player到视图的代码后添加如下行:
+```swift
 physicsWorld.gravity = CGVectorMake(0, 0)
 physicsWorld.contactDelegate = self
-~~~~
+```
 它设置了一个零重力场，并且设置了场景的委托，用来监测两个物理体的碰撞。
 
 在**addMonster()**方法中，在创建怪物精灵的代码后面添加如下行:
-~~~~swift
+```swift
 monster.physicsBody = SKPhysicsBody(rectangleOfSize: monster.size) // 1
 monster.physicsBody?.dynamic = true // 2
 monster.physicsBody?.categoryBitMask = PhysicsCategory.Monster // 3
 monster.physicsBody?.contactTestBitMask = PhysicsCategory.Projectile // 4
 monster.physicsBody?.collisionBitMask = PhysicsCategory.None // 5
-~~~~
+```
 让我们来逐行分析下:
 
 1. 为精灵创建一个物理体。在这种情况下，物理体的形状被定义为与精灵相同尺寸的矩形，因为这是个合适的怪物近似形状。
@@ -386,29 +380,29 @@ monster.physicsBody?.collisionBitMask = PhysicsCategory.None // 5
 4. contactTestBitMask的作用是设置当与另一个目标接触时需要提醒的目标类别，这里设置成子弹。
 5. collisionBitMask的作用是设置与另一个物体接触时需要用物理引擎处理做出响应(比方说反弹)的类别。 你不会想让怪物与子弹互相反弹的，在这个游戏中可以让它们穿过彼此，因此设为空。
 
-接下来在touchesEnded(_:withEvent:)中添加一些类似的代码，在设置子弹位置的代码后:
-~~~~swift
+接下来在touchesEnded(\_:withEvent:)中添加一些类似的代码，在设置子弹位置的代码后:
+```swift
 projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width/2)
 projectile.physicsBody?.dynamic = true
 projectile.physicsBody?.categoryBitMask = PhysicsCategory.Projectile
 projectile.physicsBody?.contactTestBitMask = PhysicsCategory.Monster
 projectile.physicsBody?.collisionBitMask = PhysicsCategory.None
 projectile.physicsBody?.usesPreciseCollisionDetection = true
-~~~~
+```
 试试看，自己能否能否理解每一行代码，如果不能再去看看上面的解析吧。
 
 接下来，添加一个当子弹与怪物碰撞时调用的方法。注意它不会自动调用，你如果在后面调用它。
-~~~~swift
+```swift
 func projectileDidCollideWithMonster(projectile:SKSpriteNode, monster:SKSpriteNode) {
   print("Hit")
   projectile.removeFromParent()
   monster.removeFromParent()
 }
-~~~~
+```
 你要做的就是当子弹与怪物碰撞时将它们从场景中移除。挺简单的，不是吗？
 
 现在是时候来实现接触的代理方法了，在文件中添加如下的新方法:
-~~~~swift
+```swift
 func didBeginContact(contact: SKPhysicsContact) {
  
   // 1
@@ -429,7 +423,7 @@ func didBeginContact(contact: SKPhysicsContact) {
   }
  
 }
-~~~~
+```
 在之前你在场景中设置了物理场的接触委托，这个方法会在两个物理体碰撞时被调用。
 
 在这个方法中有两部分：
@@ -438,37 +432,36 @@ func didBeginContact(contact: SKPhysicsContact) {
 2. 在最后检查一下两个碰撞体是否是子弹和怪物，如果是的话调用你之前写的那个方法。
 构建并运行一下，现在当你的子弹碰到目标时会一起消失！
 
-##完成触摸
+## 完成触摸
 
 你离一个可运行(不过还是很简陋)的游戏已经很近了。需要添加一些效果与音乐(游戏总要有点声音吧！)还有一些游戏逻辑。
 
 在项目中已经有一些现成的很酷的背景乐与一个很棒的射击音效，你只需要播放它们即可！
 
 在didMoveToView(_:)的最后添加如下代码:
-~~~~swift
+```swift
 let backgroundMusic = SKAudioNode(fileNamed: "background-music-aac.caf")
 backgroundMusic.autoplayLooped = true
 addChild(backgroundMusic)
-~~~~
+```
 这个使用了SKAudioNode —— 一个iOS 9中的新类，在你的游戏中播放与循环背景乐。
 
-在touchesEnded(_:withEvent:)中添加如下这行来添加音效:
-~~~~swift
+在touchesEnded(\_:withEvent:)中添加如下这行来添加音效:
+```swift
 runAction(SKAction.playSoundFileNamed("pew-pew-lei.caf", waitForCompletion: false))
-~~~~
+```
 非常方便，不是吗？你可以用一行来播放音效！
 
 构建并运行，享受绝妙的旋律吧！
 
->注意：如果你没听到背景乐，试试在真机上测试。
+> 注意：如果你没听到背景乐，试试在真机上测试。
 
-<a name="game-over"></a>
-##哥们！游戏结束！
+## 哥们！游戏结束！
 
 现在让我们来创建一个新场景，用来显示“你赢了”或“你输了”。创建一个名为GameOverScene的新swift文件。
 
 用如下代码替代GameOverScene.swift中的内容：
-~~~~swift
+```swift
 import Foundation
 import SpriteKit
  
@@ -510,7 +503,7 @@ class GameOverScene: SKScene {
     fatalError("init(coder:) has not been implemented")
   }
 }
-~~~~
+```
 这里有几个需要注意的点：
 
 1. 设置背景色为白色，像之前你对主场景做的那样。
@@ -523,29 +516,29 @@ class GameOverScene: SKScene {
 到现在为止还算顺利，还需要设置加载游戏时的主要场景。
 
 返回GameScene.swift中，在addMonster()方法中, 用下面的代码替换最后一行的怪物动作：
-~~~~swift
+```swift
 let loseAction = SKAction.runBlock() {
   let reveal = SKTransition.flipHorizontalWithDuration(0.5)
   let gameOverScene = GameOverScene(size: self.size, won: false)
   self.view?.presentScene(gameOverScene, transition: reveal)
 }
 monster.runAction(SKAction.sequence([actionMove, loseAction, actionMoveDone]))
-~~~~
+```
 这里创建了一个“失败动作”，当一个怪物飞出屏幕时会显示game over画面。看看你是否理解每一行，如果没有请看看之前的解析。
 
 现在你应该处理一下胜利时的情况，不要对你的玩家太残酷！在GameScene的顶部添加一个新属性，在player的声明之后：
-~~~~swift
+```swift
 var monstersDestroyed = 0
-~~~~
-在projectile(_:didCollideWithMonster:)上添加如下代码：
-~~~~swift
+```
+在projectile(\_:didCollideWithMonster:)上添加如下代码：
+```swift
 monstersDestroyed++
 if (monstersDestroyed > 30) {
   let reveal = SKTransition.flipHorizontalWithDuration(0.5)
   let gameOverScene = GameOverScene(size: self.size, won: true)
   self.view?.presentScene(gameOverScene, transition: reveal)
 }
-~~~~
+```
 直接运行一下，现在有了胜利与失败的条件并能在适当的时候看到game over画面了。
 
 ![](http://www.raywenderlich.com/wp-content/uploads/2015/10/008_YouWin.png)
