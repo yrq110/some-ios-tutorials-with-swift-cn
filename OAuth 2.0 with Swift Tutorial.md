@@ -1,11 +1,11 @@
-#OAuth 2.0 with Swift Tutorial
-##Swift的OAuth 2.0使用指南
+# OAuth 2.0 with Swift Tutorial
+## Swift的OAuth 2.0使用指南
 
 ***
 
->* 原文链接 : [OAuth 2.0 with Swift Tutorial](https://www.raywenderlich.com/99431/oauth-2-with-swift-tutorial)
-* 原文作者 : [Corinne Krych](https://www.raywenderlich.com/u/ckrych)
-* 译者 : [yrq110](https://github.com/yrq110)
+> * 原文链接 : [OAuth 2.0 with Swift Tutorial](https://www.raywenderlich.com/99431/oauth-2-with-swift-tutorial)
+> * 原文作者 : [Corinne Krych](https://www.raywenderlich.com/u/ckrych)
+> * 译者 : [yrq110](https://github.com/yrq110)
 
 ***
 
@@ -17,23 +17,23 @@
 在这篇教程中，你会使用一个名为Incognito的分享型app来学习如何使用[AeroGear OAuth2](https://github.com/aerogear/aerogear-ios-oauth2), [AFOAuth2Manager](https://github.com/AFNetworking/AFOAuth2Manager)和[OAuthSwift](https://github.com/dongri/OAuthSwift)这些开源OAuth2库来将你的资源分享到GoogleDrive上。
 
 **目录**
-* [入门](#入门)
-* [讲讲为何需要OAuth2](#why-need)
-* [授权之舞](#授权之舞)
-  * [Step 0: 注册](#step-0)
-  * [Step 1: 授权](#step-1)
-  * [Step 2: 交换授权码与令牌](#step-2)
-  * [Step 3: 取得资源](#step-3)
-* [注册OAuth2提供商](#regis)
-* [使用AeroGear与外部浏览器授权](#aerogear)
-* [配置URL Scheme](#url-scheme)
-* [使用嵌入的Web视图](#web-view)
-* [使用嵌入web视图的OAuthSwift](#oauthswift)
-* [配置URL](#con-url)
-* [显示UIWebView](#display-webview)
-* [使用AFOAuth2Manager授权](#afoauthma)
+* 入门
+* 讲讲为何需要OAuth2
+* 授权之舞
+  * Step 0: 注册
+  * Step 1: 授权
+  * Step 2: 交换授权码与令牌
+  * Step 3: 取得资源
+* 注册OAuth2提供商
+* 使用AeroGear与外部浏览器授权
+* 配置URL Scheme
+* 使用嵌入的Web视图
+* 使用嵌入web视图的OAuthSwift
+* 配置URL
+* 显示UIWebView
+* 使用AFOAuth2Manager授权
 
-##入门
+## 入门
 
 [下载Incognito开始工程](http://www.raywenderlich.com/wp-content/uploads/2015/04/Incognito.aerogear_start.zip)。开始工程使用CocoaPods来安装AeroGear与其他你需要的一切，包括生成pods与xcworkspace目录。
 
@@ -53,8 +53,7 @@
 
 让我来给你讲个故事吧，而非让你看RFC6749 OAuth2的规范，那样太无聊了。
 
-<a name="why-need"></a>
-##讲讲为何需要OAuth2
+## 讲讲为何需要OAuth2
 周一的清晨，我们的开发小哥Bob在咖啡机前碰到了友好的极客Alice。Bob拿着一大摞文件，好像挺忙的样子，他的老板想让他研究一下OAuth2规范并加入到Incognito应用中。
 
 当然，如果你把俩开发者放到一个咖啡厅中他们会开始聊聊比较极客的话题。Bob问Alice：
@@ -84,17 +83,15 @@ OAuth2规范使用授权流(grant flows)来描述交互行为。
 
 在这篇教程中会使用已有的Google Drive账号，并上传Incognito自拍。这种情况下使用3-legged认证比较好。
 
-##授权之舞
+## 授权之舞
 虽然使用开源库时会隐藏那些OAuth2协议中棘手的细节，不过了解一下基本的工作原理会有助于你更好的进行配置。
 
 这里是授权认证之舞的步骤：
 
-<a name="step-0"></a>
-###Step 0: 注册
+### Step 0: 注册
 app需要注册需要访问的服务。对你来说，Incognito需要注册Google Drive。别担心，之后会介绍具体怎么做。
 
-<a name="step-1"></a>
-###Step 1: 授权
+### Step 1: 授权
 舞蹈开始时Incognito会给第三方服务端发一个请求的授权码，包含以下信息：
 * 客户端ID: 在注册服务阶段提供。定义与服务会话的app。
 * 客户端密钥: 在注册服务阶段提供。一个服务与app之前的密钥，打包进了app的二进制文件。
@@ -105,18 +102,15 @@ app之后会切换到浏览器界面。一旦用户登入，则Google授权服�
 
 ![](https://cdn2.raywenderlich.com/wp-content/uploads/2015/05/oauth2-explained-3.png)
 
-<a name="step-2"></a>
-###Step 2: 交换授权码与令牌
+### Step 2: 交换授权码与令牌
 授权码是临时的，因此OAuth2库需要用临时码交换得到一个合适的访问令牌，是随机生成的。
 
-<a name="step-3"></a>
-###Step 3: 取得资源
+### Step 3: 取得资源
 使用访问令牌，Incognito可以访问服务器上受保护的资源-用户所授权访问的资源，可以自由的上传图片。
 
 准备好实践了吗？首先，你需要注册OAuth2的提供商-Google。
 
-<a name="regis"></a>
-##注册OAuth2提供商
+## 注册OAuth2提供商
 如果你没有Google账户，现在就去创建一个吧。我们会等你:]
 
 使用你的浏览器打开http://console.developer.google.com 进行操作
@@ -150,25 +144,24 @@ app之后会切换到浏览器界面。一旦用户登入，则Google授权服�
 
 现在成功注册了Google服务，可以开始使用第一个OAuth2库来实现OAuth2了：依赖外部浏览器的AeroGear。
 
-<a name="aerogear"></a>
-##使用AeroGear与外部浏览器授权
+## 使用AeroGear与外部浏览器授权
 打开ViewController.swift在文件头部添加如下代码：
-````swift
+```swift
 import AeroGearHttp
 import AeroGearOAuth2
-````
+```
 现在，在ViewController类中添加实例变量：
-````swift
+```swift
 var http: Http!
-````
+```
 在viewDidLoad()中初始化它：
-````swift
+```swift
 self.http = Http()
-````
+```
 使用AerGearHttp库中的这个Http的实例来执行HTTP的请求。
 
 在ViewController.swift中找到空的share(:)方法并添加如下代码：
-````swift
+```swift
 let googleConfig = GoogleConfig(
 clientId: "YOUR_GOOGLE_CLIENT_ID",                               // [1] Define a Google configuration
 scopes:["https://www.googleapis.com/auth/drive"])                // [2] Specify scope
@@ -192,7 +185,7 @@ self.http.POST("https://www.googleapis.com/upload/drive/v2/files",   // [6] Uplo
     self.presentAlert("Success", message: "Successfully uploaded!")
   }
 })
-````
+```
 上面的方法进行了如下操作：
 
 1. 需要使用你的Google控制台中的客户端ID来替换上面代码中的YOUR_GOOGLE_CLIENT_ID，进行正确的配置。
@@ -201,11 +194,11 @@ self.http.POST("https://www.googleapis.com/upload/drive/v2/files",   // [6] Uplo
 4. 接着将OAuth2模块导入连接着授权模块的HTTP对象中。
 5. 创建一个包含多种数据的对象来封装你想发送给服务器的信息。
 6. 最后调用一个简单的HTTP请求上传图片，POST()会检查OAuth2模块是否加进了HTTP中，并产生一个回调：
-    * 若没有访问令牌存在则开始授权码的授权
-    * 若需要则重新生成访问令牌
-    * 若所有令牌都可用，则仅仅调用POST指令
+  * 若没有访问令牌存在则开始授权码的授权
+  * 若需要则重新生成访问令牌
+  * 若所有令牌都可用，则仅仅调用POST指令
 
->注意：想了解有关AeroGear OAuth2的信息的话可以看看AeroGear的[在线文档](https://aerogear.org/docs/guides/aerogear-ios-2.X/Authorization/)与[API手册](https://aerogear.org/docs/specs/aerogear-ios-oauth2/)，或者看看Pods中的源代码。
+> 注意：想了解有关AeroGear OAuth2的信息的话可以看看AeroGear的[在线文档](https://aerogear.org/docs/guides/aerogear-ios-2.X/Authorization/)与[API手册](https://aerogear.org/docs/specs/aerogear-ios-oauth2/)，或者看看Pods中的源代码。
 
 构建并运行app，选择一张图片，添加一些覆盖物，然后点击分享按钮，会提示你输入Google证书，如果你已经登录过了，你的整数会存放在缓存中。重定向到认证界面，点击接受，然后...
 
@@ -216,13 +209,12 @@ Boom沙卡拉卡 你收到了一条Safari无法打开页面的错误信息。发
 当你点击接受后，Google OAuth站点会重定向到com.raywenderlich.Incognito://[some url]。因此需要设置app使其能打开这个
 URL scheme。
 
->注意：Safari将你的授权响应信息存放在了模拟器的cookie中，所以别立即就重新授权，为了清空模拟器的这些cookie需要重置iOS模拟器的内容与设置。
+> 注意：Safari将你的授权响应信息存放在了模拟器的cookie中，所以别立即就重新授权，为了清空模拟器的这些cookie需要重置iOS模拟器的内容与设置。
 
-<a name="url-scheme"></a>
-##配置URL Scheme
+## 配置URL Scheme
 允许你的用户重定向回到Incognito中，你需要自定义一个关联的URL scheme。
 在Info.plist.文件中点击右键选择Open As\Source Code，在plist的底部，</dict>标签的右边加入如下代码：
-````
+```
 <key>CFBundleURLTypes</key>
 <array>
     <dict>
@@ -232,7 +224,7 @@ URL scheme。
         </array>
     </dict>
 </array>
-````
+```
 scheme是一个URL中的第一个部分，在网页中的scheme通常是http或https。iOS app可以自定义它们自己的 URL schemes，比如com.raywenderlich.Incognito://doStuff，重点就是自定义一个独特的scheme使其与设备中安装的其他app有所区别。
 
 在OAuth2之舞中使用你自定义的URL scheme根据请求来返回到app中。自定义Scheme中包含一些参数，在这里，授权码被包含在code参数中。 OAuth2库会从URL中提取授权码然后在下一次请求时与访问令牌进行交换。
@@ -240,11 +232,11 @@ scheme是一个URL中的第一个部分，在网页中的scheme通常是http或h
 你需要在Incognito的AppDelegate类中实现一个基于自定义URL scheme的响应方法。
 
 打开AppDelegate.swift，在文件头部添加如下代码:
-````swift
+```swift
 import AeroGearOAuth2
-````
-接着像下面这样实现application(_: openURL: sourceApplication: annotation)：
-````swift
+```
+接着像下面这样实现application(\_: openURL: sourceApplication: annotation)：
+```swift
 func application(application: UIApplication,
   openURL url: NSURL,
   sourceApplication: String?,
@@ -255,7 +247,7 @@ func application(application: UIApplication,
     NSNotificationCenter.defaultCenter().postNotification(notification)
     return true
 }
-````
+```
 这个方法中创建了一个包含打开app时URL信息的NSNotification。AeroGearOAuth2库会接收到这个通知，然后调用你之前插入的POST方法中的completionHandler。
 
 构建并运行一下工程，选个时髦的自拍并打扮一下，点击分享按钮，认证，观察一下发生了什么：
@@ -266,8 +258,7 @@ func application(application: UIApplication,
 
 在OAuth2授权过程中跳转到外部浏览器未免显得太笨重，应该有一个简化的实现方法...
 
-<a name="web-view"></a>
-##使用嵌入的Web视图
+## 使用嵌入的Web视图
 
 嵌入的web视图有更好的用户体验。使用UIWebView来实现而不是跳转到Safari中。从安全的角度来讲，使用app的代码来处理登录表单与提供商的数据会使安全性降低。当用户输入信息时app可以使用JS去访问用户证书，如果你的终端用户信任app的安全性的话是一个可考虑的方案。
 
@@ -275,8 +266,7 @@ func application(application: UIApplication,
 
 来使用OAuthSwift库重新实现分享的方法，不过这次使用的是嵌入的web视图。
 
-<a name="oauthswift"></a>
-##使用嵌入web视图的OAuthSwift
+## 使用嵌入web视图的OAuthSwift
 
 将会开始一个不同的新工程，所以先关闭Xcode的工作区，下载Incognito初始工程的版本，用Xcode打开Incognito.xcworkspace文件。
 
@@ -285,11 +275,11 @@ func application(application: UIApplication,
 首先需要将OAuthSwift库加入到工程中。
 
 打开ViewController.swift在文件头部添加如下代码：
-````swift
+```swift
 import OAuthSwift
-````
+```
 在share()方法中添加如下代码:
-````swift
+```swift
 // 1 Create OAuth2Swift object
 let oauthswift = OAuth2Swift(
   consumerKey:    "YOUR_GOOGLE_DRIVE_CLIENT_ID",         // 2 Enter google app settings
@@ -321,7 +311,7 @@ oauthswift.authorizeWithCallbackURL(
   }, failure: {(error:NSError!) -> Void in
     self.presentAlert("Error", message: error!.localizedDescription)
 })
-````
+```
 上面的代码进行了如下操作：
 
 1. 首先创建一个OAuth2Swift对象，将为你执行OAuth之舞。
@@ -330,16 +320,15 @@ oauthswift.authorizeWithCallbackURL(
 4. 这个域名是你请求访问的Drive API。
 5. 如果授权成功则可以开始上传图片了。
 
-<a name="con-url"></a>
-##配置URL
+## 配置URL
 如之前的工程那样的，需要设置一个Incognito接受的URL scheme，你所要做的就是实现处理自定义URL的代码。
 
 打开AppDelegate.swift添加如下代码：
-````swift
+```swift
 import OAuthSwift
-````
-然后像下面这样实现application(_:openURL: sourceApplication: annotation:)方法:
-````swift
+```
+然后像下面这样实现application(\_:openURL: sourceApplication: annotation:)方法:
+```swift
 func application(application: UIApplication,
   openURL url: NSURL,
   sourceApplication: String?,
@@ -347,17 +336,16 @@ func application(application: UIApplication,
     OAuth2Swift.handleOpenURL(url)
     return true
 }
-````
+```
 跟AeroGearOAuth2不同, OAuthSwift使用一个类方法去处理并解析返回的URL。不过如果你看看handleOpenURL(_) 方法的代码时会发现仅仅是发送了一个NSNotification，就像用AeroGearOAuth2时需要你做的那样!
 
 构建并运行你的工程，创建一个新的自拍然后上传。喔! 再一次成功了! 挺简单的吧 :]
 
-<a name="display-webview"></a>
-##显示UIWebView
+## 显示UIWebView
 现在就要如约添加web view了。点击Incognito文件夹，在Xcode中的工程导航栏处选择File\New\File，然后选择iOS\Source\Swift File，将其命名为 WebViewController然后保存进工程中。
 
 然后打开WebViewController.swift添加如下代码：
-````swift
+```swift
 import UIKit
 import OAuthSwift
  
@@ -386,20 +374,20 @@ class WebViewController: OAuthWebViewController {
     }
   }
 }
-````
+```
 在上面的代码中创建了一个继承OAuthWebViewController的WebViewController，这个类只实现了一个方法：SetUrl:。在viewDidLoad()中调整web view的尺寸然后添加到viewcontroller的父视图中。此外，在OAuth2Swift的实例中加载URL，创建一个request。
 
 接着打开ViewController.swift找到share()方法。在创建完oauthswift实例后添加如下代码：
-````swift
+```swift
 oauthswift.webViewController = WebViewController()
-````
+```
 这里会告诉oauthswift实例使用刚刚创建的web view controller。
 
 最后，打开AppDelegate.swift，修改application(_:openURL: sourceApplication: annotation:) 方法，在return true的前面添加如下代码：
-````swift
+```swift
 // [1] Dismiss webview once url is passed to extract authorization code
 UIApplication.sharedApplication().keyWindow?.rootViewController?.dismissViewControllerAnimated(true, completion: nil)
-````
+```
 构建并运行工程，注意当授权窗口出现时，并不是通过Safari显示的，未产生app间的切换。由于默认在你app中是不会存储cookies的因此每次都会出现授权的窗口。
 
 使用一个UIWebView去授权Google当然会更流畅，的确是! :]
@@ -408,8 +396,7 @@ UIApplication.sharedApplication().keyWindow?.rootViewController?.dismissViewCont
 
 在这个教程中还剩下一件事。来重新审视share()方法，使用著名的HTTP库AFNetworking在OAuth2中的应用。
 
-<a name="afoauthma"></a>
-##使用AFOAuth2Manager授权
+## 使用AFOAuth2Manager授权
 AFOAuth2Manager使用一种与其他OAuth2库完全不同的方式：使用基于著名的AFNetworking框架的底层API。至于你想用一个UIWebView还是打开一个外部的浏览器完全由你来决定，开发者可自由选择在OAuth2之舞中第1步的初始化方式。
 
 这个部分的教程从另一个初始工程开始，关闭已有的工程下载这个新的：[Incognito starter project](http://www.raywenderlich.com/wp-content/uploads/2015/05/Incognito.afoauth2manager_start.zip).
@@ -417,7 +404,7 @@ AFOAuth2Manager使用一种与其他OAuth2库完全不同的方式：使用基�
 打开一个新工程进入ViewController.swift中，首先定义一些帮助方法与扩展。
 
 在文件头部添加如下String扩展：
-````swift
+```swift
 extension String {
   public func urlEncode() -> String {
     let encodedURL = CFURLCreateStringByAddingPercentEscapes(
@@ -429,11 +416,11 @@ extension String {
     return encodedURL as String
   }
 }
-````
+```
 上面的代码扩展了一个String类的函数，使用URL编码一段字符串。
 
 在ViewController中添加如下方法：
-````swift
+```swift
 func parametersFromQueryString(queryString: String?) -> [String: String] {
   var parameters = [String: String]()
   if (queryString != nil) {
@@ -455,13 +442,13 @@ func parametersFromQueryString(queryString: String?) -> [String: String] {
   }
   return parameters
 }
-````
+```
 从URL字符串中提取中查询的参数字符串。比方说如果查询字符串是name=Bob&age=21则方法会返回一个字典：name => Bob, age => 21。
 
 接着你需要在ViewController中定义一个辅助函数，用来提取NSNotification中URL的OAuth码。
 
 在share()方法下面添加如下方法:
-````swift
+```swift
 func extractCode(notification: NSNotification) -> String? {
   let url: NSURL? = (notification.userInfo as!
     [String: AnyObject])[UIApplicationLaunchOptionsURLKey] as? NSURL
@@ -469,11 +456,11 @@ func extractCode(notification: NSNotification) -> String? {
   // [1] extract the code from the URL
   return self.parametersFromQueryString(url?.query)["code"]
 }
-````
+```
 使用刚才实现的方法从查询字符串字典中抓取了键"code"的值。
 
 在share()中添加如下:
-````swift
+```swift
 // 1 Replace with client id /secret
 let clientID = "YOUR_GOOGLE_CLIENT_ID"
 let clientSecret = "YOUR_GOOGLE_CLIENT_SECRET"
@@ -532,7 +519,7 @@ if !isObserved {
 var params = "?scope=\(scope)&redirect_uri=\(redirect_uri)&client_id=\(clientID)&response_type=code"
 // 4 open an external browser
 UIApplication.sharedApplication().openURL(NSURL(string: "https://accounts.google.com/o/oauth2/auth\(params)")!)
-````
+```
 哇哦，这个方法好长！如果一步步分析的话就会理解的：
 
 1. 通常，你需要使用Google控制台的客户端id与客户端密钥替换掉YOUR_GOOGLE_CLIENT_ID与YOUR_GOOGLE_DRIVE_CLIENT_SECRET
