@@ -2,8 +2,7 @@
 
 ***
 > * [**Gitbook**](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/)
-* [**Github**](https://github.com/yrq110/Some_IOS_Tutorials_With_Swift)
-
+> * [**Github**](https://github.com/yrq110/Some_IOS_Tutorials_With_Swift)
 ***
 
 ### 目录
@@ -39,7 +38,7 @@
 30. [Xcode 8中使用Swift 3构建条形码与QR码识别器](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Building%20a%20Barcode%20and%20QR%20Code%20Reader%20in%20Swift%203%20and%20Xcode%208.html)
 31. [Core Plot指南:入门](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Core%20Plot%20Tutorial:%20Getting%20Started.html)
 32. [奇妙的Swift错误处理](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/Magical%20Error%20Handling%20in%20Swift.html)
-33. (未开始)[UIPresentationController指南:入门](https://www.raywenderlich.com/139277/uipresentationcontroller-tutorial-getting-started)
+33. (进行中)[UIPresentationController指南:入门](https://yrq110.gitbooks.io/some_ios_tutorials_with_swift/content/UIPresentationController%20Tutorial:%20Getting%20Started.html)
 34. (未开始)[RxSwift与RxCocoa入门](https://www.raywenderlich.com/138547/getting-started-with-rxswift-and-rxcocoa)
 35. (未开始)[iOS Accessibility指南:入门](https://www.raywenderlich.com/142058/ios-accessibility-tutorial)
 
