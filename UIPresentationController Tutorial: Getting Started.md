@@ -3,9 +3,9 @@
 
 ***
 
->* 原文链接 : [UIPresentationController Tutorial: Getting Started](https://www.raywenderlich.com/139277/uipresentationcontroller-tutorial-getting-started)
-* 原文作者 : [Ron Kliffer](https://www.raywenderlich.com/u/ron.kliffer)
-* 译者 : [yrq110](https://github.com/yrq110/)
+> * 原文链接 : [UIPresentationController Tutorial: Getting Started](https://www.raywenderlich.com/139277/uipresentationcontroller-tutorial-getting-started)
+> * 原文作者 : [Ron Kliffer](https://www.raywenderlich.com/u/ron.kliffer)
+> * 译者 : [yrq110](https://github.com/yrq110/)
 
 ***
 
@@ -33,30 +33,32 @@
 下载[开始工程](https://koenig-media.raywenderlich.com/uploads/2016/08/Medal_Count_Starter.zip)并打开它。
 
 浏览项目目录，熟悉一下以下元素:
-* MainViewController.swift: the main controller of this project from which all presentations start. This will be the only existing file in the project that you’ll modify.
-* GamesTableViewController.swift: displays a list of Games the user can select.
-* MedalCountViewController.swift: displays the medal count for the selected sporting event.
-* GamesDataStore.swift: represents the model layer in the project. It’s responsible for creating and storing model objects.
-Before you start changing things around, build and run the app to see what it does. You’ll see the following screen:
+* MainViewController.swift: 项目的主视图控制器，在之后的项目中仅需修改这个文件。the main controller of this project from which all presentations start. This will be the only existing file in the project that you’ll modify.
+* GamesTableViewController.swift: 显示一个用户可选择的奥运会列表
+* MedalCountViewController.swift: 显示所选择奥运会的奖牌榜
+* GamesDataStore.swift: 负责项目中的model层，创建并存储model对象
+
+在开始之前，先构建并运行app看看它能做什么，会看到如下界面:
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/08/medal_count_01-282x500.png)
 
-First, tap the Summer button to bring up the GamesTableViewController summer menu.
+首先点击Summer按钮显示GamesTableViewController夏季赛事的菜单。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/08/medal_gif_01.gif)
 
-Notice the menu is presented the default way, which is from the bottom; the client wants to see a sleek slide-in instead.
+注意这个菜单是以默认方式展现的，而客户想要一个平滑滑入的效果。
 
-Next, select the London 2012 games to dismiss the menu and return to the main screen. This time, you’ll see an updated logo.
+接着选择London 2012奥运会回到主界面，看到一个更新后的logo。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/08/medal_count_02-282x500.png)
 
-Finally, tap the Medal Count button to bring up the MedalCountViewController for the 2012 games.
+最后点击Medal Count按钮跳转到MedalCountViewController，看到2012年奥运会的奖牌榜。
 
 ![](https://koenig-media.raywenderlich.com/uploads/2016/08/medal_count_03-282x500.png)
 
-As you see, the old bottom-up default is used to present this controller too. Tap the screen to dismiss it.
-Now that you’ve seen the app you’ll upgrade, it’s time to turn your attention to some core concepts and theory for UIPresentationController.
+如你所见，这个控制器的跳转也是老式的自下而上弹出方式，点击屏幕隐藏它。
+
+这个app就是需要你来修改的，是时候注意下有关UIPresentationController的核心概念与理论了。
 
 ## iOS Transition的核心概念
 When you call present(\_:animated:completion:), iOS does two things.
