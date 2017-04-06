@@ -1,11 +1,11 @@
-#Creating Gradient Colors Using CAGradientLayer
-##使用CAGradientLayer创建渐变色
+# Creating Gradient Colors Using CAGradientLayer
+## 使用CAGradientLayer创建渐变色
 
 ***
 
->* 原文链接 : [Creating Gradient Colors Using CAGradientLayer](http://www.appcoda.com/cagradientlayer/)
-* 原文作者 : [GABRIEL THEODOROPOULOS](http://www.appcoda.com/author/gabrielth/)
-* 译者 : [yrq110](https://github.com/yrq110)
+> * 原文链接 : [Creating Gradient Colors Using CAGradientLayer](http://www.appcoda.com/cagradientlayer/)
+> * 原文作者 : [GABRIEL THEODOROPOULOS](http://www.appcoda.com/author/gabrielth/)
+> * 译者 : [yrq110](https://github.com/yrq110)
 
 ***
 
@@ -18,21 +18,21 @@ CAGradientLayer是CALayer类的子类，顾名思义，用来产生渐变效果�
 在之后的章节会介绍跟配置渐变效果有关的每个属性的详细信息，我会使用非常棒的色彩来演示，为了方便起见仅用两种颜色，对于demo来说足够了，你也可以使用更多的色彩。
 
 **目录**
-* [创建一个渐变层](#创建一个渐变层)
-* [渐变色](#渐变色)
-* [颜色位置](#颜色位置)
-* [渐变方向](#渐变方向)
+* 创建一个渐变层
+* 渐变色
+* 颜色位置
+* 渐变方向
 
-##创建一个渐变层
+## 创建一个渐变层
 
 创建一个渐变色彩层是项快速并且简单的任务，必须要制定一些参数。实际上你需要先设置少量的属性后就可以接着进行后面的操作，最花时间的也许是在操作渐变层时对最终结果参数的微调，对层属性设定不同的值会产生完全不同的效果。
 
 让我们来逐步看看其中的细节，首先需要一个演示的app。打开Xcode创建一个新应用，确保选择的是单视图界面模板，跟着向导完成创建。
 
 假设你已经准备好了一个新工程，点击ViewController.swift文件，在类中声明如下属性:
-````swift
+```swift
 var gradientLayer: CAGradientLayer!
-````
+```
 在之后会进行gradientLayer属性的设置，为了在目标视图中显示一个渐变层的最小实现步骤如下所示:
 
 1. 初始化一个CAGradientLayer对象(这里是gradientLayer)。
@@ -43,7 +43,7 @@ var gradientLayer: CAGradientLayer!
 除了上面这些步骤，还有一些需要配置的参数，之后会讲到。现在先主要关注这些步骤即可，简便起见，使用ViewController类中的默认视图作为目标视图，使用渐变色彩来填充它。
 
 来操作一下ViewController类，创建一个初始化与设置渐变层属性默认值的新方法:
-````swift
+```swift
 func createGradientLayer() {
     gradientLayer = CAGradientLayer()
  
@@ -53,28 +53,28 @@ func createGradientLayer() {
  
     self.view.layer.addSublayer(gradientLayer)
 }
-````
+```
 首先初始化了渐变层对象，设置它的尺寸，使其与视图控制器视图的边界属性相等。接着指定渐变效果的色彩，最后将渐变层作为子层添加到默认的视图层上。
 
 调用上述的viewWillAppear(_: )方法:
-````swift
+```swift
 override func viewWillAppear(animated: Bool) {
     super.viewWillAppear(animated)
     createGradientLayer()
 }
-````
+```
 …然后运行app，效果如下:
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_1_first_gradient.png)
 
 不是很糟，仅用了4行简单的代码，来深入一下其中的细节。
 
-##渐变色
+## 渐变色
 
 虽然上面的代码很简单，不过其中包含一个重要的属性:色彩属性。首先我觉得我不需要解释:不设置色彩的话就不会有一丝渐变效果。其次，这个属性需要接受一个色彩数组，而不是一个UIColor对象。在上面的例子中只用了两种颜色，你可以用更多的颜色。比如说设置如下的色彩集:
-````swift
+```swift
 gradientLayer.colors = [UIColor.redColor().CGColor, UIColor.orangeColor().CGColor, UIColor.blueColor().CGColor, UIColor.magentaColor().CGColor, UIColor.yellowColor().CGColor]
-````
+```
 …运行app后如下所示:
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_2_second_gradient.png)
@@ -83,15 +83,15 @@ gradientLayer.colors = [UIColor.redColor().CGColor, UIColor.orangeColor().CGColo
 
 首先，在ViewController类的顶部，在gradientLayer属性之后声明两种新属性:
 
-````swift
+```swift
 var colorSets = [[CGColor]]()
  
 var currentColorSet: Int!
-````
+```
 colorSets数组接受的元素是由CGColor对象组成的数组，currentColorSet表示当前执行渐变效果的色彩集。
 
 现在来创建色彩集，下面的颜色只是个例子，你可以使用想要的颜色N:
-````swift
+```swift
 func createColorSets() {
     colorSets.append([UIColor.redColor().CGColor, UIColor.yellowColor().CGColor])
     colorSets.append([UIColor.greenColor().CGColor, UIColor.magentaColor().CGColor])
@@ -99,38 +99,38 @@ func createColorSets() {
  
     currentColorSet = 0
 }
-````
+```
 上面的方法中，将由不同色彩组成的数组添加进了colorSets数组中，并且还设置了currentColorSet属性的初始值。
 
 来在viewDidLoad()方法中调用它:
-````swift
+```swift
 override func viewDidLoad() {
     super.viewDidLoad()
  
     createColorSets()
 }
-````
+```
 还需要稍微修改下这个createGradientLayer()方法:
-````swift
+```swift
 gradientLayer.colors = [UIColor.redColor().CGColor, UIColor.orangeColor().CGColor, UIColor.blueColor().CGColor, UIColor.magentaColor().CGColor, UIColor.yellowColor().CGColor]
-````
+```
 …用下面的代码替换:
-````swift
+```swift
 gradientLayer.colors = colorSets[currentColorSet]
-````
+```
 这样就会使用通过currentColorSet属性所指定的色彩集，而不是之前使用的默认色彩。
 
 之前我提到过：点击视图可以在不同色彩集间通过动画的方式变换，这意味着需要给视图添加一个点击的手势识别器，在viewDidLoad()中添加如下代码:
-````swift
+```swift
 override func viewDidLoad() {
     ...
  
     let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.handleTapGesture(_:)))
     self.view.addGestureRecognizer(tapGestureRecognizer)
 }
-````
-若视图接收到点击手势时会调用handleTapGesture(_:)方法，离完成不远了。注意到下面代码中用到的CABasicAnimation，使用它来产生层色彩属性变换的动画效果，这里我认为你已经具备了有关CABasicAnimation的知识，了解动画是如何实现的，如果不是的话请去google下。没有包含某些属性，只使用了执行动画所需的基本属性。
-````swift
+```
+若视图接收到点击手势时会调用handleTapGesture(\_:)方法，离完成不远了。注意到下面代码中用到的CABasicAnimation，使用它来产生层色彩属性变换的动画效果，这里我认为你已经具备了有关CABasicAnimation的知识，了解动画是如何实现的，如果不是的话请去google下。没有包含某些属性，只使用了执行动画所需的基本属性。
+```swift
 func handleTapGesture(gestureRecognizer: UITapGestureRecognizer) {
     if currentColorSet < colorSets.count - 1 {
         currentColorSet! += 1
@@ -146,19 +146,19 @@ func handleTapGesture(gestureRecognizer: UITapGestureRecognizer) {
     colorChangeAnimation.removedOnCompletion = false
     gradientLayer.addAnimation(colorChangeAnimation, forKey: "colorChange")
 }
-````
+```
 首先我们要决定下一个色彩集的索引，如果当前选择的色彩集是colorSets数组中的最后一个，则从最开始(currentColorSet = 0)选取，否则给currentColorSet属性+1。
 
 第二部分的代码是与动画相关的，duration与toValue是最重要的属性，duration意味着动画持续多久，toValue则是设置的期望目标色彩集。kCAFillModeForwards属性使动画结束后保持最后的状态，不会变为初始色彩，不过这并不是永久的，需要明确设置新的渐变色彩，何时设置？在动画完成后即可，使用下面这个方法，当CABasicAnimation完成时会调用它:
-````swift
+```swift
 override func animationDidStop(anim: CAAnimation, finished flag: Bool) {
     if flag {
         gradientLayer.colors = colorSets[currentColorSet]
     }
 }
-````
+```
 再修改下handleTapGesture(_:)方法，这样上面的方法就起作用了:
-````swift
+```swift
 func handleTapGesture(gestureRecognizer: UITapGestureRecognizer) {
     ...
  
@@ -167,12 +167,12 @@ func handleTapGesture(gestureRecognizer: UITapGestureRecognizer) {
  
     gradientLayer.addAnimation(colorChangeAnimation, forKey: &quot;colorChange&quot;)
 }
-````
+```
 搞定了。可以自由的调整动画持续时间，我设成了2秒，可以看到渐变的效果很明显:
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_3_color_change_2.gif)
 
-##颜色位置
+## 颜色位置
 
 知道渐变效果中颜色的设置与改变是渐变层的基础，离最终的目标还是有一段距离的。还需要知道如何修改层中每个色彩所覆盖的区域，这也是很重要的。
 
@@ -184,9 +184,9 @@ func handleTapGesture(gestureRecognizer: UITapGestureRecognizer) {
 
 百闻不如一见，在createGradientLayer()方法中添加如下行:
 
-````swift
+```swift
 gradientLayer.locations = [0.0, 0.35]
-````
+```
 再次运行app，看看渐变效果的变化:
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_5_locations_1.png)
@@ -199,7 +199,7 @@ gradientLayer.locations = [0.0, 0.35]
 
 来给demo再加点料吧，给视图添加一个点击手势识别器。这次将点击事件设为需要两个手指的操作，在viewDidLoad()中添加如下行:
 
-````swift
+```swift
 override func viewDidLoad() {
     ...
  
@@ -207,9 +207,9 @@ override func viewDidLoad() {
     twoFingerTapGestureRecognizer.numberOfTouchesRequired = 2
     self.view.addGestureRecognizer(twoFingerTapGestureRecognizer)
 }
-````
+```
 在handleTwoFingerTapGesture(_:)方法中会给不同色彩分配随机的位置，需要确保firstColorLocation总小于secondColorLocation，另外在改变位置时会将新的位置值实时打印在控制台中:
-````swift
+```swift
 func handleTwoFingerTapGesture(gestureRecognizer: UITapGestureRecognizer) {
     let secondColorLocation = arc4random_uniform(100)
     let firstColorLocation = arc4random_uniform(secondColorLocation - 1)
@@ -218,14 +218,14 @@ func handleTwoFingerTapGesture(gestureRecognizer: UITapGestureRecognizer) {
  
     print(gradientLayer.locations!)
 }
-````
+```
 使用两个手指操作的效果如下:
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_7_change_locations.gif)
 
 注意默认情况下locations属性是空的，需要考虑到可能会崩溃的问题。虽然现在在demo中为了方便起见只使用了两种颜色，在使用更多颜色产生渐变效果时上面的方法同样适用。
 
-##渐变方向
+## 渐变方向
 
 已经知道了渐变层颜色属性的一些相关操作，来着手学习一下如何处理渐变效果的方向吧。首先看看下面这张图:
 
@@ -256,14 +256,14 @@ CAGradientLayer类提供了两个指定渐变方向的属性:
 
 默认的起始点是(0.5, 0.0)，终止点是(0.5, 1.0)，注意到x值没变，y值从0.0(顶部)变成了1.0(底部)，创建了向下的方向。来尝试一下不同的方向，在createGradientLayer()方法中添加如下两行:
 
-````swift
+```swift
 func createGradientLayer() {
     ...
  
     gradientLayer.startPoint = CGPointMake(0.0, 0.5)
     gradientLayer.endPoint = CGPointMake(1.0, 0.5)
 }
-````
+```
 x值从0.0变为了1.0，y值不变，产生了一个向右的渐变效果:
 
 ![](http://www.appcoda.com/wp-content/uploads/2016/07/t53_10_gradient_right.png)
@@ -280,7 +280,7 @@ x值从0.0变为了1.0，y值不变，产生了一个向右的渐变效果:
 * 从右下到左上
 
 回到工程中，新建一个枚举来表示所有的方向:
-````swift
+```swift
 enum PanDirections: Int {
     case Right
     case Left
@@ -291,24 +291,24 @@ enum PanDirections: Int {
     case BottomLeftToTopRight
     case BottomRightToTopLeft
 }
-````
+```
 之后再ViewController类中声明一个标示渐变方向的新属性:
-````swift
+```swift
 var panDirection: PanDirections!
-````
+```
 panDirection属性会获取手势移动的方向，下面需要处理一个分为两个步骤的任务:首先决定期望的方向分配给上面的属性，然后等拖动手势结束后设置对应的起始值与终止值。
 
 还需要给视图添加一个拖动手势的识别器，在viewDidLoad()方法中添加如下代码:
-````swift
+```swift
 override func viewDidLoad() {
     ...
  
     let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(ViewController.handlePanGestureRecognizer(_:)))
     self.view.addGestureRecognizer(panGestureRecognizer)
 }
-````
+```
 在实现handlePanGestureRecognizer(_:)方法时使用了手势识别器的速度(velocity)属性，若某一方向(x或y)上的速度大于300.0，则取这个方向。逻辑很好理解: 优先检测水平方向的速度，第二层中检测垂直方向的速度，代码如下:
-````swift
+```swift
 func handlePanGestureRecognizer(gestureRecognizer: UIPanGestureRecognizer) {
     let velocity = gestureRecognizer.velocityInView(self.view)
  
@@ -368,7 +368,7 @@ func handlePanGestureRecognizer(gestureRecognizer: UIPanGestureRecognizer) {
         changeGradientDirection()
     }
 }
-````
+```
 上述代码中需要注意两点(不仅仅是决定拖动手势的方向):
 
 1. 若没有满足任何条件则panDirection为nil。
@@ -376,7 +376,7 @@ func handlePanGestureRecognizer(gestureRecognizer: UIPanGestureRecognizer) {
 
 下面是个简单的实现，仅设置了渐变层的一些起始点与终止点，观察一下x与y是如何随着手势方向变化的:
 
-````swift
+```swift
 func changeGradientDirection() {
     if panDirection != nil {
         switch panDirection.rawValue {
@@ -414,7 +414,7 @@ func changeGradientDirection() {
         }
     }
 }
-````
+```
 
 若panDirection为nil，则没有任何响应产生。
 
