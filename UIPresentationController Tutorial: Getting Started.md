@@ -71,3 +71,22 @@ Understanding these key components is mandatory if you want to build sweet prese
 4. A presentation controller’s delegate tells the presentation controller what to do when its trait collection changes. For the sake of adaptivity, the delegate must be an object that conforms to UIAdaptivePresentationControllerDelegate.
 That’s all you need to know before you dive in!
 
+## Creating the Transitioning Delegate
+A transitioningDelegate object inherits from NSObject and conforms to UIViewControllerTransitioningDelegate.
+
+UIViewControllerTransitioningDelegate protocol, as its name hints, declares five optional methods for managing transitions.
+
+You’ll work with these three methods quite a bit in this tutorial.
+### Set up the Framework
+Go to File\New\File…, choose iOS\Source\Cocoa Touch Class, and click Next. Set the name to SlideInPresentationManager, make it a subclass of NSObject and set the language to Swift.
+
+Click Next and set the group to Presentation then click Create.
+> Note: You declare SlideInPresentationManager to be an NSObject subclass because UIViewController‘s transitioningDelegate must conform to the NSObjectProtocol.
+
+Open SlideInPresentationManager and add the following extension:
+
+```swift
+// MARK: - UIViewControllerTransitioningDelegate
+extension SlideInPresentationManager: UIViewControllerTransitioningDelegate {
+}
+```
